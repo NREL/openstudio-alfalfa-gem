@@ -1,6 +1,6 @@
 # Openstudio Alfalfa Gem
 
-TODO: Add a description of this gem
+Extrapolation from the Haystack ruby measure written for alfalfa
 
 ## Installation
 
