@@ -1,6 +1,6 @@
 # Openstudio Alfalfa Gem
 
-Extrapolation from the Haystack ruby measure written for alfalfa
+Extrapolation from the [Haystack measure](https://github.com/NREL/alfalfa/tree/develop/worker/workflow/measures/haystack) written for alfalfa
 
 ## Installation
 
