@@ -44,4 +44,9 @@ RSpec.describe OpenStudio::Alfalfa do
     instance = OpenStudio::Alfalfa::Alfalfa.new
     expect(File.exist?(instance.measures_dir)).to be true
   end
+
+  it 'exists' do
+    x = OpenStudio::Alfalfa::Tagger.new
+    expect(x.class.to_s == 'OpenStudio::Alfalfa::Tagger').to be true
+  end
 end

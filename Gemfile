@@ -16,8 +16,7 @@ elsif allow_local
   gem 'openstudio-extension', github: 'NREL/OpenStudio-extension-gem', branch: 'develop'
 end
 
-gem 'openstudio_measure_tester', '= 0.1.7' # This includes the dependencies for running unit tests, coverage, and rubocop
+gem 'openstudio_measure_tester', '= 0.2.0' # This includes the dependencies for running unit tests, coverage, and rubocop
 
-# simplecov has an unnecessary dependency on native json gem, use fork that does not require this
-gem 'simplecov', github: 'NREL/simplecov'
+
 

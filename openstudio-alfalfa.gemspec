@@ -6,7 +6,7 @@ require 'openstudio/alfalfa/version'
 Gem::Specification.new do |spec|
   spec.name          = 'openstudio-alfalfa'
   spec.version       = OpenStudio::Alfalfa::VERSION
-  spec.authors       = ['']
+  spec.authors       = ['Austin Viveiros']
   spec.email         = ['']
 
   spec.summary       = 'library and measures for OpenStudio'
@@ -27,6 +27,6 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'rspec', '3.7.0'
   spec.add_development_dependency 'rubocop', '~> 0.54.0'
 
-  spec.add_dependency 'openstudio-extension', '~> 0.1.0'
+  spec.add_dependency 'openstudio-extension', '~> 0.2.0'
   spec.add_dependency 'openstudio-standards', '~> 0.2.7'
 end
