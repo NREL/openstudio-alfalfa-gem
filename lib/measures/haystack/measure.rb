@@ -112,7 +112,7 @@ class Haystack < OpenStudio::Ruleset::ModelUserScript
       building = model.getBuilding
       simCon = model.getSimulationControl
 
-      #Define the site, weather, and floor for haystack represetnation
+      #Define the site, weather, and floor for haystack
       site = tagger.tag_site(building.handle, building.name, building.floorArea,
                              wf.handle, wf.timeZone, wf.city, wf.stateProvinceRegion, wf.country, wf.latitude, wf.longitude)
 
@@ -144,17 +144,11 @@ class Haystack < OpenStudio::Ruleset::ModelUserScript
     output_vars = model.getOutputVariables
     output_vars.each do |outvar|
       if outvar.exportToBCVTB
+
+        user_defined_sensor_point = tagger.tag_sensor(outvar.handle, outvar.nameString, building.handle)
+        haystack_json << user_defined_sensor_point
+
         uuid = tagger.create_ref(outvar.handle)
-
-        var_haystack_json = Hash.new
-        var_haystack_json[:id] = uuid
-        var_haystack_json[:dis] = tagger.create_str(outvar.nameString)
-        var_haystack_json[:siteRef] = tagger.create_ref(building.handle)
-        var_haystack_json[:point]="m:"
-        var_haystack_json[:cur]="m:"
-        var_haystack_json[:curStatus] = "s:disabled"
-        haystack_json << var_haystack_json
-
         var_map_json = Hash.new
         var_map_json[:id] = uuid
         var_map_json[:source] = "EnergyPlus"
@@ -165,22 +159,24 @@ class Haystack < OpenStudio::Ruleset::ModelUserScript
       end
     end
 
+    # Tag thermal zones
+    thermal_zones = tagger.tag_thermal_zones(model)
+    puts(thermal_zones)
+    #Comment this in when the tagutils.py is figured out
+    #haystack_json << thermal_zones
+
+    #Tag fans
+
+
     # Export all user defined EnergyManagementSystemGlobalVariable objects
     # as haystack writable points
     global_vars = model.getEnergyManagementSystemGlobalVariables
     global_vars.each do |globalvar|
       if globalvar.exportToBCVTB
         uuid = tagger.create_ref(globalvar.handle)
-
         if not globalvar.nameString.end_with?("_Enable")
-          var_haystack_json = Hash.new
-          var_haystack_json[:id] = uuid
-          var_haystack_json[:dis] = tagger.create_str(globalvar.nameString)
-          var_haystack_json[:siteRef] = tagger.create_ref(building.handle)
-          var_haystack_json[:point]="m:"
-          var_haystack_json[:writable]="m:"
-          var_haystack_json[:writeStatus] = "s:ok"
-          haystack_json << var_haystack_json
+          user_defined_writable_point = tagger.tag_writable_point(globalvar.nameString, building.handle, uuid)
+          haystack_json << user_defined_writable_point
         end
 
         var_mapping_json = Hash.new
@@ -195,6 +191,7 @@ class Haystack < OpenStudio::Ruleset::ModelUserScript
 
     #loop through air loops and find economizers
     model.getAirLoopHVACs.each do |airloop|
+
       supply_components = airloop.supplyComponents
       #find AirLoopHVACOutdoorAirSystem on loop
       supply_components.each do |supply_component|
@@ -220,23 +217,19 @@ class Haystack < OpenStudio::Ruleset::ModelUserScript
       #AHU discharge sensors
       #discharge air node
       discharge_air_node = airloop.supplyOutletNode
-      #Temp Sensor
-      haystack_temp_json, temp_uuid = tagger.create_point_uuid("sensor", "#{airloop.name.to_s} Discharge Air Temp Sensor", building.handle, airloop.handle, simCon.handle, "discharge", "air", "temp", "Number", "C")
-      haystack_json << haystack_temp_json
-      discharge_air_temp_sensor, temp_json = tagger.create_EMS_sensor_bcvtb("System Node Temperature", discharge_air_node, "#{airloop.name.to_s} Discharge Air Temp Sensor", temp_uuid, report_freq, model)
+      #Tag Temp, Pressure, Humidity, and Flow Sensors
+      discharge_temp_sensor, discharge_temp_uuid = tagger.create_point_uuid("sensor", "#{airloop.name.to_s} Discharge Air Temp Sensor", building.handle, airloop.handle, simCon.handle, "discharge", "air", "temp", "Number", "C")
+      discharge_pressure_sensor, discharge_pressure_uuid = tagger.create_point_uuid("sensor", "#{airloop.name.to_s} Discharge Air Pressure Sensor", building.handle, airloop.handle, simCon.handle, "discharge", "air", "pressure", "Number", "Pa")
+      discharge_humidity_sensor, discharge_humidity_uuid = tagger.create_point_uuid("sensor", "#{airloop.name.to_s} Discharge Air Humidity Sensor", building.handle, airloop.handle, simCon.handle, "discharge", "air", "humidity", "Number", "%")
+      discharge_flow_sensor, discharge_flow_uuid = tagger.create_point_uuid("sensor", "#{airloop.name.to_s} Discharge Air Flow Sensor", building.handle, airloop.handle, simCon.handle, "discharge", "air", "flow", "Number", "Kg/s")
+      haystack_json.push(discharge_temp_sensor, discharge_pressure_sensor, discharge_humidity_sensor, discharge_flow_sensor)
+
+      #Controls Definitions and assignments
+      discharge_air_temp_sensor, temp_json = tagger.create_EMS_sensor_bcvtb("System Node Temperature", discharge_air_node, "#{airloop.name.to_s} Discharge Air Temp Sensor", discharge_temp_uuid, report_freq, model)
       mapping_json << temp_json
-      #Pressure Sensor
-      haystack_temp_json, temp_uuid = tagger.create_point_uuid("sensor", "#{airloop.name.to_s} Discharge Air Pressure Sensor", building.handle, airloop.handle, simCon.handle, "discharge", "air", "pressure", "Number", "Pa")
-      haystack_json << haystack_temp_json
       discharge_air_pressure_sensor = tagger.create_EMS_sensor("System Node Pressure", discharge_air_node, "#{airloop.name.to_s} Discharge Air Pressure Sensor", report_freq, model)
-      #Humidity Sensor
-      haystack_temp_json, temp_uuid = tagger.create_point_uuid("sensor", "#{airloop.name.to_s} Discharge Air Humidity Sensor", building.handle, airloop.handle, simCon.handle, "discharge", "air", "humidity", "Number", "%")
-      haystack_json << haystack_temp_json
       discharge_air_humidity_sensor = tagger.create_EMS_sensor("System Node Relative Humidity", discharge_air_node, "#{airloop.name.to_s} Discharge Air Humidity Sensor", report_freq, model)
-      #Flow Sensor
-      haystack_temp_json, temp_uuid = tagger.create_point_uuid("sensor", "#{airloop.name.to_s} Discharge Air Flow Sensor", building.handle, airloop.handle, simCon.handle, "discharge", "air", "flow", "Number", "Kg/s")
-      haystack_json << haystack_temp_json
-      discharge_air_flow_sensor, temp_json = tagger.create_EMS_sensor_bcvtb("System Node Mass Flow Rate", discharge_air_node, "#{airloop.name.to_s} Discharge Air Flow Sensor", temp_uuid, report_freq, model)
+      discharge_air_flow_sensor, temp_json = tagger.create_EMS_sensor_bcvtb("System Node Mass Flow Rate", discharge_air_node, "#{airloop.name.to_s} Discharge Air Flow Sensor", discharge_flow_uuid, report_freq, model)
       mapping_json << temp_json
 
       supply_components = airloop.supplyComponents
