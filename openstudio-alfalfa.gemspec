@@ -22,11 +22,11 @@ Gem::Specification.new do |spec|
   spec.executables   = spec.files.grep(%r{^exe/}) { |f| File.basename(f) }
   spec.require_paths = ['lib']
 
-  spec.add_development_dependency 'bundler', '~> 2.1.0'
-  spec.add_development_dependency 'rake', '12.3.1'
+  spec.add_development_dependency 'bundler', '~> 2.1', '>= 2.1.0'
+  spec.add_development_dependency 'rake', '13.0'
   spec.add_development_dependency 'rspec', '3.7.0'
   spec.add_development_dependency 'rubocop', '~> 0.54.0'
 
-  spec.add_dependency 'openstudio-extension', '~> 0.2.0'
-  spec.add_dependency 'openstudio-standards', '~> 0.2.7'
+  spec.add_dependency 'openstudio-extension', '0.2.2'
+  spec.add_dependency 'openstudio-standards', '0.2.11'
 end

@@ -16,7 +16,7 @@ elsif allow_local
   gem 'openstudio-extension', github: 'NREL/OpenStudio-extension-gem', branch: 'develop'
 end
 
-gem 'openstudio_measure_tester', '= 0.2.0' # This includes the dependencies for running unit tests, coverage, and rubocop
+gem 'openstudio_measure_tester', '= 0.2.2' # This includes the dependencies for running unit tests, coverage, and rubocop
 
 
 
