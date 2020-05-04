@@ -378,6 +378,7 @@ module OpenStudio
             end
           end
         end
+        return fan_list
       end
     end
   end
