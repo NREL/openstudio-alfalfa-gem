@@ -18,9 +18,9 @@ Or install it yourself as:
 
     $ gem install 'openstudio-alfalfa'
 
-## Usage
+## Note
 
-To be filled out later. 
+This Gem requires OpenStudio@3.0 or greater 
 
 ## TODO
 
