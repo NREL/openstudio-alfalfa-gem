@@ -34,6 +34,8 @@
 # *******************************************************************************
 
 require 'bundler/setup'
+require 'openstudio'
+require 'openstudio-standards'
 require 'openstudio/alfalfa'
 
 RSpec.configure do |config|
@@ -45,5 +47,28 @@ RSpec.configure do |config|
 
   config.expect_with :rspec do |c|
     c.syntax = :expect
+  end
+
+  config.formatter= :documentation
+
+  def check_and_create_small_office
+    osm_dir = "#{Dir.pwd}/spec/outputs/small_office"
+    sr_dir = osm_dir + "/SR1"
+    osm = sr_dir + "/in.osm"
+    # Check first whether the directories exist
+    if !File.exist?(osm)
+      model = OpenStudio::Model::Model.new
+      epw_file = nil
+      building_type = "SmallOffice"
+      template = "90.1-2013"
+      cz = "ASHRAE 169-2013-5A"
+      if !Dir.exist?(osm_dir)
+        FileUtils.mkdir_p(osm_dir)
+      end
+      prototype_creator = Standard.build("#{template}_#{building_type}")
+      prototype_creator.model_create_prototype_model(cz, epw_file, osm_dir, false, model)
+    else
+      puts "SmallOffice model already exists, will use existing"
+    end
   end
 end

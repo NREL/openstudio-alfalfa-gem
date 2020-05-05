@@ -3,9 +3,27 @@ require 'json'
 module OpenStudio
   module Alfalfa
     class Tagger
-
-      def initialize
-
+      attr_reader :building, :wf, :haystack_json
+      def initialize(model)
+        """
+        Must pass in a 'gotten' model
+        """
+        @model = model
+        @building = @model.getBuilding
+        # puts @model.weatherFile.get
+        if @model.weatherFile.is_initialized
+          @wf = @model.weatherFile.get
+        else
+          @wf = nil
+        end
+        if @wf.nil?
+          puts "Weather file must be initialized for model"
+          exit(1)
+        end
+        @storys = @model.getBuildingStorys
+        @tz = @model.getThermalZones
+        @air_loops = @model.getAirLoopHVACs
+        @haystack_json = []
       end
 
       def create_uuid(dummyinput)
@@ -139,24 +157,36 @@ module OpenStudio
         return point_json
       end
 
-      def create_fan(id, name, siteRef, equipRef, floorRef, variable)
+      ##
+      # Create a Haystack 4.0 compliant fan
+      def create_fan(fan, equipRef)
         point_json = Hash.new
-        point_json[:id] = create_ref(id)
-        point_json[:dis] = create_str(name)
-        point_json[:siteRef] = create_ref(siteRef)
-        point_json[:equipRef] = create_ref(equipRef)
-        point_json[:floorRef] = create_ref(floorRef)
+        point_json[:id] = create_ref(fan.handle)
+        point_json[:dis] = create_str(fan.name.get)
+        point_json[:siteRef] = create_ref(@building.handle)
+        point_json[:equipRef] = create_ref(equipRef.handle)
         point_json[:equip] = "m:"
         point_json[:fan] = "m:"
-        if variable
-          point_json[:vfd] = "m:"
-          point_json[:variableVolume] = "m:"
-        else
-          point_json[:constantVolume] = "m:"
+        point_json[:motor] = "m:"
+        if fan.to_FanVariableVolume.is_initialized
+          point_json[:variableAirVolume] = "m:"
+        elsif fan.to_FanConstantVolume.is_initialized
+          point_json[:steppedAirVolume] = "m:"
+        elsif fan.to_FanOnOff.is_initialized
+          point_json[:constantAirVolume] = "m:"
         end
         return point_json
       end
 
+      ##
+      # Wrapper around create_fan, adds 'discharge' tag and adds into @haystack_json
+      def create_supply_fan(fan, equipRef)
+        j = self.create_fan(fan, equipRef)
+        j[:discharge] = "m:"
+        @haystack_json << j
+      end
+
+      # TODO: deprecate
       def create_ahu(id, name, siteRef, floorRef)
         ahu_json = Hash.new
         ahu_json[:id] = create_ref(id)
@@ -225,54 +255,50 @@ module OpenStudio
         return sensor
       end
 
-      def tag_site(handle, name, floor_area, weather_ref, time_zone, city, state, country, lat, long)
-        """
-        create a haystack compliant site definition
-        :params: an OS models building [handle, name, floor_area, weather_ref, time_zone, city, state, country, lat, long]
-        :return: json representation of a haystack site definition
-        """
+      ##
+      # Create a Haystack compliant site definition and add to @haystack_json
+      def tag_site
         site = Hash.new
-        site[:id] = create_ref(handle)
-        site[:dis] = create_str(name.to_s)
+        site[:id] = create_ref(@building.handle)
+        site[:dis] = create_str(@building.name.to_s)
         site[:site] = "m:"
-        site[:area] = create_num(floor_area)
-        site[:weatherRef] = create_ref(weather_ref)
-        site[:tz] = create_num(time_zone)
-        site[:geoCity] = create_str(city)
-        site[:geoState] = create_str(state)
-        site[:geoCountry] = create_str(country)
-        site[:geoCoord] = "c:#{lat},#{long}"
+        site[:area] = create_num(@building.floorArea)
+        site[:weatherRef] = create_ref(@wf.handle)
+        site[:tz] = create_num(@wf.timeZone)
+        site[:geoCity] = create_str(@wf.city)
+        site[:geoState] = create_str(@wf.stateProvinceRegion)
+        site[:geoCountry] = create_str(@wf.country)
+        site[:geoCoord] = "c:#{@wf.latitude},#{@wf.longitude}"
         site[:simStatus] = "s:Stopped"
         site[:simType] = "s:osm"
-        return site
+        @haystack_json.push(site)
       end
 
-      def tag_weather(handle, city, time_zone, lat, long)
-        """
-        create a haystack compliant weather definition
-        :params: an OS models building [handle, time_zone, city, lat, long]
-        :return: json representation of a haystack weather definition
-        """
+      ##
+      # Create a Haystack compliant weather definition and add to @haystack_json
+      def tag_weather
         weather = Hash.new
-        weather[:id] = create_ref(handle)
-        weather[:dis] = create_str(city)
+        weather[:id] = create_ref(@wf.handle)
+        weather[:dis] = create_str(@wf.city)
         weather[:weather] = "m:"
-        weather[:tz] = create_num(time_zone)
-        weather[:geoCoord] = "c:#{lat},#{long}"
-        return weather
+        weather[:tz] = create_num(@wf.timeZone)
+        weather[:geoCoord] = "c:#{@wf.latitude},#{@wf.longitude}"
+        @haystack_json << weather
       end
 
-      def tag_floor(handle)
-        """
-        create a haystack compliant weather definition
-        :params: an OS models building Simulation Control handle
-        :return: json representation of a haystack floor representation
-        """
-        floor = Hash.new
-        floor[:id] = create_ref(handle)
-        floor[:dis] = create_str("floor discription")
-        floor[:floor] = "m:"
-        return floor
+      ##
+      # Create a Haystack 4.0 compliant floor and adds to @haystack_json
+      def tag_stories
+        @storys.each do |story|
+          if story.name.is_initialized
+            story_hash = Hash.new
+            story_hash[:id] = create_ref(story.handle)
+            story_hash[:dis] = create_str(story.name.get)
+            story_hash[:siteRef] = create_ref(@building.handle)
+            story_hash[:floor] = "m:"
+            @haystack_json << story_hash
+          end
+        end
       end
 
       def tag_sensor(o_handle, name, b_handle)
@@ -308,76 +334,95 @@ module OpenStudio
         return writable_point
       end
 
-      def tag_thermal_zones(model)
-        """
-        create a haystack compliant list of thermal zones
-        :params: an OS model
-        :return: json representation of a haystack thermal zone
-        """
-        thermal_zone_list = []
-        thermal_zones = model.getThermalZones
-
-        thermal_zones.each do |tz|
+      ##
+      # Create a Haystack compliant list of thermal zones and add
+      # each of them as a separate entry into @haystack_json.
+      #
+      # ThermalZones are not added if they are:
+      # - not connected to an airloop
+      # - a plenum
+      # - unconditioned
+      def tag_thermal_zones
+        @tz.each do |tz|
           if tz.name.is_initialized
-            ## define haystack tagset here
+            air_loops = tz.airLoopHVACs
+            next if air_loops.size == 0
+            next if tz.isPlenum
+            next if !tz.isConditioned
             thermal_zone_haystack = Hash.new
-            name = tz.name.get
-            thermal_zone_haystack[:name] = "dis:"
+            thermal_zone_haystack[:id] = create_ref(tz.handle)
+            thermal_zone_haystack[:dis] = create_str(tz.name.get)
+            thermal_zone_haystack[:siteRef] = create_ref(@building.handle)
             thermal_zone_haystack[:hvac] = "m:"
             thermal_zone_haystack[:zone] = "m:"
             thermal_zone_haystack[:space] = "m:"
-            thermal_zone_list.push(thermal_zone_haystack)
+            @haystack_json << thermal_zone_haystack
           end
         end
-        return thermal_zone_list
       end
 
-      def tag_fans(model)
-        """
-        create a haystack compliant list of model fans
-        :params: an OS model
-        :return: json representation of a haystack fan
-        """
-        fan_list = []
-        model.getAirLoopHVACs.each do |airloop|
-          supply_components = airloop.supplyComponents
-          #find AirLoopHVACOutdoorAirSystem on loop
-          supply_components.each do |supply_component|
-            if supply_component.to_AirLoopHVACOutdoorAirSystem.is_initialized
-              #no fan?
-            elsif supply_component.to_AirLoopHVACUnitarySystem.is_initialized
-              sc = supply_component.to_AirLoopHVACUnitarySystem.get
-              fan = sc.supplyFan
-              if fan.is_initialized
-                #AHU FAN equip
-                if fan.get.to_FanVariableVolume.is_initialized
-                  #puts("found VAV #{fan.get.name.to_s} on airloop #{airloop.name.to_s}")
-                  vav_fan_json = create_fan(fan.get.handle, "#{fan.get.name.to_s}", building.handle, airloop.handle, simCon.handle, true)
-                  fan_list.push(vav_fan_json)
-                else
-                  #puts("found CAV #{fan.get.name.to_s} on airloop #{airloop.name.to_s}")
-                  cav_fan_json = create_fan(fan.get.handle, "#{fan.get.name.to_s}", building.handle, airloop.handle, simCon.handle, false)
-                  fan_list.push(cav_fan_json)
-                end
-              end
-            elsif supply_component.to_FanConstantVolume.is_initialized
-              sc = supply_component.to_FanConstantVolume.get
-              #puts("found #{sc.name.to_s} on airloop #{airloop.name.to_s}")
-              fan_const_vol_json = create_fan(sc.handle, "#{sc.name.to_s}", building.handle, airloop.handle, simCon.handle, false)
-              fan_list.push(fan_const_vol_json)
-            elsif supply_component.to_FanVariableVolume.is_initialized
-              sc = supply_component.to_FanVariableVolume.get
-              #puts("found #{sc.name.to_s} on airloop #{airloop.name.to_s}")
-              fan_variable_vol_json = create_fan(sc.handle, "#{sc.name.to_s}", building.handle, airloop.handle, simCon.handle, false)
-              fan_list.push(fan_variable_vol_json)
-            elsif supply_component.to_FanOnOff.is_initialized
-              sc = supply_component.to_FanOnOff.get
-              #puts("found #{sc.name.to_s} on airloop #{airloop.name.to_s}")
-              fan_on_off_json = create_fan(sc.handle, "#{sc.name.to_s}", building.handle, airloop.handle, simCon.handle, false)
-              fan_list.push(fan_on_off_json)
-            end
+      ##
+      # Tag air loops as ahu based on Haystack 4.0
+      # https://project-haystack.dev/doc/lib-phIoT/ahu
+      # Does not add any additional parameters, that is done by separate functions
+      def tag_base_ahus
+        @air_loops.each do |air_loop|
+          if air_loop.name.is_initialized
+            ahu_hash = Hash.new
+            ahu_hash[:id] = create_ref(air_loop.handle)
+            ahu_hash[:dis] = create_str(air_loop.name)
+            ahu_hash[:siteRef] = create_ref(@building.handle)
+            ahu_hash[:equip] = "m:"
+            ahu_hash[:ahu] = "m:"
+            @haystack_json << ahu_hash
           end
         end
+      end
+
+      ##
+      # Create Haystack compliant fans and ref them back to the parent AHU
+      # TODO:
+      #  1. Need to tag other types of fans - exhaust, return, outside
+      #  2. Check that create_fan is up to date with Haystack 4.0
+      def tag_air_loop_fans
+        @air_loops.each do |air_loop|
+          air_loop.supplyComponents.each do |sc|
+            if sc.to_AirLoopHVACOutdoorAirSystem.is_initialized
+
+            # A UnitarySystem will only have a supply fan
+            elsif sc.to_AirLoopHVACUnitarySystem.is_initialized
+              unitary_system = sc.to_AirLoopHVACUnitarySystem.get
+              supply_fan = unitary_system.supplyFan
+              if supply_fan.is_initialized
+                self.create_supply_fan(supply_fan, air_loop)
+              end
+
+            # A heat pump will only have a supplyAirFan
+            elsif sc.to_AirLoopHVACUnitaryHeatPumpAirToAir.is_initialized
+              heat_pump = sc.to_AirLoopHVACUnitaryHeatPumpAirToAir.get
+              supply_fan = heat_pump.supplyAirFan
+              if supply_fan.initialized
+                self.create_supply_fan(supply_fan, air_loop)
+              end
+            elsif sc.to_FanConstantVolume.is_initialized
+              self.create_supply_fan(sc, air_loop)
+            elsif sc.to_FanVariableVolume.is_initialized
+              self.create_supply_fan(sc, air_loop)
+            elsif sc.to_FanOnOff.is_initialized
+              self.create_supply_fan(sc, air_loop)
+            end
+
+          end
+        end
+      end
+
+      def add_heating_process_to_ahu
+      # def tag_system_node(node, node_type)
+      #   """
+      #
+      #   """
+      #   temp_sensor, temp_uuid
+      #
       end
     end
   end

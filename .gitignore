@@ -27,3 +27,8 @@ lib/measures/test_results/*
 
 # runner conf
 runner.conf
+
+outputs
+
+# macs
+.DS_Store
