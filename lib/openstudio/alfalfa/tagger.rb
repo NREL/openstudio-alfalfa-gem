@@ -191,7 +191,7 @@ module OpenStudio
         heating_coil_hash[:id] = create_ref(heating_coil.handle)
         heating_coil_hash[:dis] = create_str(heating_coil.name.get)
         heating_coil_hash[:equipRef] = create_ref(airloop.handle)
-        heating_coil_hash[:foobar] = "m:"
+        heating_coil_hash[:elecHeating] = "m:"
         # TODO: Add the rest of the heating coil tagset
         @haystack_json.push(heating_coil_hash)
       end
@@ -201,7 +201,7 @@ module OpenStudio
         cooling_coil_hash[:id] = create_ref(cooling_coil.handle)
         cooling_coil_hash[:dis] = create_str(cooling_coil.name.get)
         cooling_coil_hash[:equipRef] = create_ref(air_loop.handle)
-        cooling_coil_hash[:foobar] = "m:"
+        cooling_coil_hash[:elecCooling] = "m:"
         # TODO: Add the rest of the cooling coil tagset
         @haystack_json.push(cooling_coil_hash)
       end
