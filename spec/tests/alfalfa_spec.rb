@@ -71,7 +71,7 @@ RSpec.describe OpenStudio::Alfalfa do
 
     tagger.tag_stories
     tagger.tag_base_ahus
-    tagger.tag_air_loop_fans
+    tagger.tag_air_loops
     File.open(@small_office_dir + "/haystack.json", "w") do |f|
       f.write(JSON.pretty_generate(tagger.haystack_json))
     end

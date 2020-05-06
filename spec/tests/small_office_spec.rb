@@ -52,6 +52,7 @@ RSpec.describe 'A Prototype SmallOffice' do
     @zones = []
     @ahus = []
     @cav_supply_fans = []
+    @heating_cooling_coils = []
   end
 
   it 'Should create one {weather} entity and add it to the @haystack_json' do
@@ -99,13 +100,15 @@ RSpec.describe 'A Prototype SmallOffice' do
     expect(@ahus.size).to eq(5)
   end
 
-  it 'Should create five {discharge fan motor constantAirVolume equip} entities, one for each AirLoopHVACUnitaryHeatPumpAirToAir systems' do
-    @tagger.tag_air_loop_fans
+  it 'Should create five [{discharge fan motor constantAirVolume equip}, {DX heating coil equip}, {DX cooling coil equip}, one for each AirLoopHVACUnitaryHeatPumpAirToAir systems' do
+    @tagger.tag_air_loops
     @tagger.haystack_json.each do |entity|
       @cav_supply_fans << entity if Set[:siteRef, :equipRef, :discharge, :fan, :motor, :constantAirVolume, :equip].subset? entity.keys.to_set
+      @heating_cooling_coils << entity if Set[:id, :dis, :equipRef, :foobar].subset? entity.keys.to_set
     end
-    expect(@tagger.haystack_json.size).to eq(18)
+    expect(@tagger.haystack_json.size).to eq(28)
     expect(@cav_supply_fans.size).to eq(5)
+    expect(@heating_cooling_coils.size).to eq(10)
   end
 
   it 'Should have connected each supply fan back to a main airloop' do

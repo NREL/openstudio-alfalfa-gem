@@ -186,6 +186,26 @@ module OpenStudio
         @haystack_json << j
       end
 
+      def create_heating_coil(heating_coil, airloop)
+        heating_coil_hash = Hash.new
+        heating_coil_hash[:id] = create_ref(heating_coil.handle)
+        heating_coil_hash[:dis] = create_str(heating_coil.name.get)
+        heating_coil_hash[:equipRef] = create_ref(airloop.handle)
+        heating_coil_hash[:foobar] = "m:"
+        # TODO: Add the rest of the heating coil tagset
+        @haystack_json.push(heating_coil_hash)
+      end
+
+      def create_cooling_coil(cooling_coil, air_loop)
+        cooling_coil_hash = Hash.new
+        cooling_coil_hash[:id] = create_ref(cooling_coil.handle)
+        cooling_coil_hash[:dis] = create_str(cooling_coil.name.get)
+        cooling_coil_hash[:equipRef] = create_ref(air_loop.handle)
+        cooling_coil_hash[:foobar] = "m:"
+        # TODO: Add the rest of the cooling coil tagset
+        @haystack_json.push(cooling_coil_hash)
+      end
+
       # TODO: deprecate
       def create_ahu(id, name, siteRef, floorRef)
         ahu_json = Hash.new
@@ -384,34 +404,50 @@ module OpenStudio
       # TODO:
       #  1. Need to tag other types of fans - exhaust, return, outside
       #  2. Check that create_fan is up to date with Haystack 4.0
-      def tag_air_loop_fans
+      def tag_air_loops
         @air_loops.each do |air_loop|
           air_loop.supplyComponents.each do |sc|
-            if sc.to_AirLoopHVACOutdoorAirSystem.is_initialized
+            tag_fans(air_loop, sc)
+            tag_heating_and_cooling_components(air_loop, sc)
+          end
+        end
+      end
 
-            # A UnitarySystem will only have a supply fan
-            elsif sc.to_AirLoopHVACUnitarySystem.is_initialized
-              unitary_system = sc.to_AirLoopHVACUnitarySystem.get
-              supply_fan = unitary_system.supplyFan
-              if supply_fan.is_initialized
-                self.create_supply_fan(supply_fan, air_loop)
-              end
+      def tag_fans(air_loop, sc)
+        if sc.to_AirLoopHVACOutdoorAirSystem.is_initialized
+          # A UnitarySystem will only have a supply fan
+        elsif sc.to_AirLoopHVACUnitarySystem.is_initialized
+          unitary_system = sc.to_AirLoopHVACUnitarySystem.get
+          supply_fan = unitary_system.supplyFan
+          if supply_fan.is_initialized
+            self.create_supply_fan(supply_fan, air_loop)
+          end
+          # A heat pump will only have a supplyAirFan
+        elsif sc.to_AirLoopHVACUnitaryHeatPumpAirToAir.is_initialized
+          heat_pump = sc.to_AirLoopHVACUnitaryHeatPumpAirToAir.get
+          supply_fan = heat_pump.supplyAirFan
+          if supply_fan.initialized
+            self.create_supply_fan(supply_fan, air_loop)
+          end
+        elsif sc.to_FanConstantVolume.is_initialized
+          self.create_supply_fan(sc, air_loop)
+        elsif sc.to_FanVariableVolume.is_initialized
+          self.create_supply_fan(sc, air_loop)
+        elsif sc.to_FanOnOff.is_initialized
+          self.create_supply_fan(sc, air_loop)
+        end
+      end
 
-            # A heat pump will only have a supplyAirFan
-            elsif sc.to_AirLoopHVACUnitaryHeatPumpAirToAir.is_initialized
-              heat_pump = sc.to_AirLoopHVACUnitaryHeatPumpAirToAir.get
-              supply_fan = heat_pump.supplyAirFan
-              if supply_fan.initialized
-                self.create_supply_fan(supply_fan, air_loop)
-              end
-            elsif sc.to_FanConstantVolume.is_initialized
-              self.create_supply_fan(sc, air_loop)
-            elsif sc.to_FanVariableVolume.is_initialized
-              self.create_supply_fan(sc, air_loop)
-            elsif sc.to_FanOnOff.is_initialized
-              self.create_supply_fan(sc, air_loop)
-            end
-
+      def tag_heating_and_cooling_components(air_loop, sc)
+        if sc.to_AirLoopHVACUnitaryHeatPumpAirToAir.is_initialized
+          heat_pump = sc.to_AirLoopHVACUnitaryHeatPumpAirToAir.get
+          heating_coil = heat_pump.heatingCoil
+          cooling_coil = heat_pump.coolingCoil
+          if heating_coil.initialized
+            self.create_heating_coil(heating_coil, air_loop)
+          end
+          if cooling_coil.initialized
+            self.create_cooling_coil(cooling_coil, air_loop)
           end
         end
       end
