@@ -68,10 +68,11 @@ RSpec.describe OpenStudio::Alfalfa do
     tagger = OpenStudio::Alfalfa::Tagger.new(model)
     tagger.tag_weather
     tagger.tag_site
-
     tagger.tag_stories
     tagger.tag_base_ahus
     tagger.tag_air_loops
+    tagger.tag_air_terminal_units
+
     File.open(@small_office_dir + "/haystack.json", "w") do |f|
       f.write(JSON.pretty_generate(tagger.haystack_json))
     end

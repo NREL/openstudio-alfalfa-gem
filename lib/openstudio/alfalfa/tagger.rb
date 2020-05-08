@@ -4,10 +4,11 @@ module OpenStudio
   module Alfalfa
     class Tagger
       attr_reader :building, :wf, :haystack_json
+
       def initialize(model)
-        """
+        "" "
         Must pass in a 'gotten' model
-        """
+        " ""
         @model = model
         @building = @model.getBuilding
         # puts @model.weatherFile.get
@@ -25,7 +26,7 @@ module OpenStudio
         @air_loops = @model.getAirLoopHVACs
         @haystack_json = []
         @base_ahus_tagged = false
-        @ahu_components_tagged =false
+        @ahu_components_tagged = false
       end
 
       def create_uuid(dummyinput)
@@ -227,18 +228,64 @@ module OpenStudio
         return ahu_json
       end
 
-      def create_vav(id, name, siteRef, equipRef, floorRef)
+      def create_vav(air_loop, unit)
         vav_json = Hash.new
-        vav_json[:id] = create_ref(id)
-        vav_json[:dis] = create_str(name)
+        vav_json[:id] = create_ref(unit.handle)
+        vav_json[:dis] = create_str(unit.name.to_s)
         vav_json[:hvac] = "m:"
         vav_json[:vav] = "m:"
         vav_json[:equip] = "m:"
-        vav_json[:equipRef] = create_ref(equipRef)
-        vav_json[:ahuRef] = create_ref(equipRef)
-        vav_json[:siteRef] = create_ref(siteRef)
-        vav_json[:floorRef] = create_ref(floorRef)
+        vav_json[:equipRef] = create_ref(air_loop.handle)
+        vav_json[:ahuRef] = create_ref(air_loop.handle)
+        vav_json[:siteRef] = create_ref(@building.handle)
         return vav_json
+      end
+
+      #Wraps create create_vav
+      def create_vav_reheat(air_loop, unit)
+        vav_reheat = self.create_vav(air_loop, unit)
+        #check reheat coil
+        rc = unit.to_AirTerminalSingleDuctVAVReheat.get.reheatCoil
+        if rc.to_CoilHeatingWater.is_initialized
+          vav_reheat[:hotWaterReheat] = "m:"
+          if rc.plantLoop.is_initialized
+            pl = rc.plantLoop.get
+            vav_reheat[:hotWaterPlantRef] = self.create_ref(pl.handle)
+          end
+        elsif rc.to_CoilHeatingElectric.is_initialized
+          vav_reheat[:elecReheat] = "m:"
+        end
+        @haystack_json.push(vav_reheat)
+      end
+
+      def create_const_volume(air_loop, unit)
+        const_vol = Hash.new
+        const_vol[:id] = create_ref(unit.handle)
+        const_vol[:dis] = create_str(unit.name.to_s)
+        const_vol[:hvac] = "m:"
+        const_vol[:directZone] = "m:"
+        const_vol[:equip] = "m:"
+        const_vol[:equipRef] = create_ref(air_loop.handle)
+        const_vol[:ahuRef] = create_ref(air_loop.handle)
+        const_vol[:siteRef] = create_ref(@building.handle)
+        return const_vol
+      end
+
+      #Wraps create_const_volume
+      def create_const_volume_reheat(air_loop, unit)
+        const_vol_reheat = self.create_vav(air_loop, unit)
+        #check reheat coil
+        rc = unit.to_AirTerminalSingleDuctConstantVolumeReheat.get.reheatCoil
+        if rc.to_CoilHeatingWater.is_initialized
+          const_vol_reheat[:hotWaterReheat] = "m:"
+          if rc.plantLoop.is_initialized
+            pl = rc.plantLoop.get
+            const_vol_reheat[:hotWaterPlantRef] = self.create_ref(pl.handle)
+          end
+        elsif rc.to_CoilHeatingElectric.is_initialized
+          const_vol_reheat[:elecReheat] = "m:"
+        end
+        @haystack_json.push(const_vol_reheat)
       end
 
       def create_mapping_output_uuid(emsName, uuid)
@@ -330,34 +377,34 @@ module OpenStudio
       end
 
       def tag_sensor(o_handle, name, b_handle)
-        """
+        "" "
         create a haystack compliant user defined sensor point from output variables
         :params: an OS models output variables hand, name, and building handle
         :return: json representation of a haystack sensor
-        """
+        " ""
         sensor = Hash.new
         uuid = create_ref(o_handle)
         sensor[:id] = uuid
         sensor[:dis] = create_str(name)
         sensor[:siteRef] = create_ref(b_handle)
-        sensor[:point]="m:"
-        sensor[:cur]="m:"
+        sensor[:point] = "m:"
+        sensor[:cur] = "m:"
         sensor[:curStatus] = "s:disabled"
         return sensor
       end
 
       def tag_writable_point(global, b_handle, uuid)
-        """
+        "" "
         create a haystack compliant user defined writable points from output variables
         :params: an OS models output variables hand, name, and building handle
         :return: json representation of a haystack sensor
-        """
+        " ""
         writable_point = Hash.new
         writable_point[:id] = uuid
         writable_point[:dis] = create_str(global)
         writable_point[:siteRef] = create_ref(b_handle)
-        writable_point[:point]="m:"
-        writable_point[:writable]="m:"
+        writable_point[:point] = "m:"
+        writable_point[:writable] = "m:"
         writable_point[:writeStatus] = "s:ok"
         return writable_point
       end
@@ -522,12 +569,37 @@ module OpenStudio
       end
 
       def add_heating_process_to_ahu
-      # def tag_system_node(node, node_type)
-      #   """
-      #
-      #   """
-      #   temp_sensor, temp_uuid
-      #
+        # def tag_system_node(node, node_type)
+        #   """
+        #
+        #   """
+        #   temp_sensor, temp_uuid
+        #
+      end
+
+      #Start Demand components
+      def tag_air_terminal_units()
+        @air_loops.each do |air_loop|
+          demand_components = air_loop.demandComponents
+          demand_components.each do |dc|
+            if dc.to_ThermalZone.is_initialized
+              tz = dc.to_ThermalZone.get
+              tz.equipment.each do |unit|
+                if unit.to_AirTerminalSingleDuctVAVReheat.is_initialized
+                  self.create_vav_reheat(air_loop, unit)
+                elsif unit.to_AirTerminalSingleDuctVAVNoReheat.is_initialized
+                  vav_no_reheat = self.create_vav(air_loop, unit)
+                  @haystack_json.push(vav_no_reheat)
+                elsif unit.to_AirTerminalSingleDuctConstantVolumeReheat.is_initialized
+                  self.create_const_volume_reheat(air_loop, unit)
+                elsif unit.to_AirTerminalSingleDuctConstantVolumeNoReheat.is_initialized
+                  const_vol_no_reheat = self.create_const_volume(air_loop, unit)
+                  @haystack_json.push(const_vol_no_reheat)
+                end
+              end
+            end
+          end
+        end
       end
     end
   end

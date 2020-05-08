@@ -536,23 +536,8 @@ class Haystack < OpenStudio::Ruleset::ModelUserScript
               zone_json_heating[:vav] = "m:"
               ahu_json[:vavZone] = "m:"
 
-              vav_json = tagger.create_vav(equip.handle, equip.name.to_s, building.handle, airloop.handle, simCon.handle)
+              vav_json = tagger.create_vav(equip.handle, equip.name.to_s)
 
-              #check reheat coil
-              rc = equip.to_AirTerminalSingleDuctVAVReheat.get.reheatCoil
-              if rc.to_CoilHeatingWater.is_initialized
-                rc = rc.to_CoilHeatingWater.get
-                runner.registerInfo("found #{rc.name.to_s} on airloop #{airloop.name.to_s}")
-                vav_json[:hotWaterReheat] = "m:"
-                if rc.plantLoop.is_initialized
-                  pl = rc.plantLoop.get
-                  vav_json[:hotWaterPlantRef] = tagger.create_ref(pl.handle)
-                end
-              elsif rc.to_CoilHeatingElectric.is_initialized
-                rc = rc.to_CoilHeatingElectric.get
-                runner.registerInfo("found #{rc.name.to_s} on airloop #{airloop.name.to_s}")
-                vav_json[:elecReheat] = "m:"
-              end
               haystack_json << vav_json
               #entering and discharge sensors
               entering_node = equip.to_AirTerminalSingleDuctVAVReheat.get.inletModelObject.get.to_Node

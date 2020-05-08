@@ -55,6 +55,7 @@ RSpec.describe 'A Prototype SmallOffice' do
     @heating_coils = []
     @cooling_coils = []
     @ahus_dxHeating_dxCooling = []  # for ahus with heating and cooling process typed
+    @terminal_units = []
   end
 
   it 'Should create one {weather} entity and add it to the @haystack_json' do
@@ -126,6 +127,14 @@ RSpec.describe 'A Prototype SmallOffice' do
       @ahus_dxHeating_dxCooling << entity if Set[:id, :dis, :equip, :ahu, :dxHeating, :dxCooling].subset? entity.keys.to_set
     end
     expect(@ahus_dxHeating_dxCooling.size).to eq(5)
+  end
+
+  it "Should create one directZone entity or one AirTerminal:SingleDuct:ConstantVolume:NoReheat for each Thermal Zone" do
+    @tagger.tag_air_terminal_units
+    @tagger.haystack_json.each do |entity|
+      @terminal_units << entity if Set[:id, :dis, :hvac, :directZone, :equip, :equipRef, :ahuRef, :siteRef].subset? entity.keys.to_set
+    end
+    expect(@terminal_units.size).to eq(5)
   end
 
   it 'Should have connected each supply fan back to a main airloop' do
