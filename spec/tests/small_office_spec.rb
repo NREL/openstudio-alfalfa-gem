@@ -50,11 +50,11 @@ RSpec.describe 'A Prototype SmallOffice' do
     @sites = []
     @stories = []
     @zones = []
-    @ahus = []
+    @ahus = []  # for base ahus
     @cav_supply_fans = []
     @heating_coils = []
     @cooling_coils = []
-
+    @ahus_dxHeating_dxCooling = []  # for ahus with heating and cooling process typed
   end
 
   it 'Should create one {weather} entity and add it to the @haystack_json' do
@@ -102,17 +102,30 @@ RSpec.describe 'A Prototype SmallOffice' do
     expect(@ahus.size).to eq(5)
   end
 
-  it 'Should create five [{discharge fan motor constantAirVolume equip}, {DX heating coil equip}, {DX cooling coil equip}, one for each AirLoopHVACUnitaryHeatPumpAirToAir systems' do
-    @tagger.tag_air_loops
+  it "Should create five:
+      - {discharge fan motor constantAirVolume equip}
+      - {equip coil heating dx}
+      - {equip coil cooling dx}
+      one for each AirLoopHVACUnitaryHeatPumpAirToAir systems." do
+    @tagger.tag_air_loop_components
     @tagger.haystack_json.each do |entity|
       @cav_supply_fans << entity if Set[:siteRef, :equipRef, :discharge, :fan, :motor, :constantAirVolume, :equip].subset? entity.keys.to_set
-      @heating_coils << entity if Set[:id, :dis, :equipRef, :elecHeating].subset? entity.keys.to_set
-      @cooling_coils << entity if Set[:id, :dis, :equipRef, :elecCooling].subset? entity.keys.to_set
+      @heating_coils << entity if Set[:id, :dis, :equipRef, :equip, :coil, :heating, :dx].subset? entity.keys.to_set
+      @cooling_coils << entity if Set[:id, :dis, :equipRef, :equip, :coil, :cooling, :dx].subset? entity.keys.to_set
     end
+
     expect(@tagger.haystack_json.size).to eq(28)
     expect(@cav_supply_fans.size).to eq(5)
     expect(@heating_coils.size).to eq(5)
     expect(@cooling_coils.size).to eq(5)
+  end
+
+  it "Should further type all ahus as both dxHeating and dxCooling" do
+    @tagger.tag_air_loops
+    @tagger.haystack_json.each do |entity|
+      @ahus_dxHeating_dxCooling << entity if Set[:id, :dis, :equip, :ahu, :dxHeating, :dxCooling].subset? entity.keys.to_set
+    end
+    expect(@ahus_dxHeating_dxCooling.size).to eq(5)
   end
 
   it 'Should have connected each supply fan back to a main airloop' do

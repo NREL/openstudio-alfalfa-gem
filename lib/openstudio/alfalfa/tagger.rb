@@ -24,6 +24,8 @@ module OpenStudio
         @tz = @model.getThermalZones
         @air_loops = @model.getAirLoopHVACs
         @haystack_json = []
+        @base_ahus_tagged = false
+        @ahu_components_tagged =false
       end
 
       def create_uuid(dummyinput)
@@ -186,22 +188,28 @@ module OpenStudio
         @haystack_json << j
       end
 
-      def create_heating_coil(heating_coil, airloop)
+      def create_dx_heating_coil(heating_coil, airloop)
         heating_coil_hash = Hash.new
         heating_coil_hash[:id] = create_ref(heating_coil.handle)
         heating_coil_hash[:dis] = create_str(heating_coil.name.get)
         heating_coil_hash[:equipRef] = create_ref(airloop.handle)
-        heating_coil_hash[:elecHeating] = "m:"
+        heating_coil_hash[:equip] = "m:"
+        heating_coil_hash[:coil] = "m:"
+        heating_coil_hash[:heating] = "m:"
+        heating_coil_hash[:dx] = "m:"
         # TODO: Add the rest of the heating coil tagset
         @haystack_json.push(heating_coil_hash)
       end
 
-      def create_cooling_coil(cooling_coil, air_loop)
+      def create_dx_cooling_coil(cooling_coil, air_loop)
         cooling_coil_hash = Hash.new
         cooling_coil_hash[:id] = create_ref(cooling_coil.handle)
         cooling_coil_hash[:dis] = create_str(cooling_coil.name.get)
         cooling_coil_hash[:equipRef] = create_ref(air_loop.handle)
-        cooling_coil_hash[:elecCooling] = "m:"
+        cooling_coil_hash[:equip] = "m:"
+        cooling_coil_hash[:coil] = "m:"
+        cooling_coil_hash[:cooling] = "m:"
+        cooling_coil_hash[:dx] = "m:"
         # TODO: Add the rest of the cooling coil tagset
         @haystack_json.push(cooling_coil_hash)
       end
@@ -397,6 +405,7 @@ module OpenStudio
             @haystack_json << ahu_hash
           end
         end
+        @base_ahus_tagged = true
       end
 
       ##
@@ -404,11 +413,71 @@ module OpenStudio
       # TODO:
       #  1. Need to tag other types of fans - exhaust, return, outside
       #  2. Check that create_fan is up to date with Haystack 4.0
-      def tag_air_loops
+      #  3. Add some logic that is of the effect: If I have a dx
+      def tag_air_loop_components
+        # Step 1 - tag things inside the airloop
+        if !@base_ahus_tagged
+          self.tag_base_ahus
+        end
         @air_loops.each do |air_loop|
           air_loop.supplyComponents.each do |sc|
-            tag_fans(air_loop, sc)
-            tag_heating_and_cooling_components(air_loop, sc)
+            self.tag_fans(air_loop, sc)
+            self.tag_heating_and_cooling_components(air_loop, sc)
+          end
+        end
+        @ahu_components_tagged = true
+      end
+
+      # Step 2 - add 'typing' tags to the airloop based on what's inside.
+      def tag_air_loops
+        if !@base_ahus_tagged
+          self.tag_base_ahus
+        end
+        if !@ahu_components_tagged
+          self.tag_air_loop_components
+        end
+        @air_loops.each do |air_loop|
+          self.air_loop_typing(air_loop)
+        end
+      end
+
+      def air_loop_typing(air_loop)
+        @haystack_json.each do |entity|
+          if entity[:id] == create_ref(air_loop.handle)
+            self.infer_heating_type(entity)
+            self.infer_cooling_type(entity)
+          end
+        end
+      end
+
+      # Find a {equip coil heating}
+      def infer_heating_type(entity_to_type)
+        @haystack_json.each do |entity|
+          if entity[:equipRef] == entity_to_type[:id] and Set[:equip, :coil, :heating].subset? entity.keys.to_set
+            if entity.key?(:dx)
+              entity_to_type[:dxHeating] = "m:"
+            elsif entity.key?(:elec)
+              entity_to_type[:elecHeating] = "m:"
+            elsif entity.key?(:steam)
+              entity_to_type[:steamHeating] = "m:"
+            elsif entity.key?(:gas)
+              entity_to_type[:gasHeating] = "m:"
+            elsif Set[:hot, :water].subset? entity.keys.to_set
+              entity_to_type[:hotWaterHeating] = "m:"
+            end
+          end
+        end
+      end
+
+      # Find a {equip coil cooling}
+      def infer_cooling_type(entity_to_type)
+        @haystack_json.each do |entity|
+          if entity[:equipRef] == entity_to_type[:id] and Set[:equip, :coil, :cooling].subset? entity.keys.to_set
+            if entity.key?(:dx)
+              entity_to_type[:dxCooling] = "m:"
+            elsif Set[:chilled, :water].subset? entity.keys.to_set
+              entity_to_type[:chilledWaterCooling] = "m:"
+            end
           end
         end
       end
@@ -444,10 +513,10 @@ module OpenStudio
           heating_coil = heat_pump.heatingCoil
           cooling_coil = heat_pump.coolingCoil
           if heating_coil.initialized
-            self.create_heating_coil(heating_coil, air_loop)
+            self.create_dx_heating_coil(heating_coil, air_loop)
           end
           if cooling_coil.initialized
-            self.create_cooling_coil(cooling_coil, air_loop)
+            self.create_dx_cooling_coil(cooling_coil, air_loop)
           end
         end
       end
