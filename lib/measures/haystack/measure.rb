@@ -70,7 +70,7 @@ class Haystack < OpenStudio::Ruleset::ModelUserScript
     runner.registerInfo("local_test = #{local_test}")
 
     #initialize tagger
-    tagger = OpenStudio::Alfalfa::Tagger.new
+    tagger = OpenStudio::Alfalfa::Tagger.new(model)
 
     #Global Vars
     report_freq = "timestep"
@@ -113,12 +113,10 @@ class Haystack < OpenStudio::Ruleset::ModelUserScript
       simCon = model.getSimulationControl
 
       #Define the site, weather, and floor for haystack
-      site = tagger.tag_site(building.handle, building.name, building.floorArea,
-                             wf.handle, wf.timeZone, wf.city, wf.stateProvinceRegion, wf.country, wf.latitude, wf.longitude)
-
-      weather = tagger.tag_weather(wf.handle, wf.city, wf.timeZone, wf.latitude, wf.longitude)
-      floor = tagger.tag_floor(simCon.handle)
-      haystack_json.push(site, weather, floor)
+      tagger.tag_site()
+      tagger.tag_weather()
+      tagger.tag_thermal_zones()
+      tagger.tag_air_loop_fans()
 
     end
 
@@ -160,10 +158,7 @@ class Haystack < OpenStudio::Ruleset::ModelUserScript
     end
 
     # Tag thermal zones
-    thermal_zones = tagger.tag_thermal_zones(model)
-    puts(thermal_zones)
-    #Comment this in when the tagutils.py is figured out
-    #haystack_json << thermal_zones
+
 
     #Tag fans
 
@@ -541,23 +536,8 @@ class Haystack < OpenStudio::Ruleset::ModelUserScript
               zone_json_heating[:vav] = "m:"
               ahu_json[:vavZone] = "m:"
 
-              vav_json = tagger.create_vav(equip.handle, equip.name.to_s, building.handle, airloop.handle, simCon.handle)
+              vav_json = tagger.create_vav(equip.handle, equip.name.to_s)
 
-              #check reheat coil
-              rc = equip.to_AirTerminalSingleDuctVAVReheat.get.reheatCoil
-              if rc.to_CoilHeatingWater.is_initialized
-                rc = rc.to_CoilHeatingWater.get
-                runner.registerInfo("found #{rc.name.to_s} on airloop #{airloop.name.to_s}")
-                vav_json[:hotWaterReheat] = "m:"
-                if rc.plantLoop.is_initialized
-                  pl = rc.plantLoop.get
-                  vav_json[:hotWaterPlantRef] = tagger.create_ref(pl.handle)
-                end
-              elsif rc.to_CoilHeatingElectric.is_initialized
-                rc = rc.to_CoilHeatingElectric.get
-                runner.registerInfo("found #{rc.name.to_s} on airloop #{airloop.name.to_s}")
-                vav_json[:elecReheat] = "m:"
-              end
               haystack_json << vav_json
               #entering and discharge sensors
               entering_node = equip.to_AirTerminalSingleDuctVAVReheat.get.inletModelObject.get.to_Node
