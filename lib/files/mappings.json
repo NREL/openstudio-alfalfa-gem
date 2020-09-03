@@ -1,0 +1,61 @@
+[
+  {
+    "openstudio_class": "OS:AirLoopHVAC:UnitaryHeatPump:AirToAir",
+    "feeds": [
+      "OS:AirTerminal:SingleDuct:ConstantVolume:NoReheat",
+      "OS:ThermalZone"
+    ],
+    "has_parts": [
+      {
+        "template": "OS:Fan:OnOff",
+        "qualifiers": "discharge"
+      }
+    ],
+    "brick": {
+      "template": "BS_HP"
+    },
+    "haystack": {
+      "template": "PH_HP_SD_CAV"
+    }
+  },
+  {
+    "openstudio_class": "OS:AirTerminal:SingleDuct:ConstantVolume:NoReheat",
+    "haystack": {
+      "template": "cav"
+    },
+    "brick": {
+      "template": "Terminal_Unit"
+    }
+  },
+  {
+    "openstudio_class": "OS:ThermalZone",
+    "haystack": {
+      "template": "hvac-zone-space"
+    },
+    "brick": {
+      "template": "HVAC_Zone"
+    }
+  },
+  {
+    "openstudio_class": "OS:Fan:OnOff",
+    "haystack": {
+      "template": "fan-motor",
+      "discharge": "PH_DF"
+    },
+    "brick": {
+      "template": "Fan",
+      "discharge": "Discharge_Fan"
+    }
+  },
+  {
+    "openstudio_class": "OS:Fan:ConstantVolume",
+    "haystack": {
+      "template": "fan-motor",
+      "discharge": "PH_DF"
+    },
+    "brick": {
+      "template": "Fan",
+      "discharge": "Discharge_Fan"
+    }
+  }
+]

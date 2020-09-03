@@ -1,0 +1,39 @@
+---
+- id: "UUID-1"
+  properties:
+    - id
+    - dis
+
+- id: "PH_HP_SD_CAV"
+  type: Haystack
+  version: 3.9.9
+  name: Single-Zone Unitary Heat Pump AHU
+  custom: True
+  base_type: heatPump
+  extension: True
+  properties:
+    - singleDuct
+    - constantAirVolume
+
+- id: "PH_DF"
+  type: Haystack
+  version: 3.9.9
+  name: Discharge fan
+  custom: True
+  base_type: fan-motor
+  extension: True
+  properties:
+    - discharge
+
+- id: "BS_HP"
+  type: Brick
+  version: 1.1
+  name: Single-Zone Unitary Heat Pump AHU
+  custom: True
+  base_type: Air_Handler_Unit
+  extension: False
+  has_parts:
+    - Discharge_Fan
+    - Coil
+  feeds:
+    - HVAC_Zone
