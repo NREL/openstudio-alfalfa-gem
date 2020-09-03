@@ -13,10 +13,10 @@ gem 'sparql-client'
 # checkout the latest version (develop) from github.
 allow_local = ENV['FAVOR_LOCAL_GEMS']
 
-if allow_local && File.exist?('../OpenStudio-extension-gem')
-  gem 'openstudio-extension', path: '../OpenStudio-extension-gem'
+if allow_local && File.exist?('../openstudio-extension-gem')
+  gem 'openstudio-extension', path: '../openstudio-extension-gem'
 else
   gem 'openstudio-extension', github: 'NREL/OpenStudio-extension-gem', branch: 'develop'
 end
 
-gem 'openstudio_measure_tester', '= 0.2.2' # This includes the dependencies for running unit tests, coverage, and rubocop
+gem 'openstudio_measure_tester', '= 0.2.3' # This includes the dependencies for running unit tests, coverage, and rubocop
