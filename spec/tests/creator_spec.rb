@@ -36,15 +36,14 @@
 require 'spec_helper'
 require_relative '../spec_helper'
 
-RSpec.describe 'OpenStudio::Alfalfa::Creator Haystack spec' do
+RSpec.describe 'OpenStudio::Alfalfa::Creator Haystack and Brick Small Office spec' do
   before(:all) do
     @small_office_dir = "#{Dir.pwd}/spec/outputs/small_office"
-    @small_office_osm = @small_office_dir + "/SR1/in.osm"
+    @small_office_osm = @small_office_dir + '/SR1/in.osm'
     check_and_create_small_office
 
     @model = OpenStudio::Model::Model.load(@small_office_osm)
     @model = @model.get
-    metadata_type = 'Haystack'
     @creator = OpenStudio::Alfalfa::Creator.new(@model)
   end
 
@@ -61,6 +60,34 @@ RSpec.describe 'OpenStudio::Alfalfa::Creator Haystack spec' do
     # puts @creator.haystack_ttl.to_ttl
   end
 
+  it 'Should have heatPump as a term in @haystack_repo' do
+    expect(@creator.haystack_repo.has_subject?(@creator.phiot_vocab.heatPump)).to be true
+  end
+
+  it 'Should have AHU as a term in @brick_repo' do
+    expect(@creator.brick_repo.has_subject?(@creator.brick_vocab['AHU'])).to be true
+  end
+
+  it "Should return four Haystack classes that are subclasses of an 'ahu'" do
+    s = SPARQL::Client.new(@creator.haystack_repo)
+    q = "SELECT ?e WHERE { ?e <#{RDF::RDFS.subClassOf}>* <#{@creator.phiot_vocab.ahu}> }"
+    results = s.query(q)
+    data = []
+    results.each do |r|
+      data << r['e'].to_s
+    end
+    data = data.to_set
+    expect(data.size).to be 4
+    expected = [
+      @creator.phiot_vocab.ahu.to_s,
+      @creator.phiot_vocab['doas'].to_s,
+      @creator.phiot_vocab[:rtu].to_s,
+      @creator.phiot_vocab.mau.to_s
+    ]
+    expected = expected.to_set
+    expect(expected == data).to be true
+  end
+
   it 'Should store templates as an array' do
     expect(@creator.templates).to be_an_instance_of(Array)
   end
@@ -71,47 +98,43 @@ RSpec.describe 'OpenStudio::Alfalfa::Creator Haystack spec' do
 
   it 'Should assert that all templates have an id' do
     @creator.templates.each do |template|
-      expect(template).to have_key("id")
+      expect(template).to have_key('id')
     end
   end
 
   it 'Should assert that all mappings define an openstudio_class key' do
     @creator.mappings.each do |mapping|
-      expect(mapping).to have_key("openstudio_class")
+      expect(mapping).to have_key('openstudio_class')
     end
   end
 
-  it 'Should add base info to entities' do
-    @creator.apply_mappings
-    # puts @creator.entities.to_json
-  end
-
-  it 'Should have heatPump as a term in @haystack_repo' do
-    expect(@creator.haystack_repo.has_subject? @creator.phiot_vocab.heatPump).to be true
-  end
-
-  it 'Should have AHU as a term in @brick_repo' do
-    expect(@creator.brick_repo.has_subject? @creator.brick_vocab['AHU']).to be true
-  end
-
-  it "Should return four Haystack classes that are subclasses of an 'ahu'" do
-    s = SPARQL::Client.new(@creator.haystack_repo)
-    q = "SELECT ?e WHERE { ?e <#{RDF::RDFS.subClassOf}>* <#{@creator.phiot_vocab.ahu}> }"
-    results = s.query(q)
-    data = []
-    results.each do |r|
-      data << r["e"].to_s
+  it 'Should apply mappings for Haystack entities' do
+    # TODO: check count by class
+    expect(@creator.entities.size).to eq 0
+    @creator.apply_mappings('Haystack')
+    # puts @creator.entities
+    @creator.entities.each do |e|
+      expect(e).to have_key('id')
+      expect(e).to have_key('dis')
+      expect(e).to have_key('type')
     end
-    data = data.to_set
-    expect(data.size).to be 4
-    expected = [
-        @creator.phiot_vocab.ahu.to_s,
-        @creator.phiot_vocab['doas'].to_s,
-        @creator.phiot_vocab[:rtu].to_s,
-        @creator.phiot_vocab.mau.to_s,
-    ]
-    expected = expected.to_set
-    expect(expected == data).to be true
+    count_by_class, total_count = count_class_mappings(@creator)
+    expect(@creator.entities.size).to eq total_count
+  end
+
+  it 'Should apply mappings for Brick entities' do
+    # TODO: check count by class
+    @creator.entities = []
+    expect(@creator.entities.size).to eq 0
+    @creator.apply_mappings('Brick')
+    # puts @creator.entities
+    @creator.entities.each do |e|
+      expect(e).to have_key('id')
+      expect(e).to have_key('dis')
+      expect(e).to have_key('type')
+    end
+    count_by_class, total_count = count_class_mappings(@creator)
+    expect(@creator.entities.size).to eq total_count
   end
 
 end

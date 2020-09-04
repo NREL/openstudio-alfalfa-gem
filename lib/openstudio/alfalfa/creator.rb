@@ -7,29 +7,38 @@ require 'openstudio'
 module OpenStudio
   module Alfalfa
     class Creator
-      attr_reader :mappings, :templates, :entities, :haystack_repo, :brick_repo, :phiot_vocab, :brick_vocab
+      attr_accessor :entities, :model
+      attr_reader :mappings, :templates, :haystack_repo, :brick_repo, :phiot_vocab, :brick_vocab
 
       # Pass in a model and string, either
       def initialize(model)
         @model = model
         @phiot_vocab = RDF::Vocabulary.new("https://project-haystack.org/def/phIoT/3.9.9#")
+        @ph_vocab = RDF::Vocabulary.new("https://project-haystack.org/def/ph/3.9.9#")
         @brick_vocab = RDF::Vocabulary.new("https://brickschema.org/schema/1.1/Brick#")
         @templates = nil
         @mappings = nil
         @haystack_repo = nil
         @brick_repo = nil
+        @current_repo = nil # pointer to either haystack_repo or brick_repo
+        @current_vocab = nil # pointer to either @phiot_vocab or @brick_vocab
+        @metadata_type = nil # set by apply_mappings
         @entities = []
         @files_path = File.join(File.dirname(__FILE__), '../../files')
+        @brick_version = nil
+        @haystack_version = nil
       end
 
       def read_templates_and_mappings
-        self.read_templates
-        self.read_mappings
+        read_templates
+        read_mappings
       end
 
       def read_metadata(brick_version = '1.1', haystack_version = '3.9.9')
-        self.read_brick_ttl(brick_version)
-        self.read_haystack_ttl(haystack_version)
+        @brick_version = brick_version
+        @haystack_version = haystack_version
+        read_brick_ttl_as_repository_object(brick_version)
+        read_haystack_ttl_as_repository_object(haystack_version)
       end
 
       def read_templates
@@ -45,40 +54,125 @@ module OpenStudio
         @mappings = JSON.parse(f)
       end
 
-      def read_haystack_ttl(version)
+      def read_haystack_ttl_as_repository_object(version)
         path = File.join(@files_path, "haystack/#{version}/defs.ttl")
         raise "File '#{path}' does not exist" unless File.exist?(path)
         @haystack_repo = RDF::Repository.load(path)
       end
 
-      def read_brick_ttl(version)
+      def read_brick_ttl_as_repository_object(version)
         path = File.join(@files_path, "brick/#{version}/Brick.ttl")
         raise "File '#{path}' does not exist" unless File.exist?(path)
         @brick_repo = RDF::Repository.load(path)
       end
 
-      def add_base_info(openstudio_object)
+      def create_base_info_hash(openstudio_object)
         temp = Hash.new
-        temp[:id] = OpenStudio.removeBraces(openstudio_object.handle)
-        temp[:dis] = openstudio_object.name.get
+        temp["id"] = OpenStudio.removeBraces(openstudio_object.handle)
+        temp["dis"] = openstudio_object.name.get
         return temp
       end
 
-      def add_specific_info(openstudio_object)
-        temp = self.add_base_info(openstudio_object)
-
+      def add_specific_info(openstudio_object, term_info)
+        temp = create_base_info_hash(openstudio_object)
+        temp = temp.merge(term_info)
         @entities << temp
       end
 
-      def apply_mappings
+      # def check_all_mappings
+      #   @mappings.each do |mapping|
+      #
+      #   end
+      # end
+
+      def resolve_mandatory_tags(term)
+        q = "SELECT ?m WHERE { <#{@current_vocab[term]}> <#{RDF::RDFS.subClassOf}>* ?m . ?m <#{@ph_vocab.mandatory}> <#{@ph_vocab.marker}> }"
+        s = SPARQL::Client.new(@haystack_repo)
+        results = s.query(q)
+        necessary_tags = []
+        results.each do |r|
+          necessary_tags << r[:m].to_h[:fragment]
+        end
+        necessary_tags = necessary_tags.to_set
+        term_tags = term.split('-').to_set
+        difference = necessary_tags.difference(term_tags)
+        difference = difference.to_a
+        to_return = {"type" => term}
+        if difference.size > 0
+          to_return = to_return.merge({"add_tags" => difference})
+        end
+        return to_return
+      end
+
+      def find_template(template)
+        @templates.each do |t|
+          if t["id"] == template
+            return t
+          end
+        end
+        return false
+      end
+
+      def resolve_template(mapping)
+        cls = mapping['openstudio_class']
+        k = @metadata_type.downcase
+        t = mapping[k]['template']
+        if @current_repo.has_term? @current_vocab[t]
+          if @metadata_type == 'Haystack'
+            necessary_tags = resolve_mandatory_tags(t)
+            return necessary_tags
+          else
+            return {"type" => t}
+          end
+        else
+          template = find_template(t)
+          if template
+            type = template['base_type']
+            if @metadata_type == 'Haystack'
+              to_return = resolve_mandatory_tags(type)
+            else
+              to_return = {"type" => type}
+            end
+            if template.key? 'properties'
+              if to_return.key? 'add_tags'
+                to_return['add_tags'] += template['properties']
+              else
+                to_return['add_tags'] = template['properties']
+              end
+            end
+            return to_return
+          else
+            return {"type" => nil}
+          end
+        end
+      end
+
+      def apply_mappings(metadata_type)
+        types = ['Brick', 'Haystack']
+        raise "metadata_type must be one of #{types}" unless types.include? metadata_type
+        if metadata_type == 'Brick'
+          @current_repo = @brick_repo
+          @current_vocab = @brick_vocab
+        elsif metadata_type == 'Haystack'
+          @current_repo = @haystack_repo
+          @current_vocab = @phiot_vocab
+        end
+        @metadata_type = metadata_type
         @mappings.each do |mapping|
+          info = resolve_template(mapping)
           cls = mapping['openstudio_class']
           objs = @model.getObjectsByType(cls)
           objs.each do |obj|
-            self.add_specific_info(obj)
+            add_specific_info(obj, info)
           end
         end
       end
     end
   end
 end
+
+# https://unmethours.com/question/17616/get-thermal-zone-supply-terminal/
+# tzs = model.getObjectsByType("OS:ThermalZone")
+# tz1 = tzs[0]
+# tz1 = tz1.to_ThermalZone.get
+# tu = tz1.airLoopHVACTerminal

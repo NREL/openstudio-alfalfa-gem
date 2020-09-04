@@ -11,7 +11,8 @@ gem 'sparql-client'
 #   Windows: set FAVOR_LOCAL_GEMS=1
 # Note that if allow_local is true, but the gem is not found locally, then it will
 # checkout the latest version (develop) from github.
-allow_local = ENV['FAVOR_LOCAL_GEMS']
+# allow_local = ENV['FAVOR_LOCAL_GEMS']
+allow_local = false
 
 if allow_local && File.exist?('../openstudio-extension-gem')
   gem 'openstudio-extension', path: '../openstudio-extension-gem'
