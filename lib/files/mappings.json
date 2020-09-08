@@ -64,5 +64,23 @@
     "brick": {
       "template": "Fan"
     }
+  },
+  {
+    "openstudio_class": "OS:Coil:Heating:DX:SingleSpeed",
+    "haystack": {
+      "template": "heatingCoil"
+    },
+    "brick": {
+      "template": "Heating_Coil"
+    }
+  },
+  {
+    "openstudio_class": "OS:Coil:Cooling:DX:SingleSpeed",
+    "haystack": {
+      "template": "coolingCoil"
+    },
+    "brick": {
+      "template": "Cooling_Coil"
+    }
   }
 ]

@@ -120,6 +120,7 @@ RSpec.describe 'OpenStudio::Alfalfa::Creator Haystack and Brick Small Office spe
     end
     count_by_class, total_count = count_class_mappings(@creator)
     expect(@creator.entities.size).to eq total_count
+    puts @creator.entities
   end
 
   it 'Should apply mappings for Brick entities' do
@@ -135,5 +136,6 @@ RSpec.describe 'OpenStudio::Alfalfa::Creator Haystack and Brick Small Office spe
     end
     count_by_class, total_count = count_class_mappings(@creator)
     expect(@creator.entities.size).to eq total_count
+    puts @creator.entities
   end
 end
