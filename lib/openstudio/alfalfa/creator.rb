@@ -154,7 +154,6 @@ module OpenStudio
           info[relationship[@metadata_type.downcase]] = OpenStudio.removeBraces(ref.get.handle) unless ref.empty?
         end
       end
-      
 
       def apply_mappings(metadata_type)
         types = ['Brick', 'Haystack']
@@ -175,9 +174,9 @@ module OpenStudio
           objs = @model.getObjectsByType(cls)
           objs.each do |obj|
             # UNPROVEN rescue objects from the clutches of boost
-            conv_meth = "to_" << cls[3..-1].gsub(":","")
+            conv_meth = 'to_' << cls[3..-1].gsub(':', '')
             obj = obj.send(conv_meth).get
-            
+
             add_relationship_info(obj, mapping['relationships'], info) unless !mapping['relationships']
             add_specific_info(obj, info)
           end
