@@ -1,5 +1,6 @@
 require 'json'
 require 'yaml'
+
 require 'linkeddata'
 require 'sparql/client'
 require 'openstudio'
@@ -13,9 +14,9 @@ module OpenStudio
       # Pass in a model and string, either
       def initialize(model)
         @model = model
-        @phiot_vocab = RDF::Vocabulary.new("https://project-haystack.org/def/phIoT/3.9.9#")
-        @ph_vocab = RDF::Vocabulary.new("https://project-haystack.org/def/ph/3.9.9#")
-        @brick_vocab = RDF::Vocabulary.new("https://brickschema.org/schema/1.1/Brick#")
+        @phiot_vocab = RDF::Vocabulary.new('https://project-haystack.org/def/phIoT/3.9.9#')
+        @ph_vocab = RDF::Vocabulary.new('https://project-haystack.org/def/ph/3.9.9#')
+        @brick_vocab = RDF::Vocabulary.new('https://brickschema.org/schema/1.1/Brick#')
         @templates = nil
         @mappings = nil
         @haystack_repo = nil
@@ -67,9 +68,9 @@ module OpenStudio
       end
 
       def create_base_info_hash(openstudio_object)
-        temp = Hash.new
-        temp["id"] = OpenStudio.removeBraces(openstudio_object.handle)
-        temp["dis"] = openstudio_object.name.get
+        temp = {}
+        temp['id'] = OpenStudio.removeBraces(openstudio_object.handle)
+        temp['dis'] = openstudio_object.name.get
         return temp
       end
 
@@ -97,16 +98,16 @@ module OpenStudio
         term_tags = term.split('-').to_set
         difference = necessary_tags.difference(term_tags)
         difference = difference.to_a
-        to_return = {"type" => term}
-        if difference.size > 0
-          to_return = to_return.merge({"add_tags" => difference})
+        to_return = { 'type' => term }
+        if !difference.empty?
+          to_return = to_return.merge('add_tags' => difference)
         end
         return to_return
       end
 
       def find_template(template)
         @templates.each do |t|
-          if t["id"] == template
+          if t['id'] == template
             return t
           end
         end
@@ -122,7 +123,7 @@ module OpenStudio
             necessary_tags = resolve_mandatory_tags(t)
             return necessary_tags
           else
-            return {"type" => t}
+            return { 'type' => t }
           end
         else
           template = find_template(t)
@@ -131,7 +132,7 @@ module OpenStudio
             if @metadata_type == 'Haystack'
               to_return = resolve_mandatory_tags(type)
             else
-              to_return = {"type" => type}
+              to_return = { 'type' => type }
             end
             if template.key? 'properties'
               if to_return.key? 'add_tags'
@@ -142,7 +143,7 @@ module OpenStudio
             end
             return to_return
           else
-            return {"type" => nil}
+            return { 'type' => nil }
           end
         end
       end
@@ -158,6 +159,8 @@ module OpenStudio
           @current_vocab = @phiot_vocab
         end
         @metadata_type = metadata_type
+
+        # Let mappings run through once to 'create' entities
         @mappings.each do |mapping|
           info = resolve_template(mapping)
           cls = mapping['openstudio_class']

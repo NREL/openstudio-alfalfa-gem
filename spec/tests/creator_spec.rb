@@ -136,5 +136,4 @@ RSpec.describe 'OpenStudio::Alfalfa::Creator Haystack and Brick Small Office spe
     count_by_class, total_count = count_class_mappings(@creator)
     expect(@creator.entities.size).to eq total_count
   end
-
 end

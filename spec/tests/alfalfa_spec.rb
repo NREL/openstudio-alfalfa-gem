@@ -42,7 +42,7 @@ require_relative '../spec_helper'
 RSpec.describe OpenStudio::Alfalfa do
   before(:all) do
     @small_office_dir = "#{Dir.pwd}/spec/outputs/small_office"
-    @small_office_osm = @small_office_dir + "/SR1/in.osm"
+    @small_office_osm = @small_office_dir + '/SR1/in.osm'
     check_and_create_small_office
   end
   it 'has a version number' do
@@ -73,7 +73,7 @@ RSpec.describe OpenStudio::Alfalfa do
     tagger.tag_air_loops
     tagger.tag_air_terminal_units
 
-    File.open(@small_office_dir + "/haystack.json", "w") do |f|
+    File.open(@small_office_dir + '/haystack.json', 'w') do |f|
       f.write(JSON.pretty_generate(tagger.haystack_json))
     end
     # print tagger.haystack_json.to_json

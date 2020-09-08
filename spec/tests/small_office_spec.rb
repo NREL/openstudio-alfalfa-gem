@@ -39,7 +39,7 @@ require_relative '../spec_helper'
 RSpec.describe 'A Prototype SmallOffice' do
   before(:all) do
     @small_office_dir = "#{Dir.pwd}/spec/outputs/small_office"
-    @small_office_osm = @small_office_dir + "/SR1/in.osm"
+    @small_office_osm = @small_office_dir + '/SR1/in.osm'
     check_and_create_small_office
 
     @model = OpenStudio::Model::Model.load(@small_office_osm)
@@ -50,11 +50,11 @@ RSpec.describe 'A Prototype SmallOffice' do
     @sites = []
     @stories = []
     @zones = []
-    @ahus = []  # for base ahus
+    @ahus = [] # for base ahus
     @cav_supply_fans = []
     @heating_coils = []
     @cooling_coils = []
-    @ahus_dxHeating_dxCooling = []  # for ahus with heating and cooling process typed
+    @ahus_dxHeating_dxCooling = [] # for ahus with heating and cooling process typed
     @terminal_units = []
   end
 
@@ -121,7 +121,7 @@ RSpec.describe 'A Prototype SmallOffice' do
     expect(@cooling_coils.size).to eq(5)
   end
 
-  it "Should further type all ahus as both dxHeating and dxCooling" do
+  it 'Should further type all ahus as both dxHeating and dxCooling' do
     @tagger.tag_air_loops
     @tagger.haystack_json.each do |entity|
       @ahus_dxHeating_dxCooling << entity if Set[:id, :dis, :equip, :ahu, :dxHeating, :dxCooling].subset? entity.keys.to_set
@@ -129,7 +129,7 @@ RSpec.describe 'A Prototype SmallOffice' do
     expect(@ahus_dxHeating_dxCooling.size).to eq(5)
   end
 
-  it "Should create one directZone entity or one AirTerminal:SingleDuct:ConstantVolume:NoReheat for each Thermal Zone" do
+  it 'Should create one directZone entity or one AirTerminal:SingleDuct:ConstantVolume:NoReheat for each Thermal Zone' do
     @tagger.tag_air_terminal_units
     @tagger.haystack_json.each do |entity|
       @terminal_units << entity if Set[:id, :dis, :hvac, :directZone, :equip, :equipRef, :ahuRef, :siteRef].subset? entity.keys.to_set
@@ -154,7 +154,7 @@ RSpec.describe 'A Prototype SmallOffice' do
   end
 
   after(:all) do
-    File.open(@small_office_dir + "/haystack.json", "w") do |f|
+    File.open(@small_office_dir + '/haystack.json', 'w') do |f|
       f.write(JSON.pretty_generate(@tagger.haystack_json))
     end
   end
