@@ -174,9 +174,11 @@ module OpenStudio
           cls = mapping['openstudio_class']
           objs = @model.getObjectsByType(cls)
           objs.each do |obj|
-            # UNPROVEN rescue objects from the clutches of boost
-            conv_meth = "to_" << cls[3..-1].gsub(":","")
-            obj = obj.send(conv_meth).get
+            # rescue objects from the clutches of boost
+            conv_meth = "to_" << cls.gsub(/^OS/,'').gsub(':', '').gsub('_','')
+            obj = obj.send(conv_meth)
+            break unless !obj.empty?
+            obj = obj.get
             
             add_relationship_info(obj, mapping['relationships'], info) unless !mapping['relationships']
             add_specific_info(obj, info)
