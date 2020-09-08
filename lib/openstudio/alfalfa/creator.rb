@@ -174,7 +174,7 @@ module OpenStudio
           cls = mapping['openstudio_class']
           objs = @model.getObjectsByType(cls)
           objs.each do |obj|
-            # rescue objects from the clutches of boost
+            # UNPROVEN rescue objects from the clutches of boost
             conv_meth = "to_" << cls[3..-1].gsub(":","")
             obj = obj.send(conv_meth).get
             
