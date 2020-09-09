@@ -178,7 +178,7 @@ module OpenStudio
             obj = obj.send(conv_meth)
             break unless !obj.empty?
             obj = obj.get
-            
+
             add_relationship_info(obj, mapping['relationships'], info) unless !mapping['relationships']
             add_specific_info(obj, info)
           end
