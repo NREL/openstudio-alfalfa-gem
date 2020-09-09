@@ -30,24 +30,16 @@ module OpenStudio
         cols = []
         rows = []
         entities.each do |entity|
+          entity.delete("type")
           entity.keys.each do |k|
             unless cols.include?({"name" => k})
               cols.append({"name" => k})
             end
-            if k == "add_tags"
-              tags = entity[k]
-              tags.each do |tag|
-                entity.store(tag, ":m")
-                entity.delete(k)
-              end
-            end
+            if k == "add_tags" then (tags = entity[k]) and tags.each {|tag| entity.store(tag, ":m") and entity.delete(k)} end
             rows.append(entity)
           end
         end
-        data = {
-            "meta" => {
-                "ver" => "3.0"
-            },
+        data = { "meta" => { "ver" => "3.0"},
             "cols" => cols,
             "rows" => rows,
         }
