@@ -35,3 +35,11 @@ This Gem requires OpenStudio@3.0 or greater
 * Merge down to master
 * Release via github
 * run `rake release` from master
+
+# Developing
+- Create branch
+- Work on feature
+- Add commits
+- Run `bundle exec rake rubocop:auto_correct`
+- Commit and push
+- Add PR to feature 
