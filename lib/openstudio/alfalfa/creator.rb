@@ -151,8 +151,9 @@ module OpenStudio
       def add_relationship_info(obj, relationships, info)
         relationships.each do |relationship|
           ref = obj.send(relationship['openstudio_method'])
+          break unless !ref.empty?
           info['relationships'] = {} unless info['relationships']
-          info['relationships'][relationship[@metadata_type.downcase]] = OpenStudio.removeBraces(ref.get.handle) unless ref.empty?
+          info['relationships'][relationship[@metadata_type.downcase]] = OpenStudio.removeBraces(ref.get.handle)
         end
       end
 
@@ -170,18 +171,31 @@ module OpenStudio
 
         # Let mappings run through once to 'create' entities
         @mappings.each do |mapping|
-          info = resolve_template(mapping)
+          cls_info = resolve_template(mapping)
           cls = mapping['openstudio_class']
           objs = @model.getObjectsByType(cls)
           objs.each do |obj|
             # rescue objects from the clutches of boost
             conv_meth = 'to_' << cls.gsub(/^OS/, '').gsub(':', '').gsub('_', '')
             obj = obj.send(conv_meth)
-            break unless !obj.empty?
+            break if obj.empty?
             obj = obj.get
-            
-            add_relationship_info(obj, mapping['relationships'], info) unless !mapping['relationships']
-            add_specific_info(obj, info)
+
+            obj_info = cls_info.deep_dup
+            add_relationship_info(obj, mapping['relationships'], obj_info) if mapping['relationships']
+            add_specific_info(obj, obj_info)
+          end
+        end
+
+        # Check that relationships point somewhere
+        ids = @entities.flat_map { |entity| entity['id'] }
+        @entities.select { |entity| entity.key? 'relationships' } .each do |entity|
+          relationships = entity['relationships']
+          relationships.keys.each do |key|
+            if !ids.include? relationships[key]
+              relationships.delete(key)
+              entity.delete('relationships') if relationships.empty?
+            end
           end
         end
       end
