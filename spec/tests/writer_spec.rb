@@ -33,68 +33,43 @@
 # OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 # *******************************************************************************
 
-require 'bundler/setup'
-require 'openstudio'
-require 'openstudio-standards'
-require 'openstudio/alfalfa'
+require 'spec_helper'
+require_relative '../spec_helper'
 
-RSpec.configure do |config|
-  # Enable flags like --only-failures and --next-failure
-  config.example_status_persistence_file_path = '.rspec_status'
-
-  # Disable RSpec exposing methods globally on `Module` and `main`
-  config.disable_monkey_patching!
-
-  config.expect_with :rspec do |c|
-    c.syntax = :expect
-  end
-
-  config.formatter = :documentation
-
-  def check_and_create_small_office
-    osm_dir = "#{Dir.pwd}/spec/outputs/small_office"
-    sr_dir = osm_dir + '/SR1'
-    osm = sr_dir + '/in.osm'
-    # Check first whether the directories exist
-    if !File.exist?(osm)
-      model = OpenStudio::Model::Model.new
-      epw_file = nil
-      building_type = 'SmallOffice'
-      template = '90.1-2013'
-      cz = 'ASHRAE 169-2013-5A'
-      if !Dir.exist?(osm_dir)
-        FileUtils.mkdir_p(osm_dir)
-      end
-      prototype_creator = Standard.build("#{template}_#{building_type}")
-      prototype_creator.model_create_prototype_model(cz, epw_file, osm_dir, false, model)
-    else
-      puts 'SmallOffice model already exists, will use existing'
-    end
-  end
-
-  def count_class_mappings(creator)
-    count_by_class = {}
-    total_count = 0
-    creator.mappings.each do |map|
-      c = map['openstudio_class']
-      objects = creator.model.getObjectsByType(c)
-      count_by_class[c] = objects.size
-      total_count += objects.size
-    end
-    return [count_by_class, total_count]
-  end
-
-  def setup_creator_small_office(metadata_type)
-    types = ['Brick', 'Haystack']
-    raise "metadata_type must be one of #{types}" unless types.include? metadata_type
+RSpec.describe 'A Writer for Brick' do
+  before(:all) do
     @small_office_dir = "#{Dir.pwd}/spec/outputs/small_office"
     @small_office_osm = @small_office_dir + '/SR1/in.osm'
-    @model = OpenStudio::Model::Model.load(@small_office_osm)
-    @model = @model.get
-    @creator = OpenStudio::Alfalfa::Creator.new(@model)
-    @creator.read_templates_and_mappings
-    @creator.read_metadata
-    @creator.apply_mappings(metadata_type)
-    return @creator
+    check_and_create_small_office
+    @output_path = File.join(File.dirname(__FILE__), '../outputs')
+
+    @creator_haystack = setup_creator_small_office('Haystack')
+    @creator_brick = setup_creator_small_office('Brick')
+
+    @writer_haystack = OpenStudio::Alfalfa::Writer.new(creator: @creator_haystack)
+    @writer_brick = OpenStudio::Alfalfa::Writer.new(creator: @creator_brick)
+  end
+
+  it 'Should be able to write a Brick graph to a turtle file' do
+    @writer_brick.create_output
+    n = 'model.ttl'
+    f = File.join(@output_path, n)
+    if File.exist?(f)
+      File.delete(f)
+    end
+    expect(File.exist?(f)).to be false
+    @writer_brick.write_output_to_file(output_format: 'ttl', file_path: @output_path)
+    expect(File.exist?(f)).to be true
+  end
+
+  it 'Should be able to write a Brick graph to an nquads file' do
+    n = 'model.nq'
+    f = File.join(@output_path, n)
+    if File.exist?(f)
+      File.delete(f)
+    end
+    expect(File.exist?(f)).to be false
+    @writer_brick.write_output_to_file(output_format: 'nq', file_path: @output_path)
+    expect(File.exist?(f)).to be true
   end
 end

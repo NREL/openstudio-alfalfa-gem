@@ -37,6 +37,8 @@ require 'openstudio/extension'
 require_relative 'alfalfa/tagger'
 require_relative 'alfalfa/creator'
 require_relative 'alfalfa/version'
+require_relative 'alfalfa/writer'
+require_relative 'alfalfa/brick_graph'
 
 module OpenStudio
   module Alfalfa
