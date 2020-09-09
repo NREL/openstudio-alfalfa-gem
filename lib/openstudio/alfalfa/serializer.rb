@@ -38,6 +38,7 @@ module OpenStudio
             if k == "add_tags" then (tags = entity[k]) and tags.each {|tag| entity.store(tag, ":m") and entity.delete(k)} end
             rows.append(entity)
           end
+          cols.delete("name"=>"add_tags")
         end
         data = { "meta" => { "ver" => "3.0"},
             "cols" => cols,
