@@ -72,4 +72,16 @@ RSpec.describe 'A Writer for Brick' do
     @writer_brick.write_output_to_file(output_format: 'nq', file_path: @output_path)
     expect(File.exist?(f)).to be true
   end
+
+  it 'Should be able to write a Haystack model to a json file' do
+    @writer_haystack.create_output
+    n = 'model.json'
+    f = File.join(@output_path, n)
+    if File.exist?(f)
+      File.delete(f)
+    end
+    expect(File.exist?(f)).to be false
+    @writer_haystack.write_output_to_file(output_format: 'json', file_path: @output_path)
+    expect(File.exist?(f)).to be true
+  end
 end

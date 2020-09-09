@@ -25,5 +25,34 @@ module OpenStudio
         end
       end
     end
+    class Haystack
+      def create_haystack_from_entities(entities)
+        cols = []
+        rows = []
+        entities.each do |entity|
+          entity.keys.each do |k|
+            unless cols.include?({"name" => k})
+              cols.append({"name" => k})
+            end
+            if k == "add_tags"
+              tags = entity[k]
+              tags.each do |tag|
+                entity.store(tag, ":m")
+                entity.delete(k)
+              end
+            end
+            rows.append(entity)
+          end
+        end
+        data = {
+            "meta" => {
+                "ver" => "3.0"
+            },
+            "cols" => cols,
+            "rows" => rows,
+        }
+        return JSON.pretty_generate(data)
+      end
+    end
   end
 end
