@@ -151,7 +151,8 @@ module OpenStudio
       def add_relationship_info(obj, relationships, info)
         relationships.each do |relationship|
           ref = obj.send(relationship['openstudio_method'])
-          info[relationship[@metadata_type.downcase]] = OpenStudio.removeBraces(ref.get.handle) unless ref.empty?
+          info['relationships'] = {} unless info['relationships']
+          info['relationships'][relationship[@metadata_type.downcase]] = OpenStudio.removeBraces(ref.get.handle) unless ref.empty?
         end
       end
 
