@@ -37,12 +37,12 @@ module OpenStudio
         cols = []
         rows = []
         entities.each do |entity|
-          entity.delete('type')
           entity.keys.each do |k|
             unless cols.include?('name' => k)
               cols.append('name' => k)
             end
-            if k == "add_tags" then (tags = entity[k]) and tags.each {|tag| entity.store(tag, ":m") and entity.delete(k)} end
+            if k == "add_tags" then (tags = entity[k]) and tags.each {|tag| entity.store(tag, ":m") and entity.delete(k)}
+            elsif k == "type" then (t_tags = entity[k].split("-")) and t_tags.each {|t_tag| entity.store(t_tag, ":m")} and entity.delete(k) end
           end
           rows.append(entity)
           cols.delete("name"=>"add_tags")
