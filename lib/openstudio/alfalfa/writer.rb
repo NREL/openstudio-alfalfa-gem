@@ -45,9 +45,9 @@ module OpenStudio
         when 'Brick'
           case @output_format
           when 'ttl'
-            File.open(File.join(file_path, "#{file_name_without_extension}.ttl"), 'w') { |f| f << @brick_graph.g.to_ttl }
+            File.open(File.join(file_path, "#{file_name_without_extension}.ttl"), 'w') { |f| f << @brick_graph.dump(:ttl) }
           when 'nq'
-            File.open(File.join(file_path, "#{file_name_without_extension}.nq"), 'w') { |f| f << @brick_graph.g.to_nquads }
+            File.open(File.join(file_path, "#{file_name_without_extension}.nq"), 'w') { |f| f << @brick_graph.dump(:nquads) }
           end
         when 'Haystack'
           File.open(File.join(file_path, "#{file_name_without_extension}.json"), 'w') { |f| f << @haystack }

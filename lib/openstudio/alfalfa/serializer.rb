@@ -6,16 +6,19 @@ module OpenStudio
   module Alfalfa
     class BrickGraph
       attr_reader :g
+
       def initialize(building_namespace: 'http://example.com/mybuilding#')
-        RDF::Vocabulary.register :brick, RDF::Vocabulary.new('https://brickschema.org/schema/1.1/Brick#')
-        RDF::Vocabulary.register :bldg, RDF::Vocabulary.new(building_namespace)
+        brick_vocab = Class.new RDF::Vocabulary('https://brickschema.org/schema/1.1/Brick#')
+        building_vocab = Class.new RDF::Vocabulary(building_namespace)
+        RDF::Vocabulary.register :brick, brick_vocab
+        RDF::Vocabulary.register :bldg, building_vocab
         @prefixes = {
           rdf: RDF.to_uri,
           rdfs: RDF::RDFS.to_uri,
-          brick: RDF::Vocabulary.new('https://brickschema.org/schema/1.1/Brick#'),
-          bldg: RDF::Vocabulary.new(building_namespace)
+          brick: brick_vocab,
+          bldg: building_vocab
         }
-        @g = RDF::Repository.new(prefixes: @prefixes)
+        @g = RDF::Repository.new
       end
 
       def create_graph_from_entities(entities)
@@ -24,6 +27,10 @@ module OpenStudio
           @g << RDF::Statement.new(@prefixes[:bldg][entity['id']], RDF::RDFS.label, entity['dis'])
         end
       end
+
+      def dump(format = :ttl)
+        return @g.dump(format, prefixes: @prefixes)
+      end
     end
     class Haystack
       def create_haystack_from_entities(entities)
@@ -31,13 +38,13 @@ module OpenStudio
         rows = []
         entities.each do |entity|
           entity.keys.each do |k|
-            unless cols.include?({"name" => k})
-              cols.append({"name" => k})
+            unless cols.include?('name' => k)
+              cols.append('name' => k)
             end
-            if k == "add_tags"
+            if k == 'add_tags'
               tags = entity[k]
               tags.each do |tag|
-                entity.store(tag, ":m")
+                entity.store(tag, ':m')
                 entity.delete(k)
               end
             end
@@ -45,11 +52,11 @@ module OpenStudio
           end
         end
         data = {
-            "meta" => {
-                "ver" => "3.0"
-            },
-            "cols" => cols,
-            "rows" => rows,
+          'meta' => {
+            'ver' => '3.0'
+          },
+          'cols' => cols,
+          'rows' => rows
         }
         return JSON.pretty_generate(data)
       end
