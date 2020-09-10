@@ -13,10 +13,10 @@ module OpenStudio
         RDF::Vocabulary.register :brick, brick_vocab
         RDF::Vocabulary.register :bldg, building_vocab
         @prefixes = {
-          rdf: RDF.to_uri,
-          rdfs: RDF::RDFS.to_uri,
-          brick: brick_vocab,
-          bldg: building_vocab
+            rdf: RDF.to_uri,
+            rdfs: RDF::RDFS.to_uri,
+            brick: brick_vocab,
+            bldg: building_vocab
         }
         @g = RDF::Repository.new
       end
@@ -38,18 +38,24 @@ module OpenStudio
         rows = []
         entities.each do |entity|
           entity.keys.each do |k|
+            if k == "add_tags" then
+              (tags = entity[k]) and tags.each { |tag| entity.store(tag, ":m") and entity.delete(k) }
+            elsif k == "type" then
+              (t_tags = entity[k].split("-")) and t_tags.each { |t_tag| entity.store(t_tag, ":m") } and entity.delete(k)
+            end
+          end
+          rows.append(entity)
+        end
+        rows.each do |row|
+          row.keys.each do |k|
             unless cols.include?('name' => k)
               cols.append('name' => k)
             end
-            if k == "add_tags" then (tags = entity[k]) and tags.each {|tag| entity.store(tag, ":m") and entity.delete(k)}
-            elsif k == "type" then (t_tags = entity[k].split("-")) and t_tags.each {|t_tag| entity.store(t_tag, ":m")} and entity.delete(k) end
           end
-          rows.append(entity)
-          cols.delete("name"=>"add_tags")
         end
-        data = { 'meta' => { 'ver' => '3.0' },
-                 'cols' => cols,
-                 'rows' => rows }
+        data = {'meta' => {'ver' => '3.0'},
+                'cols' => cols,
+                'rows' => rows}
         return JSON.pretty_generate(data)
       end
     end
