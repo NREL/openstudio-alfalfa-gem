@@ -67,7 +67,7 @@
     "openstudio_class": "OS:AirTerminal:SingleDuct:ConstantVolume:NoReheat",
     "relationships": [
       {
-        "openstudio_method":"airLoopHVAC",
+        "openstudio_method": ["airLoopHVAC"],
         "haystack": "airRef",
         "brick": "isFedBy"
       }
@@ -83,7 +83,7 @@
     "openstudio_class": "OS:ThermalZone",
     "relationships": [
       {
-        "openstudio_method": "airLoopHVACTerminal",
+        "openstudio_method": ["airLoopHVACTerminal"],
         "haystack": "airRef",
         "brick": "isFedBy"
       }
@@ -115,7 +115,7 @@
     "openstudio_class": "OS:Fan:OnOff",
     "relationships": [
       {
-        "openstudio_method": "containingHVACComponent",
+        "openstudio_method": ["containingHVACComponent", "airLoopHVAC"],
         "haystack": "equipRef",
         "brick": "isPartOf"
       }
@@ -131,7 +131,23 @@
     "openstudio_class": "OS:Fan:ConstantVolume",
     "relationships": [
       {
-        "openstudio_method": "containingHVACComponent",
+        "openstudio_method": ["containingHVACComponent", "airLoopHVAC"],
+        "haystack": "equipRef",
+        "brick": "isPartOf"
+      }
+    ],
+    "haystack": {
+      "template": "fan-motor"
+    },
+    "brick": {
+      "template": "Fan"
+    }
+  },
+  {
+    "openstudio_class": "OS:Fan:VariableVolume",
+    "relationships": [
+      {
+        "openstudio_method": ["containingHVACComponent", "airLoopHVAC"],
         "haystack": "equipRef",
         "brick": "isPartOf"
       }
@@ -147,7 +163,7 @@
     "openstudio_class": "OS:Coil:Heating:DX:SingleSpeed",
     "relationships": [
       {
-        "openstudio_method": "containingHVACComponent",
+        "openstudio_method": ["containingHVACComponent"],
         "haystack": "equipRef",
         "brick": "isPartOf"
       }
@@ -163,7 +179,23 @@
     "openstudio_class": "OS:Coil:Cooling:DX:SingleSpeed",
     "relationships": [
       {
-        "openstudio_method": "containingHVACComponent",
+        "openstudio_method": ["containingHVACComponent", "airLoopHVAC"],
+        "haystack": "equipRef",
+        "brick": "isPartOf"
+      }
+    ],
+    "haystack": {
+      "template": "coolingCoil"
+    },
+    "brick": {
+      "template": "Cooling_Coil"
+    }
+  },
+  {
+    "openstudio_class": "OS:Coil:Cooling:DX:TwoSpeed",
+    "relationships": [
+      {
+        "openstudio_method": ["containingHVACComponent", "airLoopHVAC"],
         "haystack": "equipRef",
         "brick": "isPartOf"
       }
@@ -179,7 +211,7 @@
     "openstudio_class": "OS:Coil:Heating:Gas",
     "relationships": [
       {
-        "openstudio_method": "containingHVACComponent",
+        "openstudio_method": ["containingHVACComponent", "airLoopHVAC"],
         "haystack": "equipRef",
         "brick": "isPartOf"
       }
@@ -189,6 +221,38 @@
     },
     "brick": {
       "template": "Heating_Coil"
+    }
+  },
+  {
+    "openstudio_class": "OS:Coil:Heating:Electric",
+    "relationships": [
+      {
+        "openstudio_method": ["containingHVACComponent", "airLoopHVAC"],
+        "haystack": "equipRef",
+        "brick": "isPartOf"
+      }
+    ],
+    "haystack": {
+      "template": "heatingCoil"
+    },
+    "brick": {
+      "template": "Heating_Coil"
+    }
+  },
+  {
+    "openstudio_class": "OS:AirTerminal:SingleDuct:VAV:Reheat",
+    "relationships": [
+      {
+        "openstudio_method": ["airLoopHVAC"],
+        "haystack": "airRef",
+        "brick": "isFedBy"
+      }
+    ],
+    "haystack": {
+      "template": "vav"
+    },
+    "brick": {
+      "template": "VAV"
     }
   }
 ]

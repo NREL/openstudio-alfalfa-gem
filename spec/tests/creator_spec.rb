@@ -36,13 +36,14 @@
 require 'spec_helper'
 require_relative '../spec_helper'
 
-RSpec.describe 'OpenStudio::Alfalfa::Creator Haystack and Brick Small Office spec' do
+RSpec.describe 'OpenStudio::Alfalfa::Creator Haystack and Brick SmallOffice spec' do
   before(:all) do
-    @small_office_dir = "#{Dir.pwd}/spec/outputs/small_office"
-    @small_office_osm = @small_office_dir + '/SR1/in.osm'
-    check_and_create_small_office
+    building_type = 'SmallOffice'
+    @dir = "#{Dir.pwd}/spec/outputs/#{building_type}"
+    @osm = @dir + '/SR1/in.osm'
+    check_and_create_prototype(building_type)
 
-    @creator = OpenStudio::Alfalfa::Creator.new(@small_office_osm)
+    @creator = OpenStudio::Alfalfa::Creator.new(@osm)
   end
 
   it 'Should read in templates and mappings' do
@@ -104,6 +105,50 @@ RSpec.describe 'OpenStudio::Alfalfa::Creator Haystack and Brick Small Office spe
     @creator.mappings.each do |mapping|
       expect(mapping).to have_key('openstudio_class')
     end
+  end
+
+  it 'Should apply mappings for Haystack entities' do
+    # TODO: check count by class
+    expect(@creator.entities.size).to eq 0
+    @creator.apply_mappings('Haystack')
+    puts @creator.entities
+    @creator.entities.each do |e|
+      expect(e).to have_key('id')
+      expect(e).to have_key('dis')
+      expect(e).to have_key('type')
+    end
+    count_by_class, total_count = count_class_mappings(@creator)
+    expect(@creator.entities.size).to eq total_count
+    puts @creator.entities
+  end
+
+  it 'Should apply mappings for Brick entities' do
+    # TODO: check count by class
+    @creator.entities = []
+    expect(@creator.entities.size).to eq 0
+    @creator.apply_mappings('Brick')
+    puts @creator.entities
+    @creator.entities.each do |e|
+      expect(e).to have_key('id')
+      expect(e).to have_key('dis')
+      expect(e).to have_key('type')
+    end
+    count_by_class, total_count = count_class_mappings(@creator)
+    expect(@creator.entities.size).to eq total_count
+    puts @creator.entities
+  end
+end
+
+RSpec.describe 'OpenStudio::Alfalfa::Creator Haystack and Brick MediumOffice spec' do
+  before(:all) do
+    building_type = 'MediumOffice'
+    @dir = "#{Dir.pwd}/spec/outputs/#{building_type}"
+    @osm = @dir + '/SR1/in.osm'
+    check_and_create_prototype(building_type)
+
+    @creator = OpenStudio::Alfalfa::Creator.new(@osm)
+    @creator.read_templates_and_mappings
+    @creator.read_metadata
   end
 
   it 'Should apply mappings for Haystack entities' do
