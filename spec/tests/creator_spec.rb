@@ -42,9 +42,7 @@ RSpec.describe 'OpenStudio::Alfalfa::Creator Haystack and Brick Small Office spe
     @small_office_osm = @small_office_dir + '/SR1/in.osm'
     check_and_create_small_office
 
-    @model = OpenStudio::Model::Model.load(@small_office_osm)
-    @model = @model.get
-    @creator = OpenStudio::Alfalfa::Creator.new(@model)
+    @creator = OpenStudio::Alfalfa::Creator.new(@small_office_osm)
   end
 
   it 'Should read in templates and mappings' do
@@ -112,7 +110,7 @@ RSpec.describe 'OpenStudio::Alfalfa::Creator Haystack and Brick Small Office spe
     # TODO: check count by class
     expect(@creator.entities.size).to eq 0
     @creator.apply_mappings('Haystack')
-    # puts @creator.entities
+    puts @creator.entities
     @creator.entities.each do |e|
       expect(e).to have_key('id')
       expect(e).to have_key('dis')
@@ -128,7 +126,7 @@ RSpec.describe 'OpenStudio::Alfalfa::Creator Haystack and Brick Small Office spe
     @creator.entities = []
     expect(@creator.entities.size).to eq 0
     @creator.apply_mappings('Brick')
-    # puts @creator.entities
+    puts @creator.entities
     @creator.entities.each do |e|
       expect(e).to have_key('id')
       expect(e).to have_key('dis')

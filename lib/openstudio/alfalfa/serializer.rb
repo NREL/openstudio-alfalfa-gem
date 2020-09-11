@@ -8,23 +8,26 @@ module OpenStudio
       attr_reader :g
 
       def initialize(building_namespace: 'http://example.com/mybuilding#')
-        brick_vocab = Class.new RDF::Vocabulary('https://brickschema.org/schema/1.1/Brick#')
-        building_vocab = Class.new RDF::Vocabulary(building_namespace)
-        RDF::Vocabulary.register :brick, brick_vocab
-        RDF::Vocabulary.register :bldg, building_vocab
+        @brick = RDF::Vocabulary.new('https://brickschema.org/schema/1.1/Brick#')
+        @bldg = RDF::Vocabulary.new(building_namespace)
         @prefixes = {
-            rdf: RDF.to_uri,
-            rdfs: RDF::RDFS.to_uri,
-            brick: brick_vocab,
-            bldg: building_vocab
+          rdf: RDF.to_uri,
+          rdfs: RDF::RDFS.to_uri,
+          brick: @brick,
+          bldg: @bldg
         }
         @g = RDF::Repository.new
       end
 
       def create_graph_from_entities(entities)
         entities.each do |entity|
-          @g << RDF::Statement.new(@prefixes[:bldg][entity['id']], RDF.type, @prefixes[:brick][entity['type']])
-          @g << RDF::Statement.new(@prefixes[:bldg][entity['id']], RDF::RDFS.label, entity['dis'])
+          @g << RDF::Statement.new(@bldg[entity['id']], RDF.type, @brick[entity['type']])
+          @g << RDF::Statement.new(@bldg[entity['id']], RDF::RDFS.label, entity['dis'])
+          if entity.key? 'relationships'
+            entity['relationships'].each do |relationship, reference|
+              @g << RDF::Statement.new(@bldg[entity['id']], @brick[relationship], @bldg[reference])
+            end
+          end
         end
       end
 
@@ -38,10 +41,16 @@ module OpenStudio
         rows = []
         entities.each do |entity|
           entity.keys.each do |k|
-            if k == "add_tags" then
-              (tags = entity[k]) and tags.each { |tag| entity.store(tag, ":m") and entity.delete(k) }
-            elsif k == "type" then
-              (t_tags = entity[k].split("-")) and t_tags.each { |t_tag| entity.store(t_tag, ":m") } and entity.delete(k)
+            if k == 'add_tags'
+              (tags = entity[k]) && tags.each { |tag| entity.store(tag, ':m') && entity.delete(k) }
+            elsif k == 'type'
+              (t_tags = entity[k].split('-')) && t_tags.each { |t_tag| entity.store(t_tag, ':m') } && entity.delete(k)
+            elsif k == 'relationships'
+              relationships = entity[k]
+              relationships.each do |relationship, reference|
+                entity.store(relationship, reference)
+              end
+              entity.delete(k)
             end
           end
           rows.append(entity)
@@ -53,9 +62,9 @@ module OpenStudio
             end
           end
         end
-        data = {'meta' => {'ver' => '3.0'},
-                'cols' => cols,
-                'rows' => rows}
+        data = { 'meta' => { 'ver' => '3.0' },
+                 'cols' => cols,
+                 'rows' => rows }
         return JSON.pretty_generate(data)
       end
     end
