@@ -37,3 +37,147 @@
     - Coil
   feeds:
     - HVAC_Zone
+
+- id: "PH_OAT_Sensor"
+  type: Haystack
+  version: 3.9.9
+  name: Outdoor air temperature sensor
+  custom: True
+  base_type: point
+  extension: True
+  properties:
+    - outdoor
+    - air
+    - temp
+    - sensor
+
+- id: "PH_OARH_Sensor"
+  type: Haystack
+  version: 3.9.9
+  name: Outdoor air humidity sensor
+  custom: True
+  base_type: point
+  extension: True
+  properties:
+    - outdoor
+    - air
+    - humidity
+    - sensor
+
+- id: "PH_MAT_Sensor"
+  type: Haystack
+  version: 3.9.9
+  name: Mixed air temperature sensor
+  custom: True
+  base_type: point
+  extension: True
+  properties:
+    - mixed
+    - air
+    - temp
+    - sensor
+
+- id: "PH_MARH_Sensor"
+  type: Haystack
+  version: 3.9.9
+  name: Mixed air humidity sensor
+  custom: True
+  base_type: point
+  extension: True
+  properties:
+    - mixed
+    - air
+    - humidity
+    - sensor
+
+- id: "PH_DAT_Sensor"
+  type: Haystack
+  version: 3.9.9
+  name: Discharge air temperature sensor
+  custom: True
+  base_type: point
+  extension: True
+  properties:
+    - discharge
+    - air
+    - temp
+    - sensor
+
+- id: "PH_DARH_Sensor"
+  type: Haystack
+  version: 3.9.9
+  name: Discharge air humidity sensor
+  custom: True
+  base_type: point
+  extension: True
+  properties:
+    - discharge
+    - air
+    - humidity
+    - sensor
+
+- id: "PH_RAT_Sensor"
+  type: Haystack
+  version: 3.9.9
+  name: Return air temperature sensor
+  custom: True
+  base_type: point
+  extension: True
+  properties:
+    - return
+    - air
+    - temp
+    - sensor
+
+- id: "PH_RARH_Sensor"
+  type: Haystack
+  version: 3.9.9
+  name: Return air humidity sensor
+  custom: True
+  base_type: point
+  extension: True
+  properties:
+    - return
+    - air
+    - humidity
+    - sensor
+
+- id: "PH_ZAT_Sensor"
+  type: Haystack
+  version: 3.9.9
+  name: Zone air temperature sensor
+  custom: True
+  base_type: point
+  extension: True
+  properties:
+    - zone
+    - air
+    - temp
+    - sensor
+
+- id: "PH_ZARH_Sensor"
+  type: Haystack
+  version: 3.9.9
+  name: Zone air humidity sensor
+  custom: True
+  base_type: point
+  extension: True
+  properties:
+    - zone
+    - air
+    - humidity
+    - sensor
+
+- id: "PH_OADP_Sensor"
+  type: Haystack
+  version: 3.9.9
+  name: OA Dewpoint Temp
+  custom: True
+  base_type: point
+  extension: True
+  properties:
+    - outdoor
+    - air
+    - dewPoint
+    - temp
+    - sensor
