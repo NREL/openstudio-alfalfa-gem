@@ -16,9 +16,8 @@ module OpenStudio
       ##
       # @param [String] path_to_model
       def initialize(path_to_model)
-        m = OpenStudio::Model::Model.load(path_to_model)
+        @model = m = OpenStudio::Model::Model.load(path_to_model).get
         @path_to_model = path_to_model
-        @model = m.get
         @phiot_vocab = RDF::Vocabulary.new('https://project-haystack.org/def/phIoT/3.9.9#')
         @ph_vocab = RDF::Vocabulary.new('https://project-haystack.org/def/ph/3.9.9#')
         @brick_vocab = RDF::Vocabulary.new('https://brickschema.org/schema/1.1/Brick#')
@@ -114,17 +113,14 @@ module OpenStudio
       end
 
       def resolve_template_from_mapping(mapping)
-        cls = mapping['openstudio_class']
-        k = @metadata_type.downcase
-        template = mapping[k]['template']
+        template = mapping[@metadata_type.downcase]['template']
         return resolve_template(template)
       end
 
       def resolve_template(template)
         if @current_repo.has_term? @current_vocab[template]
           if @metadata_type == 'Haystack'
-            necessary_tags = resolve_mandatory_tags(template)
-            return necessary_tags
+            return resolve_mandatory_tags(template)
           else
             return { 'type' => template }
           end
