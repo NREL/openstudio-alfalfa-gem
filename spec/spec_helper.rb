@@ -89,9 +89,8 @@ RSpec.configure do |config|
     raise "metadata_type must be one of #{types}" unless types.include? metadata_type
     @small_office_dir = "#{Dir.pwd}/spec/outputs/small_office"
     @small_office_osm = @small_office_dir + '/SR1/in.osm'
-    @model = OpenStudio::Model::Model.load(@small_office_osm)
-    @model = @model.get
-    @creator = OpenStudio::Alfalfa::Creator.new(@model)
+
+    @creator = OpenStudio::Alfalfa::Creator.new(@small_office_osm)
     @creator.read_templates_and_mappings
     @creator.read_metadata
     @creator.apply_mappings(metadata_type)
