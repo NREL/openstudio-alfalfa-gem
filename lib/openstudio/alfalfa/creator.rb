@@ -229,15 +229,17 @@ module OpenStudio
           supply_components = air_loop.supplyComponents
           supply_components.each do |sc|
             unitary_system = check_if_component_is_unitary(sc)
-            if unitary_system&.airLoopHVAC&.is_initialized
-              al = unitary_system.airLoopHVAC.get
-              al_handle = OpenStudio.removeBraces(al.handle).to_s
-              us_handle = OpenStudio.removeBraces(unitary_system.handle).to_s
-              @entities.delete_if { |entity| handles_to_swap[us_handle] = al_handle; entity['id'] == al_handle }
+            if unitary_system
+              if unitary_system.airLoopHVAC.is_initialized
+                al = unitary_system.airLoopHVAC.get
+                al_handle = OpenStudio.removeBraces(al.handle).to_s
+                us_handle = OpenStudio.removeBraces(unitary_system.handle).to_s
+                @entities.delete_if { |entity| handles_to_swap[us_handle] = al_handle; entity['id'] == al_handle }
+              end
             end
           end
         end
-        puts "Handles: #{handles_to_swap}"
+
         @entities.each do |entity|
           if handles_to_swap.key? entity['id']
             entity['id'] = handles_to_swap[entity['id']]
