@@ -16,7 +16,7 @@ module OpenStudio
       ##
       # @param [String] path_to_model
       def initialize(path_to_model)
-        @model = m = OpenStudio::Model::Model.load(path_to_model).get
+        @model = OpenStudio::Model::Model.load(path_to_model).get
         @path_to_model = path_to_model
         @phiot_vocab = RDF::Vocabulary.new('https://project-haystack.org/def/phIoT/3.9.9#')
         @ph_vocab = RDF::Vocabulary.new('https://project-haystack.org/def/ph/3.9.9#')
