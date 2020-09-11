@@ -174,5 +174,21 @@
     "brick": {
       "template": "Cooling_Coil"
     }
+  },
+  {
+    "openstudio_class": "OS:Coil:Heating:Gas",
+    "relationships": [
+      {
+        "openstudio_method": "containingHVACComponent",
+        "haystack": "equipRef",
+        "brick": "isPartOf"
+      }
+    ],
+    "haystack": {
+      "template": "heatingCoil"
+    },
+    "brick": {
+      "template": "Heating_Coil"
+    }
   }
 ]
