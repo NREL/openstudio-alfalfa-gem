@@ -39,6 +39,7 @@ require_relative 'alfalfa/creator'
 require_relative 'alfalfa/version'
 require_relative 'alfalfa/writer'
 require_relative 'alfalfa/serializer'
+require_relative 'alfalfa/helpers'
 
 module OpenStudio
   module Alfalfa
