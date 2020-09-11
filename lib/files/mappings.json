@@ -1,5 +1,60 @@
 [
   {
+    "openstudio_class": "OS:AirLoopHVAC",
+    "brick": {
+      "template": "AHU"
+    },
+    "haystack": {
+      "template": "ahu"
+    },
+    "nodes": {
+      "relationship_to_parent": {
+        "brick": "isPointOf",
+        "haystack": "equipRef"
+      },
+      "outdoorAirNode": {
+        "System Node Temperature": {
+          "brick": "Outside_Air_Temperature_Sensor",
+          "haystack": "PH_OAT_Sensor"
+        },
+        "System Node Relative Humidity": {
+          "brick": "Outside_Air_Humidity_Sensor",
+          "haystack": "PH_OARH_Sensor"
+        }
+      },
+      "mixedAirNode": {
+        "System Node Temperature": {
+          "brick": "Mixed_Air_Temperature_Sensor",
+          "haystack": "PH_MAT_Sensor"
+        },
+        "System Node Relative Humidity": {
+          "brick": "Air_Humidity_Sensor",
+          "haystack": "PH_MARH_Sensor"
+        }
+      },
+      "supplyOutletNode": {
+        "System Node Temperature": {
+          "brick": "Discharge_Air_Temperature_Sensor",
+          "haystack": "PH_DAT_Sensor"
+        },
+        "System Node Relative Humidity": {
+          "brick": "Discharge_Air_Humidity_Sensor",
+          "haystack": "PH_DARH_Sensor"
+        }
+      },
+      "supplyInletNode": {
+        "System Node Temperature": {
+          "brick": "Return_Air_Temperature_Sensor",
+          "haystack": "PH_RAT_Sensor"
+        },
+        "System Node Relative Humidity": {
+          "brick": "Return_Air_Humidity_Sensor",
+          "haystack": "PH_RARH_Sensor"
+        }
+      }
+    }
+  },
+  {
     "openstudio_class": "OS:AirLoopHVAC:UnitaryHeatPump:AirToAir",
     "brick": {
       "template": "AHU"
@@ -10,6 +65,13 @@
   },
   {
     "openstudio_class": "OS:AirTerminal:SingleDuct:ConstantVolume:NoReheat",
+    "relationships": [
+      {
+        "openstudio_method":"airLoopHVAC",
+        "haystack": "airRef",
+        "brick": "isFedBy"
+      }
+    ],
     "haystack": {
       "template": "cav"
     },
@@ -31,6 +93,22 @@
     },
     "brick": {
       "template": "HVAC_Zone"
+    },
+    "nodes": {
+      "relationship_to_parent": {
+        "brick": "hasLocation",
+        "haystack": "spaceRef"
+      },
+      "zoneAirNode": {
+        "System Node Temperature": {
+          "brick": "Zone_Air_Temperature_Sensor",
+          "haystack": "PH_ZAT_Sensor"
+        },
+        "System Node Relative Humidity": {
+          "brick": "Zone_Air_Humidity_Sensor",
+          "haystack": "PH_ZARH_Sensor"
+        }
+      }
     }
   },
   {
@@ -67,6 +145,13 @@
   },
   {
     "openstudio_class": "OS:Coil:Heating:DX:SingleSpeed",
+    "relationships": [
+      {
+        "openstudio_method": "containingHVACComponent",
+        "haystack": "equipRef",
+        "brick": "isPartOf"
+      }
+    ],
     "haystack": {
       "template": "heatingCoil"
     },
@@ -76,6 +161,13 @@
   },
   {
     "openstudio_class": "OS:Coil:Cooling:DX:SingleSpeed",
+    "relationships": [
+      {
+        "openstudio_method": "containingHVACComponent",
+        "haystack": "equipRef",
+        "brick": "isPartOf"
+      }
+    ],
     "haystack": {
       "template": "coolingCoil"
     },
