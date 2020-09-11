@@ -156,7 +156,6 @@ module OpenStudio
           ref = []
           relationship['openstudio_method'].each do |method|
             ref = obj.send(method)
-            puts "Method: #{method}, Ref: #{ref}"
             break unless !ref.is_initialized
           end
           break unless ref.is_initialized

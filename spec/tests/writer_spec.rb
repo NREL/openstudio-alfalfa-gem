@@ -137,3 +137,54 @@ RSpec.describe 'OpenStudio::Alfalfa::Writer Haystack and Brick MediumOffice spec
     expect(File.exist?(f)).to be true
   end
 end
+
+RSpec.describe 'OpenStudio::Alfalfa::Writer Haystack and Brick RetailStandalone spec' do
+  before(:all) do
+    @building_type = 'RetailStandalone'
+    @dir = "#{Dir.pwd}/spec/outputs/#{@building_type}"
+    @osm = @dir + '/SR1/in.osm'
+    check_and_create_prototype(@building_type)
+    @output_path = File.join(File.dirname(__FILE__), '../outputs')
+
+    @creator_haystack = setup_creator('Haystack', @building_type)
+    @creator_brick = setup_creator('Brick', @building_type)
+
+    @writer_haystack = OpenStudio::Alfalfa::Writer.new(creator: @creator_haystack)
+    @writer_brick = OpenStudio::Alfalfa::Writer.new(creator: @creator_brick)
+  end
+
+  it 'Should be able to write a Brick graph to a turtle file' do
+    @writer_brick.create_output
+    n = "#{@building_type}_model.ttl"
+    f = File.join(@output_path, n)
+    if File.exist?(f)
+      File.delete(f)
+    end
+    expect(File.exist?(f)).to be false
+    @writer_brick.write_output_to_file(output_format: 'ttl', file_path: @output_path, file_name_without_extension: n.split('.')[0])
+    expect(File.exist?(f)).to be true
+  end
+
+  it 'Should be able to write a Brick graph to an nquads file' do
+    n = "#{@building_type}_model.nq"
+    f = File.join(@output_path, n)
+    if File.exist?(f)
+      File.delete(f)
+    end
+    expect(File.exist?(f)).to be false
+    @writer_brick.write_output_to_file(output_format: 'nq', file_path: @output_path, file_name_without_extension: n.split('.')[0])
+    expect(File.exist?(f)).to be true
+  end
+
+  it 'Should be able to write a Haystack model to a json file' do
+    @writer_haystack.create_output
+    n = "#{@building_type}_model.json"
+    f = File.join(@output_path, n)
+    if File.exist?(f)
+      File.delete(f)
+    end
+    expect(File.exist?(f)).to be false
+    @writer_haystack.write_output_to_file(output_format: 'json', file_path: @output_path, file_name_without_extension: n.split('.')[0])
+    expect(File.exist?(f)).to be true
+  end
+end
