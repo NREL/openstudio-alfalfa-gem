@@ -149,12 +149,8 @@ module OpenStudio
 
       def add_relationship_info(obj, relationships, info)
         relationships.each do |relationship|
-          ref = []
-          relationship['openstudio_method'].each do |method|
-            ref = obj.send(method)
-            break unless !ref.is_initialized
-          end
-          break unless ref.is_initialized
+          ref = relationship['openstudio_method'].map { |method| obj.send(method) }.find {|ref_obj| ref_obj.is_initialized}
+          break if ref.nil?
           info['relationships'] = {} unless info['relationships']
           info['relationships'][relationship[@metadata_type.downcase]] = OpenStudio.removeBraces(ref.get.handle)
         end
