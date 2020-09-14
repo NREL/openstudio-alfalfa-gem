@@ -92,7 +92,6 @@
     "openstudio_class": "OS:AirTerminal:SingleDuct:ConstantVolume:NoReheat",
     "relationships": [
       {
-        "method_scope": "this",
         "openstudio_method": ["airLoopHVAC"],
         "haystack": "airRef",
         "brick": "isFedBy"
@@ -115,7 +114,6 @@
     "openstudio_class": "OS:ThermalZone",
     "relationships": [
       {
-        "method_scope" : "this",
         "openstudio_method": ["airLoopHVACTerminal"],
         "haystack": "airRef",
         "brick": "isFedBy"
@@ -154,7 +152,6 @@
     "openstudio_class": "OS:Fan:OnOff",
     "relationships": [
       {
-        "method_scope": "this",
         "openstudio_method": ["containingHVACComponent", "airLoopHVAC"],
         "haystack": "equipRef",
         "brick": "isPartOf"
@@ -171,7 +168,6 @@
     "openstudio_class": "OS:Fan:ConstantVolume",
     "relationships": [
       {
-        "method_scope": "this",
         "openstudio_method": ["containingHVACComponent", "airLoopHVAC"],
         "haystack": "equipRef",
         "brick": "isPartOf"
@@ -188,7 +184,6 @@
     "openstudio_class": "OS:Fan:VariableVolume",
     "relationships": [
       {
-        "method_scope": "this",
         "openstudio_method": ["containingHVACComponent", "airLoopHVAC"],
         "haystack": "equipRef",
         "brick": "isPartOf"
@@ -205,7 +200,6 @@
     "openstudio_class": "OS:Coil:Heating:DX:SingleSpeed",
     "relationships": [
       {
-        "method_scope": "this",
         "openstudio_method": ["containingHVACComponent"],
         "haystack": "equipRef",
         "brick": "isPartOf"
@@ -222,7 +216,6 @@
     "openstudio_class": "OS:Coil:Cooling:DX:SingleSpeed",
     "relationships": [
       {
-        "method_scope": "this",
         "openstudio_method": ["containingHVACComponent", "airLoopHVAC"],
         "haystack": "equipRef",
         "brick": "isPartOf"
@@ -239,7 +232,6 @@
     "openstudio_class": "OS:Coil:Cooling:DX:TwoSpeed",
     "relationships": [
       {
-        "method_scope": "this",
         "openstudio_method": ["containingHVACComponent", "airLoopHVAC"],
         "haystack": "equipRef",
         "brick": "isPartOf"
@@ -256,7 +248,6 @@
     "openstudio_class": "OS:Coil:Heating:Gas",
     "relationships": [
       {
-        "method_scope": "this",
         "openstudio_method": ["containingHVACComponent", "airLoopHVAC"],
         "haystack": "equipRef",
         "brick": "isPartOf"
@@ -273,7 +264,6 @@
     "openstudio_class": "OS:Coil:Heating:Electric",
     "relationships": [
       {
-        "method_scope": "this",
         "openstudio_method": ["containingHVACComponent", "airLoopHVAC"],
         "haystack": "equipRef",
         "brick": "isPartOf"
@@ -290,7 +280,6 @@
     "openstudio_class": "OS:AirTerminal:SingleDuct:VAV:Reheat",
     "relationships": [
       {
-        "method_scope": "this",
         "openstudio_method": ["airLoopHVAC"],
         "haystack": "airRef",
         "brick": "isFedBy"
