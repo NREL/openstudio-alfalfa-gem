@@ -12,7 +12,7 @@
     "openstudio_class": "OS:AirLoopHVAC",
     "relationships": [
       {
-        "type": "upstream",
+        "method_scope": "model",
         "openstudio_method": ["getBuilding"],
         "haystack": "siteRef",
         "brick": "hasLocation"
@@ -75,7 +75,7 @@
     "openstudio_class": "OS:AirLoopHVAC:UnitaryHeatPump:AirToAir",
     "relationships": [
       {
-        "type": "upstream",
+        "method_scope": "model",
         "openstudio_method": ["getBuilding"],
         "haystack": "siteRef",
         "brick": "hasLocation"
@@ -92,13 +92,13 @@
     "openstudio_class": "OS:AirTerminal:SingleDuct:ConstantVolume:NoReheat",
     "relationships": [
       {
-        "type": "downstream",
+        "method_scope": "this",
         "openstudio_method": ["airLoopHVAC"],
         "haystack": "airRef",
         "brick": "isFedBy"
       },
       {
-        "type": "upstream",
+        "method_scope": "model",
         "openstudio_method": ["getBuilding"],
         "haystack": "siteRef",
         "brick": "hasLocation"
@@ -115,13 +115,13 @@
     "openstudio_class": "OS:ThermalZone",
     "relationships": [
       {
-        "type" : "downstream",
+        "method_scope" : "this",
         "openstudio_method": ["airLoopHVACTerminal"],
         "haystack": "airRef",
         "brick": "isFedBy"
       },
       {
-        "type" : "upstream",
+        "method_scope" : "model",
         "openstudio_method": ["getBuilding"],
         "haystack": "siteRef",
         "brick": "hasLocation"
@@ -154,7 +154,7 @@
     "openstudio_class": "OS:Fan:OnOff",
     "relationships": [
       {
-        "type": "downstream",
+        "method_scope": "this",
         "openstudio_method": ["containingHVACComponent", "airLoopHVAC"],
         "haystack": "equipRef",
         "brick": "isPartOf"
@@ -171,7 +171,7 @@
     "openstudio_class": "OS:Fan:ConstantVolume",
     "relationships": [
       {
-        "type": "downstream",
+        "method_scope": "this",
         "openstudio_method": ["containingHVACComponent", "airLoopHVAC"],
         "haystack": "equipRef",
         "brick": "isPartOf"
@@ -188,7 +188,7 @@
     "openstudio_class": "OS:Fan:VariableVolume",
     "relationships": [
       {
-        "type": "downstream",
+        "method_scope": "this",
         "openstudio_method": ["containingHVACComponent", "airLoopHVAC"],
         "haystack": "equipRef",
         "brick": "isPartOf"
@@ -205,7 +205,7 @@
     "openstudio_class": "OS:Coil:Heating:DX:SingleSpeed",
     "relationships": [
       {
-        "type": "downstream",
+        "method_scope": "this",
         "openstudio_method": ["containingHVACComponent"],
         "haystack": "equipRef",
         "brick": "isPartOf"
@@ -222,7 +222,7 @@
     "openstudio_class": "OS:Coil:Cooling:DX:SingleSpeed",
     "relationships": [
       {
-        "type": "downstream",
+        "method_scope": "this",
         "openstudio_method": ["containingHVACComponent", "airLoopHVAC"],
         "haystack": "equipRef",
         "brick": "isPartOf"
@@ -239,7 +239,7 @@
     "openstudio_class": "OS:Coil:Cooling:DX:TwoSpeed",
     "relationships": [
       {
-        "type": "downstream",
+        "method_scope": "this",
         "openstudio_method": ["containingHVACComponent", "airLoopHVAC"],
         "haystack": "equipRef",
         "brick": "isPartOf"
@@ -256,7 +256,7 @@
     "openstudio_class": "OS:Coil:Heating:Gas",
     "relationships": [
       {
-        "type": "downstream",
+        "method_scope": "this",
         "openstudio_method": ["containingHVACComponent", "airLoopHVAC"],
         "haystack": "equipRef",
         "brick": "isPartOf"
@@ -273,7 +273,7 @@
     "openstudio_class": "OS:Coil:Heating:Electric",
     "relationships": [
       {
-        "type": "downstream",
+        "method_scope": "this",
         "openstudio_method": ["containingHVACComponent", "airLoopHVAC"],
         "haystack": "equipRef",
         "brick": "isPartOf"
@@ -290,13 +290,13 @@
     "openstudio_class": "OS:AirTerminal:SingleDuct:VAV:Reheat",
     "relationships": [
       {
-        "type": "downstream",
+        "method_scope": "this",
         "openstudio_method": ["airLoopHVAC"],
         "haystack": "airRef",
         "brick": "isFedBy"
       },
       {
-        "type": "upstream",
+        "method_scope": "model",
         "openstudio_method": ["getBuilding"],
         "haystack": "siteRef",
         "brick": "hasLocation"

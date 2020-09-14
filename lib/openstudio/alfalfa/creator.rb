@@ -150,12 +150,12 @@ module OpenStudio
       def add_relationship_info(obj, relationships, info)
         relationships.each do |relationship|
           info['relationships'] = {} unless info['relationships']
-          if relationship['type'] == "upstream"
+          if relationship['method_scope'] == "model"
             obj = @model
             ref = relationship['openstudio_method'].map { |method| obj.send(method) }.find {|ref_obj| ref_obj.initialized}
             break if ref.nil?
             info['relationships'][relationship[@metadata_type.downcase]] = OpenStudio.removeBraces(ref.handle)
-          elsif relationship['type'] == "downstream"
+          elsif relationship['method_scope'] == "this"
             ref = relationship['openstudio_method'].map { |method| obj.send(method) }.find {|ref_obj| ref_obj.is_initialized}
             break if ref.nil?
             info['relationships'][relationship[@metadata_type.downcase]] = OpenStudio.removeBraces(ref.get.handle)
