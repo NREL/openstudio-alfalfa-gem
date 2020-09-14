@@ -224,10 +224,8 @@ module OpenStudio
       # and replaces the unitary entity id with the airloop id.
       def resolve_unitary_and_air_loops_overlap
         handles_to_swap = {}
-        air_loops = @model.getAirLoopHVACs
-        air_loops.each do |air_loop|
-          supply_components = air_loop.supplyComponents
-          supply_components.each do |sc|
+        @model.getAirLoopHVACs.each do |air_loop|
+          air_loop.supplyComponents.each do |sc|
             unitary_system = check_if_component_is_unitary(sc)
             if unitary_system
               if unitary_system.airLoopHVAC.is_initialized
