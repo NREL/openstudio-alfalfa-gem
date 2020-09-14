@@ -38,11 +38,12 @@ require_relative '../spec_helper'
 
 RSpec.describe 'A Prototype SmallOffice' do
   before(:all) do
-    @small_office_dir = "#{Dir.pwd}/spec/outputs/small_office"
-    @small_office_osm = @small_office_dir + '/SR1/in.osm'
-    check_and_create_small_office
+    building_type = 'SmallOffice'
+    @dir = "#{Dir.pwd}/spec/outputs/#{building_type}"
+    @osm = @dir + '/SR1/in.osm'
+    check_and_create_prototype(building_type)
 
-    @model = OpenStudio::Model::Model.load(@small_office_osm)
+    @model = OpenStudio::Model::Model.load(@osm)
     @model = @model.get
     @tagger = OpenStudio::Alfalfa::Tagger.new(@model)
 
@@ -154,7 +155,7 @@ RSpec.describe 'A Prototype SmallOffice' do
   end
 
   after(:all) do
-    File.open(@small_office_dir + '/haystack.json', 'w') do |f|
+    File.open(@dir + '/haystack.json', 'w') do |f|
       f.write(JSON.pretty_generate(@tagger.haystack_json))
     end
   end

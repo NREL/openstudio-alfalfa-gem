@@ -51,15 +51,18 @@ RSpec.configure do |config|
 
   config.formatter = :documentation
 
-  def check_and_create_small_office
-    osm_dir = "#{Dir.pwd}/spec/outputs/small_office"
+  ##
+  # Create a building type from Standards library if doesn't exist
+  ##
+  # @param [String] building_type One of the DOE Prototype building types.
+  def check_and_create_prototype(building_type)
+    osm_dir = "#{Dir.pwd}/spec/outputs/#{building_type}"
     sr_dir = osm_dir + '/SR1'
     osm = sr_dir + '/in.osm'
     # Check first whether the directories exist
     if !File.exist?(osm)
       model = OpenStudio::Model::Model.new
       epw_file = nil
-      building_type = 'SmallOffice'
       template = '90.1-2013'
       cz = 'ASHRAE 169-2013-5A'
       if !Dir.exist?(osm_dir)
@@ -68,7 +71,7 @@ RSpec.configure do |config|
       prototype_creator = Standard.build("#{template}_#{building_type}")
       prototype_creator.model_create_prototype_model(cz, epw_file, osm_dir, false, model)
     else
-      puts 'SmallOffice model already exists, will use existing'
+      puts "#{building_type} model already exists, will use existing"
     end
   end
 
@@ -82,5 +85,18 @@ RSpec.configure do |config|
       total_count += objects.size
     end
     return [count_by_class, total_count]
+  end
+
+  def setup_creator(metadata_type, building_type)
+    types = ['Brick', 'Haystack']
+    raise "metadata_type must be one of #{types}" unless types.include? metadata_type
+    @dir = "#{Dir.pwd}/spec/outputs/#{building_type}"
+    @osm = @dir + '/SR1/in.osm'
+
+    @creator = OpenStudio::Alfalfa::Creator.new(@osm)
+    @creator.read_templates_and_mappings
+    @creator.read_metadata
+    @creator.apply_mappings(metadata_type)
+    return @creator
   end
 end
