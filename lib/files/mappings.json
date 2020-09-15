@@ -37,6 +37,15 @@
         "System Node Relative Humidity": {
           "brick": "Outside_Air_Humidity_Sensor",
           "haystack": "PH_OARH_Sensor"
+        },
+        "System Node Dewpoint Temperature": {
+          "brick": "Outside_Air_Dewpoint_Sensor",
+          "haystack":"PH_OADP_Sensor"
+
+        },
+        "System Node Mass Flow Rate": {
+          "brick": "Outside_Air_Flow_Sensor",
+          "haystack":"PH_OAF_Sensor"
         }
       },
       "mixedAirNode": {
@@ -57,6 +66,16 @@
         "System Node Relative Humidity": {
           "brick": "Discharge_Air_Humidity_Sensor",
           "haystack": "PH_DARH_Sensor"
+        },
+        "System Node Dewpoint Temperature": {
+          "brick": "Dewpoint_Sensor",
+          "haystack":"PH_DADP_Sensor"
+
+        },
+        "System Node Mass Flow Rate": {
+          "brick": "Discharge_Air_Flow_Sensor",
+          "haystack":"PH_DAF_Sensor"
+
         }
       },
       "supplyInletNode": {
@@ -67,6 +86,32 @@
         "System Node Relative Humidity": {
           "brick": "Return_Air_Humidity_Sensor",
           "haystack": "PH_RARH_Sensor"
+        },
+        "System Node Dewpoint Temperature": {
+          "brick": "Return_Air_Dewpoint_Sensor",
+          "haystack":"PH_RADP_Sensor"
+        },
+        "System Node Mass Flow Rate": {
+          "brick": "Return_Air_Flow_Sensor",
+          "haystack":"PH_RAF_Sensor"
+        }
+      },
+      "reliefAirNode": {
+        "System Node Temperature": {
+          "brick": "Exhaust_Air_Temperature_Sensor",
+          "haystack": "PH_EAT_Sensor"
+        },
+        "System Node Relative Humidity": {
+          "brick": "Exhaust_Air_Humidity_Sensor",
+          "haystack": "PH_EARH_Sensor"
+        },
+        "System Node Dewpoint Temperature": {
+          "brick": "Dewpoint_Sensor",
+          "haystack":"PH_EADP_Sensor"
+        },
+        "System Node Mass Flow Rate": {
+          "brick": "Exhaust_Air_Flow_Sensor",
+          "haystack":"PH_EAF_Sensor"
         }
       }
     }
@@ -200,7 +245,7 @@
     "openstudio_class": "OS:Coil:Heating:DX:SingleSpeed",
     "relationships": [
       {
-        "openstudio_method": ["containingHVACComponent"],
+        "openstudio_method": ["containingHVACComponent", "airLoopHVAC"],
         "haystack": "equipRef",
         "brick": "isPartOf"
       }
