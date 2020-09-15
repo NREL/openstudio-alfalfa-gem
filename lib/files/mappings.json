@@ -1,6 +1,23 @@
 [
   {
+    "openstudio_class": "OS:Building",
+    "haystack": {
+      "template": "site"
+    },
+    "brick": {
+      "template": "Building"
+    }
+  },
+  {
     "openstudio_class": "OS:AirLoopHVAC",
+    "relationships": [
+      {
+        "method_scope": "model",
+        "openstudio_method": ["getBuilding"],
+        "haystack": "siteRef",
+        "brick": "hasLocation"
+      }
+    ],
     "brick": {
       "template": "AHU"
     },
@@ -56,6 +73,14 @@
   },
   {
     "openstudio_class": "OS:AirLoopHVAC:UnitaryHeatPump:AirToAir",
+    "relationships": [
+      {
+        "method_scope": "model",
+        "openstudio_method": ["getBuilding"],
+        "haystack": "siteRef",
+        "brick": "hasLocation"
+      }
+    ],
     "brick": {
       "template": "AHU"
     },
@@ -70,6 +95,12 @@
         "openstudio_method": ["airLoopHVAC"],
         "haystack": "airRef",
         "brick": "isFedBy"
+      },
+      {
+        "method_scope": "model",
+        "openstudio_method": ["getBuilding"],
+        "haystack": "siteRef",
+        "brick": "hasLocation"
       }
     ],
     "haystack": {
@@ -86,6 +117,12 @@
         "openstudio_method": ["airLoopHVACTerminal"],
         "haystack": "airRef",
         "brick": "isFedBy"
+      },
+      {
+        "method_scope" : "model",
+        "openstudio_method": ["getBuilding"],
+        "haystack": "siteRef",
+        "brick": "hasLocation"
       }
     ],
     "haystack": {
@@ -246,6 +283,12 @@
         "openstudio_method": ["airLoopHVAC"],
         "haystack": "airRef",
         "brick": "isFedBy"
+      },
+      {
+        "method_scope": "model",
+        "openstudio_method": ["getBuilding"],
+        "haystack": "siteRef",
+        "brick": "hasLocation"
       }
     ],
     "haystack": {
