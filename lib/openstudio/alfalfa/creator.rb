@@ -181,6 +181,11 @@ module OpenStudio
       # @param [OpenStudio parent object] obj
       # @param [Hash] nodes
       def add_nodes(obj, nodes)
+        if obj.to_ThermalZone.is_initialized
+          if !obj.airLoopHVAC.is_initialized && obj.zoneConditioningEquipmentListName.empty?
+            return
+          end
+        end
         relationship_to_parent = nodes['relationship_to_parent']
         nodes.each do |node_method, node_properties|
           next unless node_method != 'relationship_to_parent'
@@ -233,10 +238,8 @@ module OpenStudio
       # and replaces the unitary entity id with the airloop id.
       def resolve_unitary_and_air_loops_overlap
         handles_to_swap = {}
-        air_loops = @model.getAirLoopHVACs
-        air_loops.each do |air_loop|
-          supply_components = air_loop.supplyComponents
-          supply_components.each do |sc|
+        @model.getAirLoopHVACs.each do |air_loop|
+          air_loop.supplyComponents.each do |sc|
             unitary_system = check_if_component_is_unitary(sc)
             if unitary_system
               if unitary_system.airLoopHVAC.is_initialized
