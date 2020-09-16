@@ -6,7 +6,7 @@ require 'sparql/client'
 require 'openstudio'
 
 module OpenStudio
-  module Alfalfa
+  module Metadata
     class Writer
       attr_accessor :brick_graph
       attr_reader :metadata_type
