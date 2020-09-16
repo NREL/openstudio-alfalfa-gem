@@ -20,7 +20,7 @@ Or install it yourself as:
 
 ## Note
 
-This Gem requires OpenStudio@3.0 or greater 
+This Gem requires OpenStudio@3.0 or greater
 
 ## TODO
 
@@ -38,7 +38,8 @@ This Gem requires OpenStudio@3.0 or greater
 
 # Developing
 - Create branch
-- Work on feature
+- Work on feature, add tests
+- Make sure tests are passing: `bundle exec rspec`
 - Add commits
 - Run `bundle exec rake rubocop:auto_correct`
 - Commit and push
