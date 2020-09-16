@@ -92,12 +92,15 @@ RSpec.configure do |config|
     raise "metadata_type must be one of #{types}" unless types.include? metadata_type
     @dir = "#{Dir.pwd}/spec/outputs/#{building_type}"
     @osm = @dir + '/SR1/in.osm'
+    return instantiate_creator_and_apply_mappings(@osm, metadata_type)
+  end
 
-    @creator = OpenStudio::Metadata::Creator.new(@osm)
-    @creator.read_templates_and_mappings
-    @creator.read_metadata
-    @creator.apply_mappings(metadata_type)
-    return @creator
+  def instantiate_creator_and_apply_mappings(osm, metadata_type)
+    creator = OpenStudio::Metadata::Creator.new(osm)
+    creator.read_templates_and_mappings
+    creator.read_metadata
+    creator.apply_mappings(metadata_type)
+    return creator
   end
 
   def run_osw(file_dir)
