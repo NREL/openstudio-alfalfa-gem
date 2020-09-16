@@ -34,16 +34,16 @@
 # *******************************************************************************
 
 require 'openstudio/extension'
-require_relative 'alfalfa/tagger'
-require_relative 'alfalfa/creator'
-require_relative 'alfalfa/version'
-require_relative 'alfalfa/writer'
-require_relative 'alfalfa/serializer'
-require_relative 'alfalfa/helpers'
+require_relative 'metadata/tagger'
+require_relative 'metadata/creator'
+require_relative 'metadata/version'
+require_relative 'metadata/writer'
+require_relative 'metadata/serializer'
+require_relative 'metadata/helpers'
 
 module OpenStudio
-  module Alfalfa
-    class Alfalfa < OpenStudio::Extension::Extension
+  module Metadata
+    class Metadata < OpenStudio::Extension::Extension
       # Override parent class
       def initialize
         super

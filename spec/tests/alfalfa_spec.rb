@@ -39,7 +39,7 @@ require 'openstudio-standards/weather/Weather.Model'
 require 'json'
 require_relative '../spec_helper'
 
-RSpec.describe OpenStudio::Alfalfa do
+RSpec.describe OpenStudio::Metadata do
   before(:all) do
     building_type = 'SmallOffice'
     @dir = "#{Dir.pwd}/spec/outputs/#{building_type}"
@@ -47,26 +47,26 @@ RSpec.describe OpenStudio::Alfalfa do
     check_and_create_prototype(building_type)
   end
   it 'has a version number' do
-    expect(OpenStudio::Alfalfa::VERSION).not_to be nil
+    expect(OpenStudio::Metadata::VERSION).not_to be nil
   end
 
   it 'has a measures directory' do
-    instance = OpenStudio::Alfalfa::Alfalfa.new
+    instance = OpenStudio::Metadata::Metadata.new
     expect(File.exist?(instance.measures_dir)).to be true
   end
 
   it 'exists' do
     model = OpenStudio::Model::Model.load(@osm)
     model = model.get
-    x = OpenStudio::Alfalfa::Tagger.new(model)
-    expect(x.class.to_s == 'OpenStudio::Alfalfa::Tagger').to be true
+    x = OpenStudio::Metadata::Tagger.new(model)
+    expect(x.class.to_s == 'OpenStudio::Metadata::Tagger').to be true
   end
 
   it 'Reads in the small_office and tags it' do
     model = OpenStudio::Model::Model.load(@osm)
     model = model.get
 
-    tagger = OpenStudio::Alfalfa::Tagger.new(model)
+    tagger = OpenStudio::Metadata::Tagger.new(model)
     tagger.tag_weather
     tagger.tag_site
     tagger.tag_stories

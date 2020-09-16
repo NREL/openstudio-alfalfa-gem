@@ -45,7 +45,7 @@ RSpec.describe 'A Prototype SmallOffice' do
 
     @model = OpenStudio::Model::Model.load(@osm)
     @model = @model.get
-    @tagger = OpenStudio::Alfalfa::Tagger.new(@model)
+    @tagger = OpenStudio::Metadata::Tagger.new(@model)
 
     @weather = []
     @sites = []

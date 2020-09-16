@@ -8,11 +8,11 @@ require 'openstudio'
 require_relative 'helpers'
 
 module OpenStudio
-  module Alfalfa
+  module Metadata
     class Creator
       attr_accessor :entities, :model
       attr_reader :mappings, :templates, :haystack_repo, :brick_repo, :phiot_vocab, :brick_vocab, :metadata_type
-      include OpenStudio::Alfalfa::Helpers
+      include OpenStudio::Metadata::Helpers
       ##
       # @param [String] path_to_model
       def initialize(path_to_model)

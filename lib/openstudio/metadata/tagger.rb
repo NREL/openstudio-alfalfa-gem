@@ -1,7 +1,7 @@
 require 'json'
 
 module OpenStudio
-  module Alfalfa
+  module Metadata
     class Tagger
       attr_reader :building, :wf, :haystack_json
 

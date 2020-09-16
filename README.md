@@ -7,7 +7,7 @@ Extrapolation from the [Haystack measure](https://github.com/NREL/alfalfa/tree/d
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'openstudio-alfalfa'
+gem 'openstudio-metadata'
 ```
 
 And then execute:

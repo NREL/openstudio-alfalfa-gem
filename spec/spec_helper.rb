@@ -36,7 +36,7 @@
 require 'bundler/setup'
 require 'openstudio'
 require 'openstudio-standards'
-require 'openstudio/alfalfa'
+require 'openstudio/metadata'
 
 RSpec.configure do |config|
   # Enable flags like --only-failures and --next-failure
@@ -93,7 +93,7 @@ RSpec.configure do |config|
     @dir = "#{Dir.pwd}/spec/outputs/#{building_type}"
     @osm = @dir + '/SR1/in.osm'
 
-    @creator = OpenStudio::Alfalfa::Creator.new(@osm)
+    @creator = OpenStudio::Metadata::Creator.new(@osm)
     @creator.read_templates_and_mappings
     @creator.read_metadata
     @creator.apply_mappings(metadata_type)

@@ -24,7 +24,7 @@
 ########################################################################################################################
 
 require 'json'
-require_relative 'resources/openstudio-alfalfa-gem/lib/openstudio/alfalfa'
+require_relative 'resources/openstudio-metadata-gem/lib/openstudio/metadata'
 
 # start the measure
 class Haystack < OpenStudio::Ruleset::ModelUserScript
@@ -69,7 +69,7 @@ class Haystack < OpenStudio::Ruleset::ModelUserScript
     runner.registerInfo("local_test = #{local_test}")
 
     # initialize tagger
-    tagger = OpenStudio::Alfalfa::Tagger.new(model)
+    tagger = OpenStudio::Metadata::Tagger.new(model)
 
     # Global Vars
     report_freq = 'timestep'

@@ -36,14 +36,14 @@
 require 'spec_helper'
 require_relative '../spec_helper'
 
-RSpec.describe 'OpenStudio::Alfalfa::Creator Haystack and Brick SmallOffice spec' do
+RSpec.describe 'OpenStudio::Metadata::Creator Haystack and Brick SmallOffice spec' do
   before(:all) do
     building_type = 'SmallOffice'
     @dir = "#{Dir.pwd}/spec/outputs/#{building_type}"
     @osm = @dir + '/SR1/in.osm'
     check_and_create_prototype(building_type)
 
-    @creator = OpenStudio::Alfalfa::Creator.new(@osm)
+    @creator = OpenStudio::Metadata::Creator.new(@osm)
   end
 
   it 'Should read in templates and mappings' do
@@ -139,14 +139,14 @@ RSpec.describe 'OpenStudio::Alfalfa::Creator Haystack and Brick SmallOffice spec
   end
 end
 
-RSpec.describe 'OpenStudio::Alfalfa::Creator Haystack and Brick MediumOffice spec' do
+RSpec.describe 'OpenStudio::Metadata::Creator Haystack and Brick MediumOffice spec' do
   before(:all) do
     building_type = 'MediumOffice'
     @dir = "#{Dir.pwd}/spec/outputs/#{building_type}"
     @osm = @dir + '/SR1/in.osm'
     check_and_create_prototype(building_type)
 
-    @creator = OpenStudio::Alfalfa::Creator.new(@osm)
+    @creator = OpenStudio::Metadata::Creator.new(@osm)
     @creator.read_templates_and_mappings
     @creator.read_metadata
   end

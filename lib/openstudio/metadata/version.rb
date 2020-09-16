@@ -34,7 +34,7 @@
 # *******************************************************************************
 
 module OpenStudio
-  module Alfalfa
+  module Metadata
     VERSION = '0.0.1'.freeze
   end
 end

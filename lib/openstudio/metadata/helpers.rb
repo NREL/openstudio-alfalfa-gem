@@ -1,5 +1,5 @@
 module OpenStudio
-  module Alfalfa
+  module Metadata
     module Helpers
       ##
       # Format with no spaces or '-' (can be used as EMS var name)
