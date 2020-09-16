@@ -47,45 +47,31 @@ RSpec.describe 'Tests a successful simulation of small office' do
   end
 
   it 'SmallOffice can run an OSW' do
+    file = 'in.osm'
+    osm_dir = File.join(@file_dir, 'run')
+    if !File.exist?(osm_dir)
+      FileUtils.mkdir_p(osm_dir)
+    end
+
+    @osm_path = File.join(@file_dir, file)
+    FileUtils.cp("#{@file_dir}/in.osm", osm_dir)
+
+    workflow = OpenStudio::WorkflowJSON.new
+    workflow.setSeedFile(@osm_path)
+    workflow.setWeatherFile(File.join(@file_dir, 'in.epw'))
+
+    osw_path = @osm_path.gsub('.osm', '.osw')
+    workflow.saveAs(File.absolute_path(osw_path.to_s))
+
     extension = OpenStudio::Extension::Extension.new(@file_dir)
-    runner_options = {run_simulations: true}
+    runner_options = { run_simulations: true }
     runner = OpenStudio::Extension::Runner.new(extension.root_dir, nil, runner_options)
-    expect(File.exist?(@osw)).to be true
-    in_osw = {}
-    file_paths = {"file_paths": [@file_dir]}
-    File.open(@osw, 'r') do |file|
-      in_osw = JSON.parse(file.read, symbolize_names: true)
-    end
-    unless in_osw.key?("file_paths")
-      File.open(@osw, 'w') do |file|
-        file.write(JSON.pretty_generate(in_osw.merge(file_paths)))
-      end
-    end
-    expect(in_osw[:seed_file]).to eq('in.osm')
-    expect(in_osw[:weather_file]).to eq('in.epw')
+    result = runner.run_osw(osw_path, osm_dir)
 
-    run_dir = @dir + '/SR1/run/'
-    run_osw_path = File.join(run_dir, 'in.osw')
-    out_osw_path = File.join(run_dir, 'out.osw')
-    failed_job_path = File.join(run_dir, 'failed.job')
-
-    if File.exist?(run_dir)
-      FileUtils.rm_rf(run_dir)
-    end
-    expect(File.exist?(run_dir)).to be false
-    expect(File.exist?(run_osw_path)).to be false
-    expect(File.exist?(failed_job_path)).to be false
-
-    FileUtils.mkdir_p(run_dir)
-    expect(File.exist?(run_dir)).to be true
-
-    result = runner.run_osw(in_osw, run_dir)
     expect(result).to be true
 
-    expect(File.exist?(run_osw_path)).to be true
-    expect(File.exist?(out_osw_path)).to be true
+    failed_job_path = File.join(osm_dir, 'failed.job')
     expect(File.exist?(failed_job_path)).to be false
-
   end
 end
 
@@ -99,45 +85,30 @@ RSpec.describe 'Tests a successful simulation of medium office' do
   end
 
   it 'MediumOffice can run an OSW' do
+    file = 'in.osm'
+    osm_dir = File.join(@file_dir, 'run')
+    if !File.exist?(osm_dir)
+      FileUtils.mkdir_p(osm_dir)
+    end
+    @osm_path = File.join(@file_dir, file)
+    FileUtils.cp("#{@file_dir}/in.osm", osm_dir)
+
+    workflow = OpenStudio::WorkflowJSON.new
+    workflow.setSeedFile(@osm_path)
+    workflow.setWeatherFile(File.join(@file_dir, 'in.epw'))
+
+    osw_path = @osm_path.gsub('.osm', '.osw')
+    workflow.saveAs(File.absolute_path(osw_path.to_s))
+
     extension = OpenStudio::Extension::Extension.new(@file_dir)
-    runner_options = {run_simulations: true}
+    runner_options = { run_simulations: true }
     runner = OpenStudio::Extension::Runner.new(extension.root_dir, nil, runner_options)
-    expect(File.exist?(@osw)).to be true
-    in_osw = {}
-    file_paths = {"file_paths": [@file_dir]}
-    File.open(@osw, 'r') do |file|
-      in_osw = JSON.parse(file.read, symbolize_names: true)
-    end
-    unless in_osw.key?("file_paths")
-      File.open(@osw, 'w') do |file|
-        file.write(JSON.pretty_generate(in_osw.merge(file_paths)))
-      end
-    end
-    expect(in_osw[:seed_file]).to eq('in.osm')
-    expect(in_osw[:weather_file]).to eq('in.epw')
+    result = runner.run_osw(osw_path, osm_dir)
 
-    run_dir = @dir + '/SR1/run/'
-    run_osw_path = File.join(run_dir, 'in.osw')
-    out_osw_path = File.join(run_dir, 'out.osw')
-    failed_job_path = File.join(run_dir, 'failed.job')
-
-    if File.exist?(run_dir)
-      FileUtils.rm_rf(run_dir)
-    end
-    expect(File.exist?(run_dir)).to be false
-    expect(File.exist?(run_osw_path)).to be false
-    expect(File.exist?(failed_job_path)).to be false
-
-    FileUtils.mkdir_p(run_dir)
-    expect(File.exist?(run_dir)).to be true
-
-    result = runner.run_osw(in_osw, run_dir)
     expect(result).to be true
 
-    expect(File.exist?(run_osw_path)).to be true
-    expect(File.exist?(out_osw_path)).to be true
+    failed_job_path = File.join(osm_dir, 'failed.job')
     expect(File.exist?(failed_job_path)).to be false
-
   end
 end
 
@@ -151,44 +122,30 @@ RSpec.describe 'Tests a successful simulation of retail standalone' do
   end
 
   it 'RetailStandalone can run an OSW' do
+    file = 'in.osm'
+    osm_dir = File.join(@file_dir, 'run')
+    if !File.exist?(osm_dir)
+      FileUtils.mkdir_p(osm_dir)
+    end
+
+    @osm_path = File.join(@file_dir, file)
+    FileUtils.cp("#{@file_dir}/in.osm", osm_dir)
+
+    workflow = OpenStudio::WorkflowJSON.new
+    workflow.setSeedFile(@osm_path)
+    workflow.setWeatherFile(File.join(@file_dir, 'in.epw'))
+
+    osw_path = @osm_path.gsub('.osm', '.osw')
+    workflow.saveAs(File.absolute_path(osw_path.to_s))
+
     extension = OpenStudio::Extension::Extension.new(@file_dir)
-    runner_options = {run_simulations: true}
+    runner_options = { run_simulations: true }
     runner = OpenStudio::Extension::Runner.new(extension.root_dir, nil, runner_options)
-    expect(File.exist?(@osw)).to be true
-    in_osw = {}
-    file_paths = {"file_paths": [@file_dir]}
-    File.open(@osw, 'r') do |file|
-      in_osw = JSON.parse(file.read, symbolize_names: true)
-    end
-    unless in_osw.key?("file_paths")
-      File.open(@osw, 'w') do |file|
-        file.write(JSON.pretty_generate(in_osw.merge(file_paths)))
-      end
-    end
-    expect(in_osw[:seed_file]).to eq('in.osm')
-    expect(in_osw[:weather_file]).to eq('in.epw')
+    result = runner.run_osw(osw_path, osm_dir)
 
-    run_dir = @dir + '/SR1/run/'
-    run_osw_path = File.join(run_dir, 'in.osw')
-    out_osw_path = File.join(run_dir, 'out.osw')
-    failed_job_path = File.join(run_dir, 'failed.job')
-
-    if File.exist?(run_dir)
-      FileUtils.rm_rf(run_dir)
-    end
-    expect(File.exist?(run_dir)).to be false
-    expect(File.exist?(run_osw_path)).to be false
-    expect(File.exist?(failed_job_path)).to be false
-
-    FileUtils.mkdir_p(run_dir)
-    expect(File.exist?(run_dir)).to be true
-
-    result = runner.run_osw(in_osw, run_dir)
     expect(result).to be true
 
-    expect(File.exist?(run_osw_path)).to be true
-    expect(File.exist?(out_osw_path)).to be true
+    failed_job_path = File.join(osm_dir, 'failed.job')
     expect(File.exist?(failed_job_path)).to be false
-
   end
 end
