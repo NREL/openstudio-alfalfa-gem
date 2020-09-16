@@ -33,8 +33,22 @@
 # OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 # *******************************************************************************
 
+require 'openstudio/extension'
+require_relative 'metadata/creator'
+require_relative 'metadata/version'
+require_relative 'metadata/writer'
+require_relative 'metadata/serializer'
+require_relative 'metadata/helpers'
+
 module OpenStudio
-  module Alfalfa
-    VERSION = '0.0.1'.freeze
+  module Metadata
+    class Metadata < OpenStudio::Extension::Extension
+      # Override parent class
+      def initialize
+        super
+
+        @root_dir = File.absolute_path(File.join(File.dirname(__FILE__), '..', '..'))
+      end
+    end
   end
 end

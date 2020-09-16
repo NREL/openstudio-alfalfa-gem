@@ -1,11 +1,11 @@
 
 lib = File.expand_path('lib', __dir__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require 'openstudio/alfalfa/version'
+require 'openstudio/metadata/version'
 
 Gem::Specification.new do |spec|
-  spec.name          = 'openstudio-alfalfa'
-  spec.version       = OpenStudio::Alfalfa::VERSION
+  spec.name          = 'openstudio-metadata'
+  spec.version       = OpenStudio::Metadata::VERSION
   spec.authors       = ['Austin Viveiros']
   spec.email         = ['']
 
