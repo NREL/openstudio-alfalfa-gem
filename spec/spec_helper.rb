@@ -99,4 +99,30 @@ RSpec.configure do |config|
     @creator.apply_mappings(metadata_type)
     return @creator
   end
+
+  def run_osw(file_dir)
+    file = 'in.osm'
+    osm_dir = File.join(file_dir, 'run')
+    if !File.exist?(osm_dir)
+      FileUtils.mkdir_p(osm_dir)
+    end
+    osm_path = File.join(file_dir, file)
+    FileUtils.cp("#{file_dir}/in.osm", osm_dir)
+
+    workflow = OpenStudio::WorkflowJSON.new
+    workflow.setSeedFile(osm_path)
+    workflow.setWeatherFile(File.join(file_dir, 'in.epw'))
+
+    osw_path = osm_path.gsub('.osm', '.osw')
+    workflow.saveAs(File.absolute_path(osw_path.to_s))
+
+    extension = OpenStudio::Extension::Extension.new(file_dir)
+    runner_options = { run_simulations: true }
+    runner = OpenStudio::Extension::Runner.new(extension.root_dir, nil, runner_options)
+    result = runner.run_osw(osw_path, osm_dir)
+
+    failed_job_path = File.join(osm_dir, 'failed.job')
+    failed = File.exist?(failed_job_path)
+    return result, failed
+  end
 end

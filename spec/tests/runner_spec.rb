@@ -41,37 +41,14 @@ RSpec.describe 'Tests a successful simulation of small office' do
   before(:all) do
     building_type = 'SmallOffice'
     @dir = "#{Dir.pwd}/spec/outputs/#{building_type}"
-    @osw = @dir + '/SR1/in.osw'
     @file_dir = @dir + '/SR1/'
     check_and_create_prototype(building_type)
   end
 
   it 'SmallOffice can run an OSW' do
-    file = 'in.osm'
-    osm_dir = File.join(@file_dir, 'run')
-    if !File.exist?(osm_dir)
-      FileUtils.mkdir_p(osm_dir)
-    end
-
-    @osm_path = File.join(@file_dir, file)
-    FileUtils.cp("#{@file_dir}/in.osm", osm_dir)
-
-    workflow = OpenStudio::WorkflowJSON.new
-    workflow.setSeedFile(@osm_path)
-    workflow.setWeatherFile(File.join(@file_dir, 'in.epw'))
-
-    osw_path = @osm_path.gsub('.osm', '.osw')
-    workflow.saveAs(File.absolute_path(osw_path.to_s))
-
-    extension = OpenStudio::Extension::Extension.new(@file_dir)
-    runner_options = { run_simulations: true }
-    runner = OpenStudio::Extension::Runner.new(extension.root_dir, nil, runner_options)
-    result = runner.run_osw(osw_path, osm_dir)
-
+    result, failed = run_osw(@file_dir)
     expect(result).to be true
-
-    failed_job_path = File.join(osm_dir, 'failed.job')
-    expect(File.exist?(failed_job_path)).to be false
+    expect(failed).to be false
   end
 end
 
@@ -79,36 +56,14 @@ RSpec.describe 'Tests a successful simulation of medium office' do
   before(:all) do
     building_type = 'MediumOffice'
     @dir = "#{Dir.pwd}/spec/outputs/#{building_type}"
-    @osw = @dir + '/SR1/in.osw'
     @file_dir = @dir + '/SR1/'
     check_and_create_prototype(building_type)
   end
 
   it 'MediumOffice can run an OSW' do
-    file = 'in.osm'
-    osm_dir = File.join(@file_dir, 'run')
-    if !File.exist?(osm_dir)
-      FileUtils.mkdir_p(osm_dir)
-    end
-    @osm_path = File.join(@file_dir, file)
-    FileUtils.cp("#{@file_dir}/in.osm", osm_dir)
-
-    workflow = OpenStudio::WorkflowJSON.new
-    workflow.setSeedFile(@osm_path)
-    workflow.setWeatherFile(File.join(@file_dir, 'in.epw'))
-
-    osw_path = @osm_path.gsub('.osm', '.osw')
-    workflow.saveAs(File.absolute_path(osw_path.to_s))
-
-    extension = OpenStudio::Extension::Extension.new(@file_dir)
-    runner_options = { run_simulations: true }
-    runner = OpenStudio::Extension::Runner.new(extension.root_dir, nil, runner_options)
-    result = runner.run_osw(osw_path, osm_dir)
-
+    result, failed = run_osw(@file_dir)
     expect(result).to be true
-
-    failed_job_path = File.join(osm_dir, 'failed.job')
-    expect(File.exist?(failed_job_path)).to be false
+    expect(failed).to be false
   end
 end
 
@@ -116,36 +71,13 @@ RSpec.describe 'Tests a successful simulation of retail standalone' do
   before(:all) do
     building_type = 'RetailStandalone'
     @dir = "#{Dir.pwd}/spec/outputs/#{building_type}"
-    @osw = @dir + '/SR1/in.osw'
     @file_dir = @dir + '/SR1/'
     check_and_create_prototype(building_type)
   end
 
   it 'RetailStandalone can run an OSW' do
-    file = 'in.osm'
-    osm_dir = File.join(@file_dir, 'run')
-    if !File.exist?(osm_dir)
-      FileUtils.mkdir_p(osm_dir)
-    end
-
-    @osm_path = File.join(@file_dir, file)
-    FileUtils.cp("#{@file_dir}/in.osm", osm_dir)
-
-    workflow = OpenStudio::WorkflowJSON.new
-    workflow.setSeedFile(@osm_path)
-    workflow.setWeatherFile(File.join(@file_dir, 'in.epw'))
-
-    osw_path = @osm_path.gsub('.osm', '.osw')
-    workflow.saveAs(File.absolute_path(osw_path.to_s))
-
-    extension = OpenStudio::Extension::Extension.new(@file_dir)
-    runner_options = { run_simulations: true }
-    runner = OpenStudio::Extension::Runner.new(extension.root_dir, nil, runner_options)
-    result = runner.run_osw(osw_path, osm_dir)
-
+    result, failed = run_osw(@file_dir)
     expect(result).to be true
-
-    failed_job_path = File.join(osm_dir, 'failed.job')
-    expect(File.exist?(failed_job_path)).to be false
+    expect(failed).to be false
   end
 end
