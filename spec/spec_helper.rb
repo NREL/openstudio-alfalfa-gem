@@ -125,4 +125,18 @@ RSpec.configure do |config|
     failed = File.exist?(failed_job_path)
     return result, failed
   end
+
+  def set_entities_to_zero(creator)
+    creator.entities = []
+    expect(creator.entities.size).to eq 0
+  end
+
+  def check_creator_entity_keys(creator)
+    puts creator.entities
+    creator.entities.each do |e|
+      expect(e).to have_key('id')
+      expect(e).to have_key('dis')
+      expect(e).to have_key('type')
+    end
+  end
 end
