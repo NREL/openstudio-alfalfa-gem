@@ -181,3 +181,123 @@
     - dewPoint
     - temp
     - sensor
+
+- id: "PH_OAF_Sensor"
+  type: Haystack
+  version: 3.9.9
+  name: OA flow sensor
+  custom: True
+  base_type: point
+  extension: True
+  properties:
+    - outdoor
+    - air
+    - flow
+    - sensor
+
+- id: "PH_DADP_Sensor"
+  type: Haystack
+  version: 3.9.9
+  name: Discharge air dewpoint temp
+  custom: True
+  base_type: point
+  extension: True
+  properties:
+    - discharge
+    - air
+    - dewPoint
+    - temp
+    - sensor
+
+- id: "PH_DAF_Sensor"
+  type: Haystack
+  version: 3.9.9
+  name: Discharge air flow
+  custom: True
+  base_type: point
+  extension: True
+  properties:
+    - discharge
+    - air
+    - flow
+    - sensor
+
+- id: "PH_RADP_Sensor"
+  type: Haystack
+  version: 3.9.9
+  name: Return air dewpoint temp
+  custom: True
+  base_type: point
+  extension: True
+  properties:
+    - return
+    - air
+    - dewPoint
+    - temp
+    - sensor
+
+- id: "PH_RAF_Sensor"
+  type: Haystack
+  version: 3.9.9
+  name: Return air flow
+  custom: True
+  base_type: point
+  extension: True
+  properties:
+    - return
+    - air
+    - flow
+    - sensor
+
+- id: "PH_EAT_Sensor"
+  type: Haystack
+  version: 3.9.9
+  name: Exhaust air temperature sensor
+  custom: True
+  base_type: point
+  extension: True
+  properties:
+    - exhaust
+    - air
+    - temp
+    - sensor
+
+- id: "PH_EARH_Sensor"
+  type: Haystack
+  version: 3.9.9
+  name: Exhaust air humidity sensor
+  custom: True
+  base_type: point
+  extension: True
+  properties:
+    - exhaust
+    - air
+    - humidity
+    - sensor
+
+- id: "PH_EADP_Sensor"
+  type: Haystack
+  version: 3.9.9
+  name: Exhaust air dewpoint temp
+  custom: True
+  base_type: point
+  extension: True
+  properties:
+    - exhaust
+    - air
+    - dewPoint
+    - temp
+    - sensor
+
+- id: "PH_EAF_Sensor"
+  type: Haystack
+  version: 3.9.9
+  name: Exhaust air flow
+  custom: True
+  base_type: point
+  extension: True
+  properties:
+    - exhaust
+    - air
+    - flow
+    - sensor

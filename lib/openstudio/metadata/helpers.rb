@@ -127,8 +127,6 @@ module OpenStudio
         json[:variable] = emsName
         return json
       end
-
-
     end
   end
 end
