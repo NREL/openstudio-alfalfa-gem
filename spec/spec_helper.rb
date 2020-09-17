@@ -92,12 +92,15 @@ RSpec.configure do |config|
     raise "metadata_type must be one of #{types}" unless types.include? metadata_type
     @dir = "#{Dir.pwd}/spec/outputs/#{building_type}"
     @osm = @dir + '/SR1/in.osm'
+    return instantiate_creator_and_apply_mappings(@osm, metadata_type)
+  end
 
-    @creator = OpenStudio::Metadata::Creator.new(@osm)
-    @creator.read_templates_and_mappings
-    @creator.read_metadata
-    @creator.apply_mappings(metadata_type)
-    return @creator
+  def instantiate_creator_and_apply_mappings(osm, metadata_type)
+    creator = OpenStudio::Metadata::Creator.new(osm)
+    creator.read_templates_and_mappings
+    creator.read_metadata
+    creator.apply_mappings(metadata_type)
+    return creator
   end
 
   def run_osw(file_dir)
@@ -124,5 +127,19 @@ RSpec.configure do |config|
     failed_job_path = File.join(osm_dir, 'failed.job')
     failed = File.exist?(failed_job_path)
     return result, failed
+  end
+
+  def set_entities_to_zero(creator)
+    creator.entities = []
+    expect(creator.entities.size).to eq 0
+  end
+
+  def check_creator_entity_keys(creator)
+    puts creator.entities
+    creator.entities.each do |e|
+      expect(e).to have_key('id')
+      expect(e).to have_key('dis')
+      expect(e).to have_key('type')
+    end
   end
 end
