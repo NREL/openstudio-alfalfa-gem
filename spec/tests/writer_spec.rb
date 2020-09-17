@@ -36,7 +36,7 @@
 require 'spec_helper'
 require_relative '../spec_helper'
 
-RSpec.describe 'OpenStudio::Alfalfa::Writer Haystack and Brick SmallOffice spec' do
+RSpec.describe 'OpenStudio::Metadata::Writer Haystack and Brick SmallOffice spec' do
   before(:all) do
     @building_type = 'SmallOffice'
     @dir = "#{Dir.pwd}/spec/outputs/#{@building_type}"
@@ -47,8 +47,8 @@ RSpec.describe 'OpenStudio::Alfalfa::Writer Haystack and Brick SmallOffice spec'
     @creator_haystack = setup_creator('Haystack', @building_type)
     @creator_brick = setup_creator('Brick', @building_type)
 
-    @writer_haystack = OpenStudio::Alfalfa::Writer.new(creator: @creator_haystack)
-    @writer_brick = OpenStudio::Alfalfa::Writer.new(creator: @creator_brick)
+    @writer_haystack = OpenStudio::Metadata::Writer.new(creator: @creator_haystack)
+    @writer_brick = OpenStudio::Metadata::Writer.new(creator: @creator_brick)
   end
 
   it 'Should be able to write a Brick graph to a turtle file' do
@@ -87,7 +87,7 @@ RSpec.describe 'OpenStudio::Alfalfa::Writer Haystack and Brick SmallOffice spec'
   end
 end
 
-RSpec.describe 'OpenStudio::Alfalfa::Writer Haystack and Brick MediumOffice spec' do
+RSpec.describe 'OpenStudio::Metadata::Writer Haystack and Brick MediumOffice spec' do
   before(:all) do
     @building_type = 'MediumOffice'
     @dir = "#{Dir.pwd}/spec/outputs/#{@building_type}"
@@ -98,8 +98,8 @@ RSpec.describe 'OpenStudio::Alfalfa::Writer Haystack and Brick MediumOffice spec
     @creator_haystack = setup_creator('Haystack', @building_type)
     @creator_brick = setup_creator('Brick', @building_type)
 
-    @writer_haystack = OpenStudio::Alfalfa::Writer.new(creator: @creator_haystack)
-    @writer_brick = OpenStudio::Alfalfa::Writer.new(creator: @creator_brick)
+    @writer_haystack = OpenStudio::Metadata::Writer.new(creator: @creator_haystack)
+    @writer_brick = OpenStudio::Metadata::Writer.new(creator: @creator_brick)
   end
 
   it 'Should be able to write a Brick graph to a turtle file' do
@@ -138,7 +138,7 @@ RSpec.describe 'OpenStudio::Alfalfa::Writer Haystack and Brick MediumOffice spec
   end
 end
 
-RSpec.describe 'OpenStudio::Alfalfa::Writer Haystack and Brick RetailStandalone spec' do
+RSpec.describe 'OpenStudio::Metadata::Writer Haystack and Brick RetailStandalone spec' do
   before(:all) do
     @building_type = 'RetailStandalone'
     @dir = "#{Dir.pwd}/spec/outputs/#{@building_type}"
@@ -149,8 +149,8 @@ RSpec.describe 'OpenStudio::Alfalfa::Writer Haystack and Brick RetailStandalone 
     @creator_haystack = setup_creator('Haystack', @building_type)
     @creator_brick = setup_creator('Brick', @building_type)
 
-    @writer_haystack = OpenStudio::Alfalfa::Writer.new(creator: @creator_haystack)
-    @writer_brick = OpenStudio::Alfalfa::Writer.new(creator: @creator_brick)
+    @writer_haystack = OpenStudio::Metadata::Writer.new(creator: @creator_haystack)
+    @writer_brick = OpenStudio::Metadata::Writer.new(creator: @creator_brick)
   end
 
   it 'Should be able to write a Brick graph to a turtle file' do

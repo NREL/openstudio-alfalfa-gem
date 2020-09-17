@@ -3,7 +3,7 @@ require 'linkeddata'
 require 'sparql/client'
 
 module OpenStudio
-  module Alfalfa
+  module Metadata
     class BrickGraph
       attr_reader :g
 

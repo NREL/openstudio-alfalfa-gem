@@ -8,8 +8,8 @@
 #
 ## Load in the rake tasks from the base openstudio-extension gem
 require 'openstudio/extension/rake_task'
-# require 'openstudio/alfalfa'
+# require 'openstudio/metadata'
 # os_extension = OpenStudio::Extension::RakeTask.new
-# os_extension.set_extension_class(OpenStudio::Alfalfa::Alfalfa)
+# os_extension.set_extension_class(OpenStudio::Metadata::Metadata)
 #
 # task default: :spec

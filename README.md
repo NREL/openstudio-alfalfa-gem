@@ -1,13 +1,13 @@
-# Openstudio Alfalfa Gem
+# Openstudio Metadata Gem
 
-Extrapolation from the [Haystack measure](https://github.com/NREL/alfalfa/tree/develop/worker/workflow/measures/haystack) written for alfalfa
+This gem produces semantic data representations for OpenStudio models
 
 ## Installation
 
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'openstudio-alfalfa'
+gem 'openstudio-metadata'
 ```
 
 And then execute:
@@ -16,11 +16,11 @@ And then execute:
 
 Or install it yourself as:
 
-    $ gem install 'openstudio-alfalfa'
+    $ gem install 'openstudio-metadata'
 
 ## Note
 
-This Gem requires OpenStudio@3.0 or greater 
+This Gem requires OpenStudio@3.0 or greater
 
 ## TODO
 
@@ -31,14 +31,15 @@ This Gem requires OpenStudio@3.0 or greater
 # Releasing
 
 * Update change log
-* Update version in `/lib/openstudio/openstudio-alfalfa/version.rb`
+* Update version in `/lib/openstudio/openstudio-metadata/version.rb`
 * Merge down to master
 * Release via github
 * run `rake release` from master
 
 # Developing
 - Create branch
-- Work on feature
+- Work on feature, add tests
+- Make sure tests are passing: `bundle exec rspec`
 - Add commits
 - Run `bundle exec rake rubocop:auto_correct`
 - Commit and push
