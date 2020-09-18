@@ -35,7 +35,10 @@
 require 'rexml/document'
 module OpenStudio
   module Metadata
-    module BCVTBControlsSetup
+    class BCVTBControlsSetup
+
+      ##
+      # @param [OpenStudio::Model::Model] model
       def initialize(model)
         @model = model
         @output_variables = @model.getOutputVariables.sort_by{ |m| [ m.keyValue.to_s, m.name.to_s.downcase]}
