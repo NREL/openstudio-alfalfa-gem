@@ -45,7 +45,7 @@ module OpenStudio
   module Metadata
     ##
     # Class to map OpenStudio models to haystack and brick
-    # @example Instantiate creator with model 
+    # @example Instantiate creator with model
     #   path_to_model = "path/to/model.osm"
     #   creator = OpenStudio::Alfalfa::Creator.new(path_to_model)
     class Creator
@@ -71,6 +71,47 @@ module OpenStudio
         @files_path = File.join(File.dirname(__FILE__), '../../files')
         @brick_version = nil
         @haystack_version = nil
+      end
+
+      ##
+      # Add nodes defined in mapping document as entities
+      ##
+      # @param [OpenStudio parent object] obj
+      # @param [Hash] nodes
+      def add_nodes(obj, nodes)
+        if obj.to_ThermalZone.is_initialized
+          if !obj.airLoopHVAC.is_initialized && obj.zoneConditioningEquipmentListName.empty?
+            return
+          end
+        end
+        relationship_to_parent = nodes['relationship_to_parent']
+        nodes.each do |node_method, node_properties|
+          next unless node_method != 'relationship_to_parent'
+          found_node = obj.send(node_method)
+          found_node = found_node.get unless found_node.is_a?(OpenStudio::Model::Node)
+          next unless found_node.initialized
+          node_properties.each do |system_node_property, map|
+            name = "#{obj.name} #{map['brick']}" # Brick names are prettier / consistent
+            name = create_ems_str(name)
+
+            # Else recreates variable every time
+            output_variable = @model.getOutputVariableByName(name)
+            if output_variable.is_initialized
+              output_variable = output_variable.get
+            else
+              output_variable = create_output_variable_and_ems_sensor(system_node_property: system_node_property, node: found_node, ems_name: name, model: @model)
+            end
+            entity_info = resolve_template(map[@metadata_type.downcase])
+            entity_info = add_node_relationship_to_parent(obj, relationship_to_parent, entity_info) unless relationship_to_parent.nil?
+            add_specific_info(output_variable, entity_info)
+          end
+        end
+      end
+
+      # Necessary when adding additional output / EMS variables
+      # so they get stored in OSM
+      def save_model
+        @model.save(@path_to_model, true)
       end
 
       def read_templates_and_mappings
@@ -235,46 +276,7 @@ module OpenStudio
         return entity_info
       end
 
-      ##
-      # Add nodes defined in mapping document as entities
-      ##
-      # @param [OpenStudio parent object] obj
-      # @param [Hash] nodes
-      def add_nodes(obj, nodes)
-        if obj.to_ThermalZone.is_initialized
-          if !obj.airLoopHVAC.is_initialized && obj.zoneConditioningEquipmentListName.empty?
-            return
-          end
-        end
-        relationship_to_parent = nodes['relationship_to_parent']
-        nodes.each do |node_method, node_properties|
-          next unless node_method != 'relationship_to_parent'
-          found_node = obj.send(node_method)
-          found_node = found_node.get unless found_node.is_a?(OpenStudio::Model::Node)
-          next unless found_node.initialized
-          node_properties.each do |system_node_property, map|
-            name = "#{obj.name} #{map['brick']}" # Brick names are prettier / consistent
-            name = create_ems_str(name)
 
-            # Else recreates variable every time
-            output_variable = @model.getOutputVariableByName(name)
-            if output_variable.is_initialized
-              output_variable = output_variable.get
-            else
-              output_variable = create_output_variable_and_ems_sensor(system_node_property: system_node_property, node: found_node, ems_name: name, model: @model)
-            end
-            entity_info = resolve_template(map[@metadata_type.downcase])
-            entity_info = add_node_relationship_to_parent(obj, relationship_to_parent, entity_info) unless relationship_to_parent.nil?
-            add_specific_info(output_variable, entity_info)
-          end
-        end
-      end
-
-      # Necessary when adding additional output / EMS variables
-      # so they get stored in OSM
-      def save_model
-        @model.save(@path_to_model, true)
-      end
 
       ##
       # @return [Boolean or One of AirLoopHVACUnitary* objects]
