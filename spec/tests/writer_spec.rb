@@ -52,7 +52,6 @@ RSpec.describe 'OpenStudio::Metadata::Writer Haystack and Brick SmallOffice spec
   end
 
   it 'Should be able to write a Brick graph to a turtle file' do
-    @writer_brick.create_output
     n = "#{@building_type}_model.ttl"
     f = File.join(@output_path, n)
     if File.exist?(f)
@@ -75,7 +74,6 @@ RSpec.describe 'OpenStudio::Metadata::Writer Haystack and Brick SmallOffice spec
   end
 
   it 'Should be able to write a Haystack model to a json file' do
-    @writer_haystack.create_output
     n = "#{@building_type}_model.json"
     f = File.join(@output_path, n)
     if File.exist?(f)
@@ -103,7 +101,6 @@ RSpec.describe 'OpenStudio::Metadata::Writer Haystack and Brick MediumOffice spe
   end
 
   it 'Should be able to write a Brick graph to a turtle file' do
-    @writer_brick.create_output
     n = "#{@building_type}_model.ttl"
     f = File.join(@output_path, n)
     if File.exist?(f)
@@ -126,7 +123,6 @@ RSpec.describe 'OpenStudio::Metadata::Writer Haystack and Brick MediumOffice spe
   end
 
   it 'Should be able to write a Haystack model to a json file' do
-    @writer_haystack.create_output
     n = "#{@building_type}_model.json"
     f = File.join(@output_path, n)
     if File.exist?(f)
@@ -154,7 +150,6 @@ RSpec.describe 'OpenStudio::Metadata::Writer Haystack and Brick RetailStandalone
   end
 
   it 'Should be able to write a Brick graph to a turtle file' do
-    @writer_brick.create_output
     n = "#{@building_type}_model.ttl"
     f = File.join(@output_path, n)
     if File.exist?(f)
@@ -177,7 +172,6 @@ RSpec.describe 'OpenStudio::Metadata::Writer Haystack and Brick RetailStandalone
   end
 
   it 'Should be able to write a Haystack model to a json file' do
-    @writer_haystack.create_output
     n = "#{@building_type}_model.json"
     f = File.join(@output_path, n)
     if File.exist?(f)

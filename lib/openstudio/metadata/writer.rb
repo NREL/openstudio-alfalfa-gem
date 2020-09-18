@@ -41,10 +41,18 @@ require 'openstudio'
 
 module OpenStudio
   module Metadata
+    ##
+    # Class to write serialized metadata models to file
+    # @example Write Haystack JSON to file with Writer
+    #   creator = OpenStudio::Metadata::Creator.new(path_to_model)
+    #   creator.apply_mappings('Haystack')
+    #   writer = OpenStudio::Metadata::Writer.new(creator: creator)
+    #   writer.write_output_to_file(output_format: 'json')
     class Writer
-      attr_accessor :brick_graph
-      attr_reader :metadata_type
 
+      ##
+      # Initialize Writer
+      # @param [Creator] creator
       def initialize(creator:)
         @creator = creator
         @files_path = File.join(File.dirname(__FILE__), '../../files')
@@ -57,7 +65,13 @@ module OpenStudio
         raise "metadata_type must be one of #{supported_metadata_types}" unless supported_metadata_types.include? @metadata_type
       end
 
-      def create_output
+      ##
+      # Write metadata model to file
+      #
+      # @param [String] output_format One of: ['json', 'ttl', 'nq']
+      # @param [String] file_path Path to output folder
+      # @param [String] file_name_without_extension output name without extension
+      def write_output_to_file(output_format:, file_path: '.', file_name_without_extension: 'model')
         case @metadata_type
         when 'Brick'
           @brick_graph = BrickGraph.new
@@ -66,9 +80,6 @@ module OpenStudio
           @haystack = Haystack.new
           @haystack = @haystack.create_haystack_from_entities(@creator.entities)
         end
-      end
-
-      def write_output_to_file(output_format:, file_path: '.', file_name_without_extension: 'model')
         @output_format = output_format
 
         supported_haystack_formats = ['json']
