@@ -301,3 +301,48 @@
     - air
     - flow
     - sensor
+
+- id: "PH_Elec_SiteMeter"
+  type: Haystack
+  version: 3.9.9
+  name: Site elec meter
+  custom: True
+  base_type: point
+  extension: True
+  properties:
+    - siteMeter
+
+- id: "PH_Gas_SiteMeter"
+  type: Haystack
+  version: 3.9.9
+  name: Site elec meter
+  custom: True
+  base_type: meter
+  extension: True
+  properties:
+    - naturalGas
+    - siteMeter
+
+- id: "PH_Elec_Power"
+  type: Haystack
+  version: 3.9.9
+  name: Elec power sensor
+  custom: True
+  base_type: point
+  extension: True
+  properties:
+    - elec
+    - power
+    - sensor
+
+- id: "PH_Gas_Energy"
+  type: Haystack
+  version: 3.9.9
+  name: Gas energy sensor
+  custom: True
+  base_type: point
+  extension: True
+  properties:
+    - naturalGas
+    - energy
+    - sensor

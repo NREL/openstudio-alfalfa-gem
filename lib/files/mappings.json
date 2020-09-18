@@ -342,5 +342,58 @@
     "brick": {
       "template": "VAV"
     }
+  },
+  {
+    "openstudio_class": "OS:Output:Meter",
+    "relationships": [
+      {
+        "method_scope": "model",
+        "openstudio_method": ["getBuilding"],
+        "haystack": "siteRef",
+        "brick": "hasLocation"
+      }
+    ],
+    "submeter_relationships": {
+      "haystack": "submeterOf",
+      "brick": "isFedBy"
+    },
+    "point_to_meter_relationship": {
+      "haystack": "equipRef",
+      "brick": "isPointOf"
+    },
+    "meters": {
+      "Electricity:Facility": {
+        "haystack": {
+          "equip_template": "PH_Elec_SiteMeter",
+          "point_template": "PH_Elec_Power"
+        },
+        "brick": {
+          "equip_template": "Building_Electrical_Meter",
+          "point_template": "Electrical_Power_Sensor"
+        },
+        "meters": {
+          "InteriorLights:Electricity:Facility": {
+            "haystack": {
+              "equip_template": "elec-meter",
+              "point_template":"PH_Elec_Power"
+            },
+            "brick": {
+              "equip_template": "Electrical_Meter",
+              "point_template": "Electrical_Power_Sensor"
+            }
+          }
+        }
+      },
+      "Gas:Facility": {
+        "haystack": {
+          "equip_template": "PH_Gas_SiteMeter",
+          "point_template": "PH_Gas_Energy"
+        },
+        "brick": {
+          "equip_template": "Building_Gas_Meter",
+          "point_template": "Energy_Sensor"
+        }
+      }
+    }
   }
 ]

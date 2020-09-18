@@ -145,7 +145,7 @@ class Haystack < OpenStudio::Ruleset::ModelUserScript
         user_defined_sensor_point = tagger.tag_sensor(outvar.handle, outvar.nameString, building.handle)
         haystack_json << user_defined_sensor_point
 
-        uuid = tagger.create_ref(outvar.handle)
+        uuid = tagger.haystack_format_as_ref(outvar.handle)
         var_map_json = {}
         var_map_json[:id] = uuid
         var_map_json[:source] = 'EnergyPlus'
@@ -165,7 +165,7 @@ class Haystack < OpenStudio::Ruleset::ModelUserScript
     global_vars = model.getEnergyManagementSystemGlobalVariables
     global_vars.each do |globalvar|
       if globalvar.exportToBCVTB
-        uuid = tagger.create_ref(globalvar.handle)
+        uuid = tagger.haystack_format_as_ref(globalvar.handle)
         if !globalvar.nameString.end_with?('_Enable')
           user_defined_writable_point = tagger.tag_writable_point(globalvar.nameString, building.handle, uuid)
           haystack_json << user_defined_writable_point
@@ -419,7 +419,7 @@ class Haystack < OpenStudio::Ruleset::ModelUserScript
               ahu_json[:chilledWaterCool] = 'm:'
               if cc.get.plantLoop.is_initialized
                 pl = cc.get.plantLoop.get
-                ahu_json[:chilledWaterPlantRef] = tagger.create_ref(pl.handle)
+                ahu_json[:chilledWaterPlantRef] = tagger.haystack_format_as_ref(pl.handle)
               end
               if cc.get.to_CoilCoolingWaterToAirHeatPumpEquationFit.is_initialized
                 ahu_json[:heatPump] = 'm:'
@@ -442,7 +442,7 @@ class Haystack < OpenStudio::Ruleset::ModelUserScript
               ahu_json[:hotWaterHeat] = 'm:'
               if hc.get.plantLoop.is_initialized
                 pl = hc.get.plantLoop.get
-                ahu_json[:hotWaterPlantRef] = tagger.create_ref(pl.handle)
+                ahu_json[:hotWaterPlantRef] = tagger.haystack_format_as_ref(pl.handle)
               end
               if hc.get.to_CoilHeatingWaterToAirHeatPumpEquationFit.is_initialized
                 ahu_json[:heatPump] = 'm:'
@@ -471,7 +471,7 @@ class Haystack < OpenStudio::Ruleset::ModelUserScript
           ahu_json[:chilledWaterCool] = 'm:'
           if sc.plantLoop.is_initialized
             pl = sc.plantLoop.get
-            ahu_json[:chilledWaterPlantRef] = tagger.create_ref(pl.handle)
+            ahu_json[:chilledWaterPlantRef] = tagger.haystack_format_as_ref(pl.handle)
           end
         elsif sc.to_CoilHeatingWater.is_initialized
           sc = sc.to_CoilHeatingWater.get
@@ -479,7 +479,7 @@ class Haystack < OpenStudio::Ruleset::ModelUserScript
           ahu_json[:hotWaterHeat] = 'm:'
           if sc.plantLoop.is_initialized
             pl = sc.plantLoop.get
-            ahu_json[:hotWaterPlantRef] = tagger.create_ref(pl.handle)
+            ahu_json[:hotWaterPlantRef] = tagger.haystack_format_as_ref(pl.handle)
           end
         elsif sc.to_CoilHeatingElectric.is_initialized
           sc = sc.to_CoilHeatingElectric.get
@@ -510,17 +510,17 @@ class Haystack < OpenStudio::Ruleset::ModelUserScript
               zone_json_heating[:heating] = 'm:'
             end
           end
-          zone_json_temp[:area] = tagger.create_num(tz.floorArea)
+          zone_json_temp[:area] = tagger.haystack_format_as_num(tz.floorArea)
           if tz.volume.is_initialized
-            zone_json_temp[:volume] = tagger.create_num(tz.volume)
+            zone_json_temp[:volume] = tagger.haystack_format_as_num(tz.volume)
           else
-            zone_json_temp[:volume] = tagger.create_num(0)
+            zone_json_temp[:volume] = tagger.haystack_format_as_num(0)
           end
-          zone_json_humidity[:area] = tagger.create_num(tz.floorArea)
+          zone_json_humidity[:area] = tagger.haystack_format_as_num(tz.floorArea)
           if tz.volume.is_initialized
-            zone_json_humidity[:volume] = tagger.create_num(tz.volume)
+            zone_json_humidity[:volume] = tagger.haystack_format_as_num(tz.volume)
           else
-            zone_json_humidity[:volume] = tagger.create_num(0)
+            zone_json_humidity[:volume] = tagger.haystack_format_as_num(0)
           end
 
           tz.equipment.each do |equip|
