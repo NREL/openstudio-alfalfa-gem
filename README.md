@@ -63,9 +63,3 @@ This Gem requires OpenStudio@3.0 or greater
 3. Merge down to master
 4. Release via github
 5. run `rake release` from master
-
-## TODO
-
-- [ ] Remove measures from OpenStudio-Measures to standardize on this location
-- [ ] Update measures to code standards
-- [ ] Review and fill out the gemspec file with author and gem description
