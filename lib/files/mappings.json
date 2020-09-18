@@ -41,7 +41,6 @@
         "System Node Dewpoint Temperature": {
           "brick": "Outside_Air_Dewpoint_Sensor",
           "haystack":"PH_OADP_Sensor"
-
         },
         "System Node Mass Flow Rate": {
           "brick": "Outside_Air_Flow_Sensor",
@@ -56,6 +55,10 @@
         "System Node Relative Humidity": {
           "brick": "Air_Humidity_Sensor",
           "haystack": "PH_MARH_Sensor"
+        },
+        "System Node Mass Flow Rate": {
+          "brick": "Air_Flow_Sensor",
+          "haystack":"PH_MAF_Sensor"
         }
       },
       "supplyOutletNode": {
@@ -67,15 +70,9 @@
           "brick": "Discharge_Air_Humidity_Sensor",
           "haystack": "PH_DARH_Sensor"
         },
-        "System Node Dewpoint Temperature": {
-          "brick": "Dewpoint_Sensor",
-          "haystack":"PH_DADP_Sensor"
-
-        },
         "System Node Mass Flow Rate": {
           "brick": "Discharge_Air_Flow_Sensor",
           "haystack":"PH_DAF_Sensor"
-
         }
       },
       "supplyInletNode": {
@@ -86,10 +83,6 @@
         "System Node Relative Humidity": {
           "brick": "Return_Air_Humidity_Sensor",
           "haystack": "PH_RARH_Sensor"
-        },
-        "System Node Dewpoint Temperature": {
-          "brick": "Return_Air_Dewpoint_Sensor",
-          "haystack":"PH_RADP_Sensor"
         },
         "System Node Mass Flow Rate": {
           "brick": "Return_Air_Flow_Sensor",
@@ -104,10 +97,6 @@
         "System Node Relative Humidity": {
           "brick": "Exhaust_Air_Humidity_Sensor",
           "haystack": "PH_EARH_Sensor"
-        },
-        "System Node Dewpoint Temperature": {
-          "brick": "Dewpoint_Sensor",
-          "haystack":"PH_EADP_Sensor"
         },
         "System Node Mass Flow Rate": {
           "brick": "Exhaust_Air_Flow_Sensor",
