@@ -49,7 +49,7 @@ module OpenStudio
       # Returns new instance of BrickGraph
       #
       # == Parameters:
-      # building_namespace:
+      # building_namespace::
       #   building namespace, used for `bldg` prefix in ttl
       def initialize(building_namespace: 'http://example.com/mybuilding#')
         @brick = RDF::Vocabulary.new('https://brickschema.org/schema/1.1/Brick#')
@@ -60,12 +60,13 @@ module OpenStudio
           brick: @brick,
           bldg: @bldg
         }
+        @g = nil
       end
 
       # Creates graph from list of entities
       #
       # == Parameters:
-      # entities:
+      # entities::
       #   list of entities from [Creator]
       #
       def create_graph_from_entities(entities)
@@ -101,7 +102,7 @@ module OpenStudio
       # Creates Haystack JSON from list of entities
       #
       # == Parameters:
-      # entities:
+      # entities::
       #   list of entities from [Creator]
       #
       # == Returns:
