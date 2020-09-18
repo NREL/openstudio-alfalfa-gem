@@ -108,7 +108,14 @@ module OpenStudio
       def create_base_info_hash(openstudio_object)
         temp = {}
         temp['id'] = OpenStudio.removeBraces(openstudio_object.handle)
-        temp['dis'] = openstudio_object.name.get
+        temp['dis'] = openstudio_object.name.instance_of?(String) ? openstudio_object.name : openstudio_object.name.get
+        return temp
+      end
+
+      def create_meter_base_info_hash(meter_name)
+        temp = {}
+        temp['id'] = "#{OpenStudio.removeBraces(OpenStudio.createUUID)}"
+        temp['dis'] = meter_name
         return temp
       end
 
@@ -130,7 +137,7 @@ module OpenStudio
         term_tags = term.split('-').to_set
         difference = necessary_tags.difference(term_tags)
         difference = difference.to_a
-        to_return = { 'type' => term }
+        to_return = {'type' => term}
         if !difference.empty?
           to_return = to_return.merge('add_tags' => difference)
         end
@@ -156,7 +163,7 @@ module OpenStudio
           if @metadata_type == 'Haystack'
             return resolve_mandatory_tags(template)
           else
-            return { 'type' => template }
+            return {'type' => template}
           end
         else
           template = find_template(template)
@@ -165,7 +172,7 @@ module OpenStudio
             if @metadata_type == 'Haystack'
               to_return = resolve_mandatory_tags(type)
             else
-              to_return = { 'type' => type }
+              to_return = {'type' => type}
             end
             if template.key? 'properties'
               if to_return.key? 'add_tags'
@@ -176,7 +183,7 @@ module OpenStudio
             end
             return to_return
           else
-            return { 'type' => nil }
+            return {'type' => nil}
           end
         end
       end
@@ -201,6 +208,12 @@ module OpenStudio
             info['relationships'][relationship[@metadata_type.downcase]] = OpenStudio.removeBraces(ref.get.handle)
           end
         end
+      end
+
+      def add_meter_relationship_to_parent(parent_id, relationship, entity_info)
+        entity_info['relationships'] = {} unless entity_info['relationships']
+        entity_info['relationships'][relationship[@metadata_type.downcase]] = parent_id
+        return entity_info
       end
 
       def add_node_relationship_to_parent(parent_obj, relationship, entity_info)
@@ -300,6 +313,57 @@ module OpenStudio
         end
       end
 
+      ##
+      #
+      def apply_meter_mappings(meters, relationships, submeter_relationship, point_to_meter_relationship, parent_meter_id = nil)
+        meters.each do |k, v|
+          # next unless !meters.key? == 'meters'
+
+          # A new 'meter' entity is created, since no meter as an equipment exists in OpenStudio.
+          meter_equip_entity_info = resolve_template(v[@metadata_type.downcase]['equip_template'])
+          temp_info = create_meter_base_info_hash(k)
+          meter_equip_entity_info = meter_equip_entity_info.merge(temp_info)
+          obj_info = meter_equip_entity_info.deep_dup
+
+          # Can pass nil since only relationship should have method_scope = 'model'
+          # relationships will always stay the same
+          add_relationship_info(nil, relationships, obj_info)
+          if !parent_meter_id.nil?
+            obj_info['relationships'] = {} unless obj_info['relationships']
+            obj_info['relationships'][submeter_relationship[@metadata_type.downcase]] = parent_meter_id
+          end
+
+          @entities << obj_info
+
+          # Add actual point variable
+          meter_variable = @model.getOutputMeterByName(k)
+          if meter_variable.is_initialized
+            meter_variable = meter_variable.get
+          else
+            meter_variable = create_output_meter(@model, k)
+          end
+          point_info = resolve_template(v[@metadata_type.downcase]['point_template'])
+          point_info = add_meter_relationship_to_parent(obj_info['id'], point_to_meter_relationship, point_info)
+          add_specific_info(meter_variable, point_info)
+
+          if v.key? 'meters'
+            apply_meter_mappings(v['meters'], relationships, submeter_relationship, point_to_meter_relationship, obj_info['id'])
+          end
+        end
+      end
+
+
+      ##
+      # Apply mappings for all of the Hash objects in the mappings.json.
+      # Applying a mapping consists of:
+      # 1. Resolving the OpenStudio class to a template type
+      # 2. Iterating through all objects of a certain OpenStudio class and adding metadata to @entities
+      # 3. Adding relationships and nodes
+      #
+      # Note: meter mappings are handled via apply_meter_mappings
+      #
+      # ##
+      # @param [String] metadata_type One of: ['Brick', 'Haystack']
       def apply_mappings(metadata_type)
         types = ['Brick', 'Haystack']
         raise "metadata_type must be one of #{types}" unless types.include? metadata_type
@@ -314,20 +378,26 @@ module OpenStudio
 
         # Let mappings run through once to 'create' entities
         @mappings.each do |mapping|
-          cls_info = resolve_template_from_mapping(mapping)
-          cls = mapping['openstudio_class']
-          objs = @model.getObjectsByType(cls)
-          objs.each do |obj|
-            # rescue objects from the clutches of boost
-            conv_meth = 'to_' << cls.gsub(/^OS/, '').gsub(':', '').gsub('_', '')
-            obj = obj.send(conv_meth)
-            break if obj.empty?
-            obj = obj.get
+          if mapping['openstudio_class'] == "OS:Output:Meter"
+            raise "Primary meter mapping must have key: submeter_relationships" unless mapping.key? 'submeter_relationships'
+            apply_meter_mappings(mapping['meters'], mapping['relationships'],
+                                 mapping['submeter_relationships'], mapping['point_to_meter_relationship'])
+          else
+            cls_info = resolve_template_from_mapping(mapping)
+            cls = mapping['openstudio_class']
+            objs = @model.getObjectsByType(cls)
+            objs.each do |obj|
+              # rescue objects from the clutches of boost
+              conv_meth = 'to_' << cls.gsub(/^OS/, '').gsub(':', '').gsub('_', '')
+              obj = obj.send(conv_meth)
+              break if obj.empty?
+              obj = obj.get
 
-            obj_info = cls_info.deep_dup
-            add_relationship_info(obj, mapping['relationships'], obj_info) if mapping.key? 'relationships'
-            add_specific_info(obj, obj_info)
-            add_nodes(obj, mapping['nodes']) if mapping.key? 'nodes'
+              obj_info = cls_info.deep_dup
+              add_relationship_info(obj, mapping['relationships'], obj_info) if mapping.key? 'relationships'
+              add_specific_info(obj, obj_info)
+              add_nodes(obj, mapping['nodes']) if mapping.key? 'nodes'
+            end
           end
         end
 
@@ -349,9 +419,3 @@ module OpenStudio
     end
   end
 end
-
-# https://unmethours.com/question/17616/get-thermal-zone-supply-terminal/
-# tzs = model.getObjectsByType("OS:ThermalZone")
-# tz1 = tzs[0]
-# tz1 = tz1.to_ThermalZone.get
-# tu = tz1.airLoopHVACTerminal

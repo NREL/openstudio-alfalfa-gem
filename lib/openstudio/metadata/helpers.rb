@@ -107,6 +107,13 @@ module OpenStudio
         return output_variable
       end
 
+      def create_output_meter(model, meter_name, reporting_frequency: 'timestep')
+        meter = OpenStudio::Model::OutputMeter.new(model)
+        meter.setName(meter_name)
+        meter.setReportingFrequency(reporting_frequency)
+        return meter
+      end
+
       def create_point_timevars(outvar_time, siteRef)
         # this function will add haystack tag to the time-variables created by user.
         # the time-variables are also written to variables.cfg file to coupling energyplus
