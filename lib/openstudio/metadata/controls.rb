@@ -131,7 +131,6 @@ module OpenStudio
             ems_global_handle = ems_var.handle.to_s
             ems_var.remove
 
-            # Initial value
             ext_int_var = OpenStudio::Model::ExternalInterfaceVariable.new(@model, ems_global_name, 0)
             ext_int_var_handle = ext_int_var.handle.to_s
 

@@ -35,6 +35,7 @@
 module OpenStudio
   module Metadata
     module Helpers
+
       ##
       # Format with no spaces or '-' (can be used as EMS var name)
       ##
@@ -43,28 +44,38 @@ module OpenStudio
         return name.gsub(/[\s-]/, '_').to_s
       end
 
-      def create_uuid(dummyinput)
+      ##
+      # Create a UUID and format as a Haystack ref (ie, "r:xxxxx")
+      ##
+      # @return [String]
+      def haystack_create_uuid
         return "r:#{OpenStudio.removeBraces(OpenStudio.createUUID)}"
       end
 
-      def create_ref(id)
-        # return string formatted for Ref (ie, "r:xxxxx") with uuid of object
-        # return "r:#{id.gsub(/[\s-]/,'_')}"
+      ##
+      # Return string formatted for Ref (ie, "r:xxxxx") with uuid of object
+      ##
+      # @param [OpenStudio::UUID] id
+      # @return [String]
+      def haystack_format_as_ref(id)
         return "r:#{OpenStudio.removeBraces(id)}"
       end
 
-      def create_ref_name(id)
-        # return string formatted for Ref (ie, "r:xxxxx") with uuid of object
-        return "r:#{id.gsub(/[\s-]/, '_')}"
-      end
-
-      def create_str(str)
-        # return string formatted for strings (ie, "s:xxxxx")
+      ##
+      # Return string formatted for strings (ie, "s:xxxxx")
+      ##
+      # @param [] str An object which can be converted to a string
+      # @return [String]
+      def haystack_format_as_str(str)
         return "s:#{str}"
       end
 
-      def create_num(str)
-        # return string formatted for numbers (ie, "n:xxxxx")
+      ##
+      # Return string formatted for numbers (ie, "n:xxxxx")
+      ##
+      # @param [] str An object which can be converted to a string
+      # @return [String]
+      def haystack_format_as_num(str)
         return "n:#{str}"
       end
 
@@ -103,14 +114,14 @@ module OpenStudio
         # the point_json generated here caontains the tags for the tim-variables
         point_json = {}
         # id = outvar_time.keyValue.to_s + outvar_time.name.to_s
-        uuid = create_uuid('')
+        uuid = haystack_create_uuid
         point_json[:id] = uuid
         # point_json[:source] = create_str("EnergyPlus")
         # point_json[:type] = "Output:Variable"
         # point_json[:name] = create_str(outvar_time.name.to_s)
         # point_json[:variable] = create_str(outvar_time.name)
-        point_json[:dis] = create_str(outvar_time.nameString)
-        point_json[:siteRef] = create_ref(siteRef)
+        point_json[:dis] = haystack_format_as_str(outvar_time.nameString)
+        point_json[:siteRef] = haystack_format_as_ref(siteRef)
         point_json[:point] = 'm:'
         point_json[:cur] = 'm:'
         point_json[:curStatus] = 's:disabled'
@@ -134,19 +145,19 @@ module OpenStudio
 
       def create_point_uuid(type, id, siteRef, equipRef, floorRef, where, what, measurement, kind, unit)
         point_json = {}
-        uuid = create_uuid(id)
+        uuid = haystack_create_uuid
         point_json[:id] = uuid
-        point_json[:dis] = create_str(id)
-        point_json[:siteRef] = create_ref(siteRef)
-        point_json[:equipRef] = create_ref(equipRef)
-        point_json[:floorRef] = create_ref(floorRef)
+        point_json[:dis] = haystack_format_as_str(id)
+        point_json[:siteRef] = haystack_format_as_ref(siteRef)
+        point_json[:equipRef] = haystack_format_as_ref(equipRef)
+        point_json[:floorRef] = haystack_format_as_ref(floorRef)
         point_json[:point] = 'm:'
         point_json[type.to_s] = 'm:'
         point_json[measurement.to_s] = 'm:'
         point_json[where.to_s] = 'm:'
         point_json[what.to_s] = 'm:'
-        point_json[:kind] = create_str(kind)
-        point_json[:unit] = create_str(unit)
+        point_json[:kind] = haystack_format_as_str(kind)
+        point_json[:unit] = haystack_format_as_str(unit)
         point_json[:cur] = 'm:'
         point_json[:curStatus] = 's:disabled'
         return point_json, uuid
@@ -154,7 +165,7 @@ module OpenStudio
 
       def create_mapping_output_uuid(emsName, uuid)
         json = {}
-        json[:id] = create_ref(uuid)
+        json[:id] = haystack_format_as_ref(uuid)
         json[:source] = 'Ptolemy'
         json[:name] = ''
         json[:type] = ''
