@@ -90,6 +90,19 @@
     - humidity
     - sensor
 
+- id: "PH_MAF_Sensor"
+  type: Haystack
+  version: 3.9.9
+  name: Mixed air flow sensor
+  custom: True
+  base_type: point
+  extension: True
+  properties:
+    - mixed
+    - air
+    - flow
+    - sensor
+
 - id: "PH_DAT_Sensor"
   type: Haystack
   version: 3.9.9
