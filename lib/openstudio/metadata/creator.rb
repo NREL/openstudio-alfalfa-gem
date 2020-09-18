@@ -115,8 +115,16 @@ module OpenStudio
       def create_meter_base_info_hash(meter_name)
         temp = {}
         temp['id'] = "#{OpenStudio.removeBraces(OpenStudio.createUUID)}"
-        temp['dis'] = meter_name
+        temp['dis'] = "#{meter_name} Meter Equipment"
         return temp
+      end
+
+      def add_meter_specific_info(meter_object, term_info)
+        temp = {}
+        temp['id'] = OpenStudio.removeBraces(meter_object.handle)
+        temp['dis'] = "#{meter_object.name} Sensor"
+        temp = temp.merge(term_info)
+        @entities << temp
       end
 
       def add_specific_info(openstudio_object, term_info)
@@ -344,7 +352,7 @@ module OpenStudio
           end
           point_info = resolve_template(v[@metadata_type.downcase]['point_template'])
           point_info = add_meter_relationship_to_parent(obj_info['id'], point_to_meter_relationship, point_info)
-          add_specific_info(meter_variable, point_info)
+          add_meter_specific_info(meter_variable, point_info)
 
           if v.key? 'meters'
             apply_meter_mappings(v['meters'], relationships, submeter_relationship, point_to_meter_relationship, obj_info['id'])
