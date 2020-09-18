@@ -39,6 +39,7 @@ require_relative 'metadata/version'
 require_relative 'metadata/writer'
 require_relative 'metadata/serializer'
 require_relative 'metadata/helpers'
+require_relative 'metadata/controls'
 
 module OpenStudio
   module Metadata
