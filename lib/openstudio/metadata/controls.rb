@@ -105,6 +105,8 @@ module OpenStudio
       # @param [String] type Depending on the type of ExternalInterface, this is one of: ['variable', 'schedule', 'actuator']
       # @param [String] name Value of the '.name' method called on the ExternalInterface object
       def add_xml_ptolemy(type, name)
+        valid_types = ['variable', 'schedule', 'actuator']
+        raise "type must be one of #{valid_types}" unless valid_types.include? type
         variable = REXML::Element.new "variable"
         variable.attributes["source"] = "Ptolemy"
         energyplus = REXML::Element.new "EnergyPlus"
@@ -117,6 +119,9 @@ module OpenStudio
       # Loops through all EMSGlobalVariables.  If exportToBCVTB, removes the variable from the
       # model and creates a new ExternalInterfaceVariable to replace it.  Handles of the old
       # EMSGlobalVariable and the new ExternalInterfaceVariable are swapped in programs and subroutines.
+      #
+      # Initial values for all are set to 0.
+      #
       # After, the @ext_int_variables attribute is populated.
       ##
       def replace_ems_globals_with_ext_variables
@@ -126,6 +131,7 @@ module OpenStudio
             ems_global_handle = ems_var.handle.to_s
             ems_var.remove
 
+            # Initial value
             ext_int_var = OpenStudio::Model::ExternalInterfaceVariable.new(@model, ems_global_name, 0)
             ext_int_var_handle = ext_int_var.handle.to_s
 
