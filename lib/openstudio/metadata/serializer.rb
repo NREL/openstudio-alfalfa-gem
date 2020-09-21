@@ -64,7 +64,7 @@ module OpenStudio
       ##
       # Creates graph from list of entities
       ##
-      # @param entities [Array<Hash>] list of entities from [Creator]
+      # @param entities [Array<Hash>] list of entities from {Creator.entities}
       def create_from_entities(entities)
         @g = RDF::Repository.new
         entities.each do |entity|
@@ -81,7 +81,8 @@ module OpenStudio
       ##
       # Outputs Brick graph in desired `format`
       ##
-      # @param format [Symbol] A symbol declaring to format to dump the graph as (see https://rubydoc.info/github/ruby-rdf/rdf/RDF/Enumerable#dump-instance_method)
+      # @param format [Symbol] A symbol declaring to format to dump the graph as
+      # @see https://rubydoc.info/github/ruby-rdf/rdf/RDF/Enumerable#dump-instance_method
       ##
       # @return [String] A string representation of the graph in the desired format
       #
@@ -101,7 +102,7 @@ module OpenStudio
       ##
       # Creates Haystack JSON from list of entities
       ##
-      # @param entities [Array<Hash>]  list of entities from [Creator]
+      # @param entities [Array<Hash>]  list of entities from {Creator.entities}
       ##
       # @return [String] Haystack JSON representation of entities
       def create_from_entities(entities)
