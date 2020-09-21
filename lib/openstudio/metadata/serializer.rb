@@ -40,6 +40,7 @@ module OpenStudio
   module Metadata
     ##
     # Class to serialize entities into Brick Graph
+    ##
     # @example Use BrickGraph to make a `ttl` from a list of entities
     #   entities = creator.entities
     #   brick_graph = BrickGraph.new
@@ -47,10 +48,7 @@ module OpenStudio
     #   ttl = brick_graph.dump(:ttl)
     class BrickGraph
       # Returns new instance of BrickGraph
-      #
-      # == Parameters:
-      # building_namespace::
-      #   building namespace, used for `bldg` prefix in ttl
+      # @param building_namespace [String] used for `bldg` prefix in ttl
       def initialize(building_namespace: 'http://example.com/mybuilding#')
         @brick = RDF::Vocabulary.new('https://brickschema.org/schema/1.1/Brick#')
         @bldg = RDF::Vocabulary.new(building_namespace)
@@ -63,13 +61,11 @@ module OpenStudio
         @g = nil
       end
 
+      ##
       # Creates graph from list of entities
-      #
-      # == Parameters:
-      # entities::
-      #   list of entities from [Creator]
-      #
-      def create_graph_from_entities(entities)
+      ##
+      # @param entities [Array<Hash>] list of entities from [Creator]
+      def create_from_entities(entities)
         @g = RDF::Repository.new
         entities.each do |entity|
           @g << RDF::Statement.new(@bldg[entity['id']], RDF.type, @brick[entity['type']])
@@ -82,35 +78,33 @@ module OpenStudio
         end
       end
 
+      ##
       # Outputs Brick graph in desired `format`
-      # (defaults to `:ttl`)
-      #
-      # == Parameters:
-      # format::
-      #   A symbol declaring to format to dump the graph as
-      #
-      # == Returns:
-      # A string representation of the graph in the desired format
+      ##
+      # @param format [Symbol] A symbol declaring to format to dump the graph as (see https://rubydoc.info/github/ruby-rdf/rdf/RDF/Enumerable#dump-instance_method)
+      ##
+      # @return [String] A string representation of the graph in the desired format
       #
       def dump(format = :ttl)
         return @g.dump(format, prefixes: @prefixes)
       end
     end
+
     ##
     # Class to serialize entities into a Haystack JSON
+    ##
+    # @example Use Haystack to make JSON from list of entities
+    #   entities = creator.entities
+    #   haystack = Haystack.new
+    #   haystack_json = haystack.create_haystack_from_entities(entities)
     class Haystack
+      ##
       # Creates Haystack JSON from list of entities
-      #
-      # == Parameters:
-      # entities::
-      #   list of entities from [Creator]
-      #
-      # == Returns:
-      # Haystack JSON representation of entities
-      #   entities = creator.entities
-      #   haystack = Haystack.new
-      #   haystack_json = haystack.create_haystack_from_entities(entities)
-      def create_haystack_from_entities(entities)
+      ##
+      # @param entities [Array<Hash>]  list of entities from [Creator]
+      ##
+      # @return [String] Haystack JSON representation of entities
+      def create_from_entities(entities)
         cols = []
         rows = []
         entities.each do |entity|

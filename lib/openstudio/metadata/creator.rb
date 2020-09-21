@@ -45,6 +45,7 @@ module OpenStudio
   module Metadata
     ##
     # Class to map OpenStudio models to haystack and brick
+    ##
     # @example Instantiate creator with model
     #   path_to_model = "path/to/model.osm"
     #   creator = OpenStudio::Alfalfa::Creator.new(path_to_model)
@@ -76,8 +77,8 @@ module OpenStudio
       ##
       # Add nodes defined in mapping document as entities
       ##
-      # @param [OpenStudio parent object] obj
-      # @param [Hash] nodes
+      # @param obj [OpenStudio parent object] obj
+      # @param nodes [Hash] nodes
       def add_nodes(obj, nodes)
         if obj.to_ThermalZone.is_initialized
           if !obj.airLoopHVAC.is_initialized && obj.zoneConditioningEquipmentListName.empty?
@@ -115,10 +116,9 @@ module OpenStudio
       # 2. Iterating through all objects of a certain OpenStudio class and adding metadata to @entities
       # 3. Adding relationships and nodes
       #
-      # Note: meter mappings are handled via apply_meter_mappings
-      #
-      #
-      # @param [String] metadata_type One of: ['Brick', 'Haystack']
+      # @note  meter mappings are handled via apply_meter_mappings
+      ##
+      # @param metadata_type [String] One of: ['Brick', 'Haystack']
       def apply_mappings(metadata_type)
         types = ['Brick', 'Haystack']
         raise "metadata_type must be one of #{types}" unless types.include? metadata_type
@@ -172,12 +172,16 @@ module OpenStudio
         save_model
       end
 
+      ##
       # Necessary when adding additional output / EMS variables
       # so they get stored in OSM
       def save_model
         @model.save(@path_to_model, true)
       end
 
+      ##
+      # Reads templates and mappings into memory
+      # @note Must do before applying mappings
       def read_templates_and_mappings
         templates_path = File.join(@files_path, 'templates.yaml')
         mappings_path = File.join(@files_path, 'mappings.json')
@@ -187,6 +191,9 @@ module OpenStudio
         @mappings = JSON.parse(File.read(mappings_path))
       end
 
+      ##
+      # Reads Brick and Haystack metadata into memory
+      # @note Must do before applying mappings
       def read_metadata(brick_version = '1.1', haystack_version = '3.9.9')
         @brick_version = brick_version
         @haystack_version = haystack_version
