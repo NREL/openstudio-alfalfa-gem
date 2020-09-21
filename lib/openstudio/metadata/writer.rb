@@ -66,12 +66,8 @@ module OpenStudio
       end
 
       ##
-      # Write metadata model to file
-      #
-      # @param [String] output_format One of: ['json', 'ttl', 'nq']
-      # @param [String] file_path Path to output folder
-      # @param [String] file_name_without_extension output name without extension
-      def write_output_to_file(output_format:, file_path: '.', file_name_without_extension: 'model')
+      # Generates BrickGraph or Haystack from entities
+      def create_output
         case @metadata_type
         when 'Brick'
           @brick_graph = BrickGraph.new
@@ -80,8 +76,16 @@ module OpenStudio
           @haystack = Haystack.new
           @haystack = @haystack.create_haystack_from_entities(@creator.entities)
         end
-        @output_format = output_format
+      end
 
+      ##
+      # Write metadata model to file
+      #
+      # @param [String] output_format One of: ['json', 'ttl', 'nq']
+      # @param [String] file_path Path to output folder
+      # @param [String] file_name_without_extension output name without extension
+      def write_output_to_file(output_format:, file_path: '.', file_name_without_extension: 'model')
+        @output_format = output_format
         supported_haystack_formats = ['json']
         supported_brick_formats = ['ttl', 'nq']
         raise "Brick output format must be one of: #{supported_brick_formats}" if (@metadata_type == 'Brick') && !supported_brick_formats.include?(@output_format)
