@@ -135,7 +135,7 @@ RSpec.configure do |config|
   end
 
   def check_creator_entity_keys(creator)
-    puts creator.entities
+    # puts creator.entities
     creator.entities.each do |e|
       expect(e).to have_key('id')
       expect(e).to have_key('dis')

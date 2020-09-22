@@ -38,7 +38,9 @@ module OpenStudio
     class BCVTBControlsSetup
 
       ##
-      # @param [OpenStudio::Model::Model] model
+      # Returns new BCVTBControlsSetup
+      ##
+      # @param model [OpenStudio::Model::Model] openstudio model
       def initialize(model)
         @model = model
         @output_variables = @model.getOutputVariables.sort_by{ |m| [ m.keyValue.to_s, m.name.to_s.downcase]}
@@ -63,7 +65,7 @@ module OpenStudio
       ##
       # Add xml declaration and doctyp to output file
       ##
-      # @param [String] file_path Path to file to save bcvtb data
+      # @param file_path [String] Path to file to save bcvtb data
       def initialize_bcvtb_output_file(file_path: File.join(File.dirname(__FILE__ ) , 'report_variables.cfg'))
         @bcvtb_output_file = file_path
         File.open(@bcvtb_output_file, 'w') do |fo|
@@ -86,8 +88,8 @@ module OpenStudio
       # Add either an OutputVariable or an EnergyManagementSystemOutputVariable to the bcvtb xml file.
       # The source attribute is set as 'EnergyPlus'.
       ##
-      # @param [String] variable_name OutputVariable.variableName or EMSOutputVariable.nameString
-      # @param [String] key_value OutputVariable.keyValue or 'EMS'
+      # @param variable_name [String] variable_name OutputVariable.variableName or EMSOutputVariable.nameString
+      # @param key_value [String] OutputVariable.keyValue or 'EMS'
       def add_xml_output(variable_name, key_value)
         variable = REXML::Element.new "variable"
         variable.attributes["source"] = "EnergyPlus"
@@ -102,8 +104,8 @@ module OpenStudio
       # Add an ExternalInterface:* object to the bcvtb xml file.
       # The source attribute is set as 'Ptolemy'.
       ##
-      # @param [String] type Depending on the type of ExternalInterface, this is one of: ['variable', 'schedule', 'actuator']
-      # @param [String] name Value of the '.name' method called on the ExternalInterface object
+      # @param type [String] Depending on the type of ExternalInterface, this is one of: ['variable', 'schedule', 'actuator']
+      # @param name [String] Value of the '.name' method called on the ExternalInterface object
       def add_xml_ptolemy(type, name)
         valid_types = ['variable', 'schedule', 'actuator']
         raise "type must be one of #{valid_types}" unless valid_types.include? type
@@ -153,7 +155,7 @@ module OpenStudio
 
       ##
       # Adds all OpenStudio OutputVariable variables to the bcvtb xml
-      # These are added as sourcing from 'EnergyPlus'
+      # @note These are added as sourcing from 'EnergyPlus'
       ##
       def add_output_variables_to_bcvtb
         @output_variables.each do |outvar|
@@ -165,7 +167,7 @@ module OpenStudio
 
       ##
       # Adds all EMSOutputVariable variables to the bcvtb xml
-      # These are added as sourcing from 'EnergyPlus'
+      # @note These are added as sourcing from 'EnergyPlus'
       ##
       def add_ems_output_variables_to_bcvtb
         @ems_output_variables.each do |outvar|
@@ -177,7 +179,7 @@ module OpenStudio
 
       ##
       # Adds all ExternalInterface:Variable variables to the bcvtb xml
-      # These are added as sourcing from 'Ptolemy'
+      # @note These are added as sourcing from 'Ptolemy'
       ##
       def add_ext_int_variables_to_bcvtb
         if !@global_variables_swapped
@@ -192,7 +194,7 @@ module OpenStudio
 
       ##
       # Adds all ExternalInterface:Schedule variables to the bcvtb xml.
-      # These are added as sourcing from 'Ptolemy'
+      # @note These are added as sourcing from 'Ptolemy'
       ##
       def add_ext_int_schedules_to_bcvtb
         @ext_int_schedules.each do |schedule|
@@ -204,7 +206,7 @@ module OpenStudio
 
       ##
       # Adds all ExternalInterface:Actuator variables to the bcvtb xml
-      # These are added as sourcing from 'Ptolemy'
+      # @note These are added as sourcing from 'Ptolemy'
       ##
       def add_ext_int_actuators_to_bcvtb
         @ext_int_actuators.each do |actuator|

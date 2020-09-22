@@ -43,6 +43,12 @@ require_relative 'helpers'
 
 module OpenStudio
   module Metadata
+    ##
+    # Class to map OpenStudio models to haystack and brick
+    ##
+    # @example Instantiate creator with model
+    #   path_to_model = "path/to/model.osm"
+    #   creator = OpenStudio::Alfalfa::Creator.new(path_to_model)
     class Creator
       attr_accessor :entities, :model
       attr_reader :mappings, :templates, :haystack_repo, :brick_repo, :phiot_vocab, :brick_vocab, :metadata_type
@@ -68,11 +74,126 @@ module OpenStudio
         @haystack_version = nil
       end
 
-      def read_templates_and_mappings
-        read_templates
-        read_mappings
+      ##
+      # Add nodes defined in mapping document as entities
+      ##
+      # @param obj [OpenStudio parent object] obj
+      # @param nodes [Hash] nodes
+      def add_nodes(obj, nodes)
+        if obj.to_ThermalZone.is_initialized
+          if !obj.airLoopHVAC.is_initialized && obj.zoneConditioningEquipmentListName.empty?
+            return
+          end
+        end
+        relationship_to_parent = nodes['relationship_to_parent']
+        nodes.each do |node_method, node_properties|
+          next unless node_method != 'relationship_to_parent'
+          found_node = obj.send(node_method)
+          found_node = found_node.get unless found_node.is_a?(OpenStudio::Model::Node)
+          next unless found_node.initialized
+          node_properties.each do |system_node_property, map|
+            name = "#{obj.name} #{map['brick']}" # Brick names are prettier / consistent
+            name = create_ems_str(name)
+
+            # Else recreates variable every time
+            output_variable = @model.getOutputVariableByName(name)
+            if output_variable.is_initialized
+              output_variable = output_variable.get
+            else
+              output_variable = create_output_variable_and_ems_sensor(system_node_property: system_node_property, node: found_node, ems_name: name, model: @model)
+            end
+            entity_info = resolve_template(map[@metadata_type.downcase])
+            entity_info = add_node_relationship_to_parent(obj, relationship_to_parent, entity_info) unless relationship_to_parent.nil?
+            add_specific_info(output_variable, entity_info)
+          end
+        end
       end
 
+      ##
+      # Apply mappings for all of the Hash objects in the mappings.json.
+      # Applying a mapping consists of:
+      # 1. Resolving the OpenStudio class to a template type
+      # 2. Iterating through all objects of a certain OpenStudio class and adding metadata to @entities
+      # 3. Adding relationships and nodes
+      #
+      # @note  meter mappings are handled via apply_meter_mappings
+      ##
+      # @param metadata_type [String] One of: ['Brick', 'Haystack']
+      def apply_mappings(metadata_type)
+        types = ['Brick', 'Haystack']
+        raise "metadata_type must be one of #{types}" unless types.include? metadata_type
+        if metadata_type == 'Brick'
+          @current_repo = @brick_repo
+          @current_vocab = @brick_vocab
+        elsif metadata_type == 'Haystack'
+          @current_repo = @haystack_repo
+          @current_vocab = @phiot_vocab
+        end
+        @metadata_type = metadata_type
+
+        # Let mappings run through once to 'create' entities
+        @mappings.each do |mapping|
+          if mapping['openstudio_class'] == "OS:Output:Meter"
+            raise "Primary meter mapping must have key: submeter_relationships" unless mapping.key? 'submeter_relationships'
+            apply_meter_mappings(mapping['meters'], mapping['relationships'],
+                                 mapping['submeter_relationships'], mapping['point_to_meter_relationship'])
+          else
+            cls_info = resolve_template_from_mapping(mapping)
+            cls = mapping['openstudio_class']
+            objs = @model.getObjectsByType(cls)
+            objs.each do |obj|
+              # rescue objects from the clutches of boost
+              conv_meth = 'to_' << cls.gsub(/^OS/, '').gsub(':', '').gsub('_', '')
+              obj = obj.send(conv_meth)
+              break if obj.empty?
+              obj = obj.get
+
+              obj_info = cls_info.deep_dup
+              add_relationship_info(obj, mapping['relationships'], obj_info) if mapping.key? 'relationships'
+              add_specific_info(obj, obj_info)
+              add_nodes(obj, mapping['nodes']) if mapping.key? 'nodes'
+            end
+          end
+        end
+
+        resolve_unitary_and_air_loops_overlap
+
+        # Check that relationships point somewhere
+        ids = @entities.flat_map { |entity| entity['id'] }
+        @entities.select { |entity| entity.key? 'relationships' }.each do |entity|
+          relationships = entity['relationships']
+          relationships.keys.each do |key|
+            if !ids.include? relationships[key]
+              relationships.delete(key)
+              entity.delete('relationships') if relationships.empty?
+            end
+          end
+        end
+        save_model
+      end
+
+      ##
+      # Necessary when adding additional output / EMS variables
+      # so they get stored in OSM
+      def save_model
+        @model.save(@path_to_model, true)
+      end
+
+      ##
+      # Reads templates and mappings into memory
+      # @note Must do before applying mappings
+      def read_templates_and_mappings
+        templates_path = File.join(@files_path, 'templates.yaml')
+        mappings_path = File.join(@files_path, 'mappings.json')
+        raise "File '#{templates_path}' does not exist" unless File.exist?(templates_path)
+        raise "File '#{mappings_path}' does not exist" unless File.exist?(mappings_path)
+        @templates = YAML.load_file(templates_path)
+        @mappings = JSON.parse(File.read(mappings_path))
+      end
+
+      ##
+      # Reads Brick and Haystack metadata into memory
+      # @note Must do before applying mappings
       def read_metadata(brick_version = '1.1', haystack_version = '3.9.9')
         @brick_version = brick_version
         @haystack_version = haystack_version
@@ -80,18 +201,7 @@ module OpenStudio
         read_haystack_ttl_as_repository_object(haystack_version)
       end
 
-      def read_templates
-        path = File.join(@files_path, 'templates.yaml')
-        raise "File '#{path}' does not exist" unless File.exist?(path)
-        @templates = YAML.load_file(path)
-      end
-
-      def read_mappings
-        path = File.join(@files_path, 'mappings.json')
-        raise "File '#{path}' does not exist" unless File.exist?(path)
-        f = File.read(path)
-        @mappings = JSON.parse(f)
-      end
+      private
 
       def read_haystack_ttl_as_repository_object(version)
         path = File.join(@files_path, "haystack/#{version}/defs.ttl")
@@ -114,7 +224,7 @@ module OpenStudio
 
       def create_meter_base_info_hash(meter_name)
         temp = {}
-        temp['id'] = "#{OpenStudio.removeBraces(OpenStudio.createUUID)}"
+        temp['id'] = OpenStudio.removeBraces(OpenStudio.createUUID).to_s
         temp['dis'] = "#{meter_name} Meter Equipment"
         return temp
       end
@@ -199,11 +309,10 @@ module OpenStudio
       def add_relationship_info(obj, relationships, info)
         relationships.each do |relationship|
           info['relationships'] = {} unless info['relationships']
+          # Default to `this`
+          scope = 'this'
           if relationship.key? 'method_scope'
             scope = relationship['method_scope']
-          else
-            # Default to 'this'
-            scope = 'this'
           end
           if scope == 'model'
             obj = @model
@@ -228,47 +337,6 @@ module OpenStudio
         entity_info['relationships'] = {} unless entity_info['relationships']
         entity_info['relationships'][relationship[@metadata_type.downcase]] = OpenStudio.removeBraces(parent_obj.handle)
         return entity_info
-      end
-
-      ##
-      # Add nodes defined in mapping document as entities
-      ##
-      # @param [OpenStudio parent object] obj
-      # @param [Hash] nodes
-      def add_nodes(obj, nodes)
-        if obj.to_ThermalZone.is_initialized
-          if !obj.airLoopHVAC.is_initialized && obj.zoneConditioningEquipmentListName.empty?
-            return
-          end
-        end
-        relationship_to_parent = nodes['relationship_to_parent']
-        nodes.each do |node_method, node_properties|
-          next unless node_method != 'relationship_to_parent'
-          found_node = obj.send(node_method)
-          found_node = found_node.get unless found_node.is_a?(OpenStudio::Model::Node)
-          next unless found_node.initialized
-          node_properties.each do |system_node_property, map|
-            name = "#{obj.name} #{map['brick']}" # Brick names are prettier / consistent
-            name = create_ems_str(name)
-
-            # Else recreates variable every time
-            output_variable = @model.getOutputVariableByName(name)
-            if output_variable.is_initialized
-              output_variable = output_variable.get
-            else
-              output_variable = create_output_variable_and_ems_sensor(system_node_property: system_node_property, node: found_node, ems_name: name, model: @model)
-            end
-            entity_info = resolve_template(map[@metadata_type.downcase])
-            entity_info = add_node_relationship_to_parent(obj, relationship_to_parent, entity_info) unless relationship_to_parent.nil?
-            add_specific_info(output_variable, entity_info)
-          end
-        end
-      end
-
-      # Necessary when adding additional output / EMS variables
-      # so they get stored in OSM
-      def save_model
-        @model.save(@path_to_model, true)
       end
 
       ##
@@ -358,71 +426,6 @@ module OpenStudio
             apply_meter_mappings(v['meters'], relationships, submeter_relationship, point_to_meter_relationship, obj_info['id'])
           end
         end
-      end
-
-
-      ##
-      # Apply mappings for all of the Hash objects in the mappings.json.
-      # Applying a mapping consists of:
-      # 1. Resolving the OpenStudio class to a template type
-      # 2. Iterating through all objects of a certain OpenStudio class and adding metadata to @entities
-      # 3. Adding relationships and nodes
-      #
-      # Note: meter mappings are handled via apply_meter_mappings
-      #
-      # ##
-      # @param [String] metadata_type One of: ['Brick', 'Haystack']
-      def apply_mappings(metadata_type)
-        types = ['Brick', 'Haystack']
-        raise "metadata_type must be one of #{types}" unless types.include? metadata_type
-        if metadata_type == 'Brick'
-          @current_repo = @brick_repo
-          @current_vocab = @brick_vocab
-        elsif metadata_type == 'Haystack'
-          @current_repo = @haystack_repo
-          @current_vocab = @phiot_vocab
-        end
-        @metadata_type = metadata_type
-
-        # Let mappings run through once to 'create' entities
-        @mappings.each do |mapping|
-          if mapping['openstudio_class'] == "OS:Output:Meter"
-            raise "Primary meter mapping must have key: submeter_relationships" unless mapping.key? 'submeter_relationships'
-            apply_meter_mappings(mapping['meters'], mapping['relationships'],
-                                 mapping['submeter_relationships'], mapping['point_to_meter_relationship'])
-          else
-            cls_info = resolve_template_from_mapping(mapping)
-            cls = mapping['openstudio_class']
-            objs = @model.getObjectsByType(cls)
-            objs.each do |obj|
-              # rescue objects from the clutches of boost
-              conv_meth = 'to_' << cls.gsub(/^OS/, '').gsub(':', '').gsub('_', '')
-              obj = obj.send(conv_meth)
-              break if obj.empty?
-              obj = obj.get
-
-              obj_info = cls_info.deep_dup
-              add_relationship_info(obj, mapping['relationships'], obj_info) if mapping.key? 'relationships'
-              add_specific_info(obj, obj_info)
-              add_nodes(obj, mapping['nodes']) if mapping.key? 'nodes'
-            end
-          end
-        end
-
-        resolve_unitary_and_air_loops_overlap
-
-        # Check that relationships point somewhere
-        ids = @entities.flat_map { |entity| entity['id'] }
-        @entities.select { |entity| entity.key? 'relationships' }.each do |entity|
-          relationships = entity['relationships']
-          relationships.keys.each do |key|
-            if !ids.include? relationships[key]
-              relationships.delete(key)
-              entity.delete('relationships') if relationships.empty?
-            end
-          end
-        end
-        save_model
       end
     end
   end
