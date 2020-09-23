@@ -20,7 +20,7 @@ Or install it yourself as:
 	
 ## Usage
 
-Find documentation at https://rubydoc.info/github/NREL/openstudio-metadata-gem/
+Find documentation at https://www.rubydoc.info/gems/openstudio-metadata
 
 ## Note
 
