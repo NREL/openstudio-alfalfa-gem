@@ -60,6 +60,7 @@ This Gem requires OpenStudio@3.0 or greater
 
 1. Update change log
 2. Update version in `/lib/openstudio/openstudio-metadata/version.rb`
-3. Merge down to master
+3. Run `bundle exec rake rubocop:auto_correct`
+3. Merge develop down to master and confirm tests pass
 4. Release via github
 5. run `rake release` from master
