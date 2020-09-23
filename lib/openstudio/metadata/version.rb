@@ -33,49 +33,8 @@
 # OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 # *******************************************************************************
 
-require 'openstudio'
-require 'openstudio-standards'
-require 'openstudio-standards/weather/Weather.Model'
-require 'json'
-require_relative '../spec_helper'
-
-RSpec.describe OpenStudio::Alfalfa do
-  before(:all) do
-    @small_office_dir = "#{Dir.pwd}/spec/outputs/small_office"
-    @small_office_osm = @small_office_dir + "/SR1/in.osm"
-    check_and_create_small_office
-  end
-  it 'has a version number' do
-    expect(OpenStudio::Alfalfa::VERSION).not_to be nil
-  end
-
-  it 'has a measures directory' do
-    instance = OpenStudio::Alfalfa::Alfalfa.new
-    expect(File.exist?(instance.measures_dir)).to be true
-  end
-
-  it 'exists' do
-    model = OpenStudio::Model::Model.load(@small_office_osm)
-    model = model.get
-    x = OpenStudio::Alfalfa::Tagger.new(model)
-    expect(x.class.to_s == 'OpenStudio::Alfalfa::Tagger').to be true
-  end
-
-  it 'Reads in the small_office and tags it' do
-    model = OpenStudio::Model::Model.load(@small_office_osm)
-    model = model.get
-
-    tagger = OpenStudio::Alfalfa::Tagger.new(model)
-    tagger.tag_weather
-    tagger.tag_site
-    tagger.tag_stories
-    tagger.tag_base_ahus
-    tagger.tag_air_loops
-    tagger.tag_air_terminal_units
-
-    File.open(@small_office_dir + "/haystack.json", "w") do |f|
-      f.write(JSON.pretty_generate(tagger.haystack_json))
-    end
-    # print tagger.haystack_json.to_json
+module OpenStudio
+  module Metadata
+    VERSION = '0.1.0'.freeze
   end
 end

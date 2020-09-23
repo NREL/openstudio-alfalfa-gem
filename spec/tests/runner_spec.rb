@@ -33,8 +33,57 @@
 # OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 # *******************************************************************************
 
-module OpenStudio
-  module Alfalfa
-    VERSION = '0.0.1'.freeze
+require 'spec_helper'
+require_relative '../spec_helper'
+require 'fileutils'
+
+RSpec.describe 'Tests a successful simulation of SmallOffice after mappings applied' do
+  before(:all) do
+    building_type = 'SmallOffice'
+    @dir = "#{Dir.pwd}/spec/outputs/#{building_type}"
+    @file_dir = @dir + '/SR1/'
+    @osm = @file_dir + 'in.osm'
+    check_and_create_prototype(building_type)
+    @creator = instantiate_creator_and_apply_mappings(@osm, 'Haystack')
+  end
+
+  it 'SmallOffice can run an OSW' do
+    result, failed = run_osw(@file_dir)
+    expect(result).to be true
+    expect(failed).to be false
+  end
+end
+
+RSpec.describe 'Tests a successful simulation of MediumOffice after mappings applied' do
+  before(:all) do
+    building_type = 'MediumOffice'
+    @dir = "#{Dir.pwd}/spec/outputs/#{building_type}"
+    @file_dir = @dir + '/SR1/'
+    @osm = @file_dir + 'in.osm'
+    check_and_create_prototype(building_type)
+    @creator = instantiate_creator_and_apply_mappings(@osm, 'Brick')
+  end
+
+  it 'MediumOffice can run an OSW' do
+    result, failed = run_osw(@file_dir)
+    expect(result).to be true
+    expect(failed).to be false
+  end
+end
+
+RSpec.describe 'Tests a successful simulation of RetailStandalone after mappings applied' do
+  before(:all) do
+    building_type = 'RetailStandalone'
+    @dir = "#{Dir.pwd}/spec/outputs/#{building_type}"
+    @file_dir = @dir + '/SR1/'
+    @osm = @file_dir + 'in.osm'
+    check_and_create_prototype(building_type)
+    @creator = instantiate_creator_and_apply_mappings(@osm, 'Haystack')
+  end
+
+  it 'RetailStandalone can run an OSW' do
+    result, failed = run_osw(@file_dir)
+    expect(result).to be true
+    expect(failed).to be false
   end
 end

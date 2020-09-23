@@ -13,6 +13,8 @@
 /test/
 /lib/measures/test_results
 /lib/measures/.rubocop*
+ruby
+rubocop-results.xml
 
 # rspec failure tracking
 .rspec_status
@@ -32,3 +34,16 @@ outputs
 
 # macs
 .DS_Store
+
+#rbtagger
+TAGS*
+.TAGS
+.ruby_tags_commit_hash
+
+#projectile
+.projectile
+
+#emacs
+*~
+\#*\#
+.\#*

@@ -1,0 +1,9 @@
+AllCops:
+  Exclude:
+    - 'ruby/**/*'
+    - 'spec/outputs/**/*'
+    - 'spec/files/measures/**/*'
+    - '**/*.ttl'
+
+inherit_from:
+  - http://s3.amazonaws.com/openstudio-resources/styles/rubocop_v3.yml
