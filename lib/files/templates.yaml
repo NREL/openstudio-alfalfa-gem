@@ -320,7 +320,7 @@
   version: 3.9.9
   name: Site elec meter
   custom: True
-  base_type: point
+  base_type: meter
   extension: True
   properties:
     - siteMeter
