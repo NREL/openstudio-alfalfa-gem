@@ -17,7 +17,7 @@ allow_local = false
 if allow_local && File.exist?('../openstudio-extension-gem')
   gem 'openstudio-extension', path: '../openstudio-extension-gem'
 else
-  gem 'openstudio-extension', github: 'NREL/OpenStudio-extension-gem', branch: 'develop'
+  gem 'openstudio-extension', github: 'NREL/OpenStudio-extension-gem', tag: 'v0.2.5'
 end
 
 gem 'openstudio_measure_tester', '= 0.2.3' # This includes the dependencies for running unit tests, coverage, and rubocop
