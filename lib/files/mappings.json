@@ -384,5 +384,62 @@
         }
       }
     }
+  },
+  {
+    "openstudio_class": "OS:Coil:Cooling:Water"
+  },
+  {
+    "openstudio_class": "OS:Coil:Heating:Water"
+  },
+  {
+    "openstudio_class": "OS:Fan:ConstantVolume"
+  },
+  {
+    "openstudio_class": "OS:Coil:Cooling:WaterToAirHeatPump:EquationFit"
+  },
+  {
+    "openstudio_class": "OS:Coil:Heating:WaterToAirHeatPump:EquationFit"
+  },
+  {
+    "openstudio_class": "OS:HeatExchanger:AirToAir:SensibleAndLatent"
+  },
+  {
+    "openstudio_class": "OS:Chiller:Electric:EIR"
+  },
+  {
+    "openstudio_class": "OS:Pump:VariableSpeed"
+  },
+  {
+    "openstudio_class": "OS:Pump:ConstantSpeed"
+  },
+  {
+    "openstudio_class": "OS:CoolingTower:SingleSpeed"
+  },
+  {
+    "openstudio_class": "OS:CoolingTower:TwoSpeed"
+  },
+  {
+    "openstudio_class": "OS:Boiler:HotWater"
+  },
+  {
+    "openstudio_class": "OS:WaterHeater:Mixed"
+  },
+  {
+    "openstudio_class": "OS:Coil:Heating:Gas"
+  },
+  {
+    "openstudio_class": "OS:HeatExchanger:FluidToFluid"
+  },
+  {
+    "openstudio_class": "OS:Coil:Heating:Electric"
+  },
+  {
+    "openstudio_class": "OS:Humidifier:Steam:Electric"
+  },
+  {
+    "openstudio_class": "OS:AirLoopHVACUnitarySystem"
+  },
+  {
+    "openstudio_class": "OS:EvaporativeFluidCooler:SingleSpeed"
   }
 ]
