@@ -441,5 +441,20 @@
   },
   {
     "openstudio_class": "OS:EvaporativeFluidCooler:SingleSpeed"
+  },
+  {
+    "openstudio_class": "OS:AirTerminal:SingleDuct:VAV:NoReheat"
+  },
+  {
+    "openstudio_class": "OS:DistrictCooling"
+  },
+  {
+    "openstudio_class": "OS:DistrictHeating"
+  },
+  {
+    "openstudio_class": "OS:Coil:Heating:LowTemperatureRadiant:VariableFlow"
+  },
+  {
+    "openstudio_class": "OS:Coil:Cooling:LowTemperatureRadiant:VariableFlow"
   }
 ]
