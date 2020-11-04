@@ -392,9 +392,6 @@
     "openstudio_class": "OS:Coil:Heating:Water"
   },
   {
-    "openstudio_class": "OS:Fan:ConstantVolume"
-  },
-  {
     "openstudio_class": "OS:Coil:Cooling:WaterToAirHeatPump:EquationFit"
   },
   {
@@ -425,13 +422,7 @@
     "openstudio_class": "OS:WaterHeater:Mixed"
   },
   {
-    "openstudio_class": "OS:Coil:Heating:Gas"
-  },
-  {
     "openstudio_class": "OS:HeatExchanger:FluidToFluid"
-  },
-  {
-    "openstudio_class": "OS:Coil:Heating:Electric"
   },
   {
     "openstudio_class": "OS:Humidifier:Steam:Electric"
