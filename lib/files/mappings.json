@@ -272,10 +272,10 @@
       }
     ],
     "haystack": {
-      "template": "coolingCoil"
+      "template": "PH_DX_Cooling_Coil_2_Stage"
     },
     "brick": {
-      "template": "PH_DX_Cooling_Coil_2_Stage"
+      "template": "Cooling_Coil"
     }
   },
   {
