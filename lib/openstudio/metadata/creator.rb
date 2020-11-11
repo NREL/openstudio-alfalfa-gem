@@ -257,7 +257,10 @@ module OpenStudio
         difference = difference.to_a
         to_return = {'type' => term}
         if !difference.empty?
-          to_return = to_return.merge('add_tags' => difference)
+          to_return['add_tags'] = {}
+          difference.each do |tag|
+            to_return['add_tags'][tag] = ':m'
+          end
         end
         return to_return
       end
@@ -293,10 +296,14 @@ module OpenStudio
               to_return = {'type' => type}
             end
             if template.key? 'properties'
+              tags = {}
+              template['properties'].each do |tag, val|
+                tags[tag] = val.nil? ? ':m' : val
+              end
               if to_return.key? 'add_tags'
-                to_return['add_tags'] += template['properties']
+                to_return['add_tags'] = to_return['add_tags'].merge(tags)
               else
-                to_return['add_tags'] = template['properties']
+                to_return['add_tags'] = tags
               end
             end
             return to_return

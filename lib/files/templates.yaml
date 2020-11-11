@@ -1,8 +1,8 @@
 ---
 - id: "UUID-1"
   properties:
-    - id
-    - dis
+    id:
+    dis:
 
 - id: "PH_HP_SD_CAV"
   type: Haystack
@@ -12,8 +12,8 @@
   base_type: heatPump
   extension: True
   properties:
-    - singleDuct
-    - constantAirVolume
+    singleDuct:
+    constantAirVolume:
 
 - id: "PH_DF"
   type: Haystack
@@ -23,7 +23,7 @@
   base_type: fan-motor
   extension: True
   properties:
-    - discharge
+    discharge:
 
 - id: "BS_HP"
   type: Brick
@@ -46,10 +46,10 @@
   base_type: point
   extension: True
   properties:
-    - outdoor
-    - air
-    - temp
-    - sensor
+    outdoor:
+    air:
+    temp:
+    sensor:
 
 - id: "PH_OARH_Sensor"
   type: Haystack
@@ -59,10 +59,10 @@
   base_type: point
   extension: True
   properties:
-    - outdoor
-    - air
-    - humidity
-    - sensor
+    outdoor:
+    air:
+    humidity:
+    sensor:
 
 - id: "PH_MAT_Sensor"
   type: Haystack
@@ -72,10 +72,10 @@
   base_type: point
   extension: True
   properties:
-    - mixed
-    - air
-    - temp
-    - sensor
+    mixed:
+    air:
+    temp:
+    sensor:
 
 - id: "PH_MARH_Sensor"
   type: Haystack
@@ -85,10 +85,10 @@
   base_type: point
   extension: True
   properties:
-    - mixed
-    - air
-    - humidity
-    - sensor
+    mixed:
+    air:
+    humidity:
+    sensor:
 
 - id: "PH_MAF_Sensor"
   type: Haystack
@@ -98,10 +98,10 @@
   base_type: point
   extension: True
   properties:
-    - mixed
-    - air
-    - flow
-    - sensor
+    mixed:
+    air:
+    flow:
+    sensor:
 
 - id: "PH_DAT_Sensor"
   type: Haystack
@@ -111,10 +111,10 @@
   base_type: point
   extension: True
   properties:
-    - discharge
-    - air
-    - temp
-    - sensor
+    discharge:
+    air:
+    temp:
+    sensor:
 
 - id: "PH_DARH_Sensor"
   type: Haystack
@@ -124,10 +124,10 @@
   base_type: point
   extension: True
   properties:
-    - discharge
-    - air
-    - humidity
-    - sensor
+    discharge:
+    air:
+    humidity:
+    sensor:
 
 - id: "PH_RAT_Sensor"
   type: Haystack
@@ -137,10 +137,10 @@
   base_type: point
   extension: True
   properties:
-    - return
-    - air
-    - temp
-    - sensor
+    return:
+    air:
+    temp:
+    sensor:
 
 - id: "PH_RARH_Sensor"
   type: Haystack
@@ -150,10 +150,10 @@
   base_type: point
   extension: True
   properties:
-    - return
-    - air
-    - humidity
-    - sensor
+    return:
+    air:
+    humidity:
+    sensor:
 
 - id: "PH_ZAT_Sensor"
   type: Haystack
@@ -163,10 +163,10 @@
   base_type: point
   extension: True
   properties:
-    - zone
-    - air
-    - temp
-    - sensor
+    zone:
+    air:
+    temp:
+    sensor:
 
 - id: "PH_ZARH_Sensor"
   type: Haystack
@@ -176,10 +176,10 @@
   base_type: point
   extension: True
   properties:
-    - zone
-    - air
-    - humidity
-    - sensor
+    zone:
+    air:
+    humidity:
+    sensor:
 
 - id: "PH_OADP_Sensor"
   type: Haystack
@@ -189,11 +189,11 @@
   base_type: point
   extension: True
   properties:
-    - outdoor
-    - air
-    - dewPoint
-    - temp
-    - sensor
+    outdoor:
+    air:
+    dewPoint:
+    temp:
+    sensor:
 
 - id: "PH_OAF_Sensor"
   type: Haystack
@@ -203,10 +203,10 @@
   base_type: point
   extension: True
   properties:
-    - outdoor
-    - air
-    - flow
-    - sensor
+    outdoor:
+    air:
+    flow:
+    sensor:
 
 - id: "PH_DADP_Sensor"
   type: Haystack
@@ -216,11 +216,11 @@
   base_type: point
   extension: True
   properties:
-    - discharge
-    - air
-    - dewPoint
-    - temp
-    - sensor
+    discharge:
+    air:
+    dewPoint:
+    temp:
+    sensor:
 
 - id: "PH_DAF_Sensor"
   type: Haystack
@@ -230,10 +230,10 @@
   base_type: point
   extension: True
   properties:
-    - discharge
-    - air
-    - flow
-    - sensor
+    discharge:
+    air:
+    flow:
+    sensor:
 
 - id: "PH_RADP_Sensor"
   type: Haystack
@@ -243,11 +243,11 @@
   base_type: point
   extension: True
   properties:
-    - return
-    - air
-    - dewPoint
-    - temp
-    - sensor
+    return:
+    air:
+    dewPoint:
+    temp:
+    sensor:
 
 - id: "PH_RAF_Sensor"
   type: Haystack
@@ -257,10 +257,10 @@
   base_type: point
   extension: True
   properties:
-    - return
-    - air
-    - flow
-    - sensor
+    return:
+    air:
+    flow:
+    sensor:
 
 - id: "PH_EAT_Sensor"
   type: Haystack
@@ -270,10 +270,10 @@
   base_type: point
   extension: True
   properties:
-    - exhaust
-    - air
-    - temp
-    - sensor
+    exhaust:
+    air:
+    temp:
+    sensor:
 
 - id: "PH_EARH_Sensor"
   type: Haystack
@@ -283,10 +283,10 @@
   base_type: point
   extension: True
   properties:
-    - exhaust
-    - air
-    - humidity
-    - sensor
+    exhaust:
+    air:
+    humidity:
+    sensor:
 
 - id: "PH_EADP_Sensor"
   type: Haystack
@@ -296,11 +296,11 @@
   base_type: point
   extension: True
   properties:
-    - exhaust
-    - air
-    - dewPoint
-    - temp
-    - sensor
+    exhaust:
+    air:
+    dewPoint:
+    temp:
+    sensor:
 
 - id: "PH_EAF_Sensor"
   type: Haystack
@@ -310,10 +310,10 @@
   base_type: point
   extension: True
   properties:
-    - exhaust
-    - air
-    - flow
-    - sensor
+    exhaust:
+    air:
+    flow:
+    sensor:
 
 - id: "PH_Elec_SiteMeter"
   type: Haystack
@@ -323,7 +323,7 @@
   base_type: meter
   extension: True
   properties:
-    - siteMeter
+    siteMeter:
 
 - id: "PH_Gas_SiteMeter"
   type: Haystack
@@ -333,8 +333,8 @@
   base_type: meter
   extension: True
   properties:
-    - naturalGas
-    - siteMeter
+    naturalGas:
+    siteMeter:
 
 - id: "PH_Elec_Power"
   type: Haystack
@@ -344,9 +344,9 @@
   base_type: point
   extension: True
   properties:
-    - elec
-    - power
-    - sensor
+    elec:
+    power:
+    sensor:
 
 - id: "PH_Gas_Energy"
   type: Haystack
@@ -356,6 +356,64 @@
   base_type: point
   extension: True
   properties:
-    - naturalGas
-    - energy
-    - sensor
+    naturalGas:
+    energy:
+    sensor:
+
+- id: "PH_Gas_Heating_Coil"
+  type: Haystack
+  version: 3.9.9
+  name: Gas heating coil
+  base_type: heatingCoil
+  extension: True
+  properties:
+    naturalGasHeating:
+
+- id: "PH_Electric_Heating_Coil"
+  type: Haystack
+  version: 3.9.9
+  name: Electric heating coil
+  base_type: heatingCoil
+  extension: True
+  properties:
+    elecHeating:
+
+- id: "PH_DX_Heating_Coil"
+  type: Haystack
+  version: 3.9.9
+  name: DX heating coil
+  base_type: heatingCoil
+  extension: True
+  properties:
+    dxHeating:
+    stage: 1
+
+- id: "PH_DX_Heating_Coil_2_Stage"
+  type: Haystack
+  version: 3.9.9
+  name: DX heating coil
+  base_type: heatingCoil
+  extension: True
+  properties:
+    dxHeating:
+    stage: 2
+
+- id: "PH_DX_Cooling_Coil"
+  type: Haystack
+  version: 3.9.9
+  name: DX cooling coil
+  base_type: coolingCoil
+  extension: True
+  properties:
+    dxCooling:
+    stage: 1
+
+- id: "PH_DX_Cooling_Coil_2_Stage"
+  type: Haystack
+  version: 3.9.9
+  name: DX cooling coil
+  base_type: coolingCoil
+  extension: True
+  properties:
+    dxCooling:
+    stage: 2

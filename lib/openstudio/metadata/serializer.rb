@@ -111,7 +111,7 @@ module OpenStudio
         entities.each do |entity|
           entity.keys.each do |k|
             if k == 'add_tags'
-              (tags = entity[k]) && tags.each { |tag| entity.store(tag, ':m') && entity.delete(k) }
+              (tags = entity[k]) && (entity = entity.merge(tags)) && entity.delete(k)
             elsif k == 'type'
               (t_tags = entity[k].split('-')) && t_tags.each { |t_tag| entity.store(t_tag, ':m') } && entity.delete(k)
             elsif k == 'relationships'

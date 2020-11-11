@@ -40,9 +40,12 @@ require_relative 'metadata/writer'
 require_relative 'metadata/serializer'
 require_relative 'metadata/helpers'
 require_relative 'metadata/controls'
+require_relative 'metadata/reverse_translator'
 
 module OpenStudio
   module Metadata
+    HAYSTACK = 'HAYSTACK'
+    BRICK = 'BRICK'
     class Metadata < OpenStudio::Extension::Extension
       # Override parent class
       def initialize

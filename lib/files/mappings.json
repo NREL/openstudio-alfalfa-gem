@@ -240,7 +240,7 @@
       }
     ],
     "haystack": {
-      "template": "heatingCoil"
+      "template": "PH_DX_Heating_Coil"
     },
     "brick": {
       "template": "Heating_Coil"
@@ -256,7 +256,7 @@
       }
     ],
     "haystack": {
-      "template": "coolingCoil"
+      "template": "PH_DX_Cooling_Coil"
     },
     "brick": {
       "template": "Cooling_Coil"
@@ -275,7 +275,7 @@
       "template": "coolingCoil"
     },
     "brick": {
-      "template": "Cooling_Coil"
+      "template": "PH_DX_Cooling_Coil_2_Stage"
     }
   },
   {
@@ -288,7 +288,7 @@
       }
     ],
     "haystack": {
-      "template": "heatingCoil"
+      "template": "PH_Gas_Heating_Coil"
     },
     "brick": {
       "template": "Heating_Coil"
@@ -304,7 +304,7 @@
       }
     ],
     "haystack": {
-      "template": "heatingCoil"
+      "template": "PH_Electric_Heating_Coil"
     },
     "brick": {
       "template": "Heating_Coil"
