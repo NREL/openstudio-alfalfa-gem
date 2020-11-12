@@ -208,7 +208,7 @@
       }
     ],
     "haystack": {
-      "template": "fan-motor"
+      "template": "PH_CAV_Fan"
     },
     "brick": {
       "template": "Fan"
@@ -224,7 +224,7 @@
       }
     ],
     "haystack": {
-      "template": "fan-motor"
+      "template": "PH_VAV_Fan"
     },
     "brick": {
       "template": "Fan"

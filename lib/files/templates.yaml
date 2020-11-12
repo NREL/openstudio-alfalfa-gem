@@ -417,3 +417,21 @@
   properties:
     dxCooling:
     stage: 2
+
+- id: "PH_CAV_Fan"
+  type: Haystack
+  version: 3.9.9
+  name: CAV Fan
+  base_type: fan-motor
+  extension: True
+  properties:
+    constantAirVolume:
+
+- id: "PH_VAV_Fan"
+  type: Haystack
+  version: 3.9.9
+  name: VAV Fan
+  base_type: fan-motor
+  extension: True
+  properties:
+    variableAirVolume:

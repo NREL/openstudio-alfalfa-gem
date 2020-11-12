@@ -1,5 +1,7 @@
 require 'json'
 require_relative 'mapping/mappings_manager'
+require_relative 'topology/loop_builder'
+require_relative 'topology/equipment'
 module OpenStudio
   module Metadata
     class ReverseTranslator
@@ -15,13 +17,21 @@ module OpenStudio
       end
 
       def reverse_translate
+        equips = []
         File.open('log.txt', 'w') do |f|
           @model['rows'].each do |row|
             next unless (IGNORE_TAGS & row.keys).empty?
-            f.write find_matching_class(row)
+            openstudio_class = find_matching_class(row)
+            equips.push(OpenStudio::Metadata::Topology::Equipment.new(openstudio_class, row))
+            f.write openstudio_class
             f.write("\n")
             f.write row
             f.write("\n\n")
+          end
+          loop_builder = OpenStudio::Metadata::Topology::LoopBuilder.new(equips)
+          loops = loop_builder.build_loops
+          loops.each do |loop|
+            f.write("#{loop}\n")
           end
         end
       end
