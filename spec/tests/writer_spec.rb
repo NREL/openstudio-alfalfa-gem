@@ -34,32 +34,32 @@
 # *******************************************************************************
 
 require 'spec_helper'
+require 'openstudio'
 require_relative '../spec_helper'
 
 RSpec.describe 'OpenStudio::Metadata::Writer Haystack and Brick SmallOffice spec' do
   before(:all) do
     @building_type = 'SmallOffice'
     @dir = "#{Dir.pwd}/spec/outputs/#{@building_type}"
-    @osm = @dir + '/SR1/in.osm'
+    @model = OpenStudio::Model::Model.load(@dir + '/SR1/in.osm').get
+    @mappings_manager = OpenStudio::Metadata::Mapping::MappingsManager.new
     check_and_create_prototype(@building_type)
     @output_path = File.join(File.dirname(__FILE__), '../outputs')
 
-    @creator_haystack = setup_creator('Haystack', @building_type)
-    @creator_brick = setup_creator('Brick', @building_type)
-
-    @writer_haystack = OpenStudio::Metadata::Writer.new(creator: @creator_haystack)
-    @writer_brick = OpenStudio::Metadata::Writer.new(creator: @creator_brick)
+    @translator = OpenStudio::Metadata::Translator.new(@model, @mappings_manager)
+    @entities = @translator.build_entities_list
+    @writer = OpenStudio::Metadata::Writer.new
   end
 
   it 'Should be able to write a Brick graph to a turtle file' do
-    @writer_brick.create_output
+    @writer.create_output(@entities)
     n = "#{@building_type}_model.ttl"
     f = File.join(@output_path, n)
     if File.exist?(f)
       File.delete(f)
     end
     expect(File.exist?(f)).to be false
-    @writer_brick.write_output_to_file(output_format: 'ttl', file_path: @output_path, file_name_without_extension: n.split('.')[0])
+    @writer.write_output_to_file(output_format: 'ttl', file_path: @output_path, file_name_without_extension: n.split('.')[0])
     expect(File.exist?(f)).to be true
   end
 
@@ -70,19 +70,19 @@ RSpec.describe 'OpenStudio::Metadata::Writer Haystack and Brick SmallOffice spec
       File.delete(f)
     end
     expect(File.exist?(f)).to be false
-    @writer_brick.write_output_to_file(output_format: 'nq', file_path: @output_path, file_name_without_extension: n.split('.')[0])
+    @writer.write_output_to_file(output_format: 'nq', file_path: @output_path, file_name_without_extension: n.split('.')[0])
     expect(File.exist?(f)).to be true
   end
 
   it 'Should be able to write a Haystack model to a json file' do
-    @writer_haystack.create_output
+    @writer.create_output(@entities)
     n = "#{@building_type}_model.json"
     f = File.join(@output_path, n)
     if File.exist?(f)
       File.delete(f)
     end
     expect(File.exist?(f)).to be false
-    @writer_haystack.write_output_to_file(output_format: 'json', file_path: @output_path, file_name_without_extension: n.split('.')[0])
+    @writer.write_output_to_file(output_format: 'json', file_path: @output_path, file_name_without_extension: n.split('.')[0])
     expect(File.exist?(f)).to be true
   end
 end
@@ -91,26 +91,25 @@ RSpec.describe 'OpenStudio::Metadata::Writer Haystack and Brick MediumOffice spe
   before(:all) do
     @building_type = 'MediumOffice'
     @dir = "#{Dir.pwd}/spec/outputs/#{@building_type}"
-    @osm = @dir + '/SR1/in.osm'
+    @model = OpenStudio::Model::Model.load(@dir + '/SR1/in.osm').get
+    @mappings_manager = OpenStudio::Metadata::Mapping::MappingsManager.new
     check_and_create_prototype(@building_type)
     @output_path = File.join(File.dirname(__FILE__), '../outputs')
 
-    @creator_haystack = setup_creator('Haystack', @building_type)
-    @creator_brick = setup_creator('Brick', @building_type)
-
-    @writer_haystack = OpenStudio::Metadata::Writer.new(creator: @creator_haystack)
-    @writer_brick = OpenStudio::Metadata::Writer.new(creator: @creator_brick)
+    @translator = OpenStudio::Metadata::Translator.new(@model, @mappings_manager)
+    @entities = @translator.build_entities_list
+    @writer = OpenStudio::Metadata::Writer.new
   end
 
   it 'Should be able to write a Brick graph to a turtle file' do
-    @writer_brick.create_output
+    @writer.create_output(@entities)
     n = "#{@building_type}_model.ttl"
     f = File.join(@output_path, n)
     if File.exist?(f)
       File.delete(f)
     end
     expect(File.exist?(f)).to be false
-    @writer_brick.write_output_to_file(output_format: 'ttl', file_path: @output_path, file_name_without_extension: n.split('.')[0])
+    @writer.write_output_to_file(output_format: 'ttl', file_path: @output_path, file_name_without_extension: n.split('.')[0])
     expect(File.exist?(f)).to be true
   end
 
@@ -121,19 +120,19 @@ RSpec.describe 'OpenStudio::Metadata::Writer Haystack and Brick MediumOffice spe
       File.delete(f)
     end
     expect(File.exist?(f)).to be false
-    @writer_brick.write_output_to_file(output_format: 'nq', file_path: @output_path, file_name_without_extension: n.split('.')[0])
+    @writer.write_output_to_file(output_format: 'nq', file_path: @output_path, file_name_without_extension: n.split('.')[0])
     expect(File.exist?(f)).to be true
   end
 
   it 'Should be able to write a Haystack model to a json file' do
-    @writer_haystack.create_output
+    @writer.create_output(@entities)
     n = "#{@building_type}_model.json"
     f = File.join(@output_path, n)
     if File.exist?(f)
       File.delete(f)
     end
     expect(File.exist?(f)).to be false
-    @writer_haystack.write_output_to_file(output_format: 'json', file_path: @output_path, file_name_without_extension: n.split('.')[0])
+    @writer.write_output_to_file(output_format: 'json', file_path: @output_path, file_name_without_extension: n.split('.')[0])
     expect(File.exist?(f)).to be true
   end
 end
@@ -142,26 +141,25 @@ RSpec.describe 'OpenStudio::Metadata::Writer Haystack and Brick RetailStandalone
   before(:all) do
     @building_type = 'RetailStandalone'
     @dir = "#{Dir.pwd}/spec/outputs/#{@building_type}"
-    @osm = @dir + '/SR1/in.osm'
+    @model = OpenStudio::Model::Model.load(@dir + '/SR1/in.osm').get
+    @mappings_manager = OpenStudio::Metadata::Mapping::MappingsManager.new
     check_and_create_prototype(@building_type)
     @output_path = File.join(File.dirname(__FILE__), '../outputs')
 
-    @creator_haystack = setup_creator('Haystack', @building_type)
-    @creator_brick = setup_creator('Brick', @building_type)
-
-    @writer_haystack = OpenStudio::Metadata::Writer.new(creator: @creator_haystack)
-    @writer_brick = OpenStudio::Metadata::Writer.new(creator: @creator_brick)
+    @translator = OpenStudio::Metadata::Translator.new(@model, @mappings_manager)
+    @entities = @translator.build_entities_list
+    @writer = OpenStudio::Metadata::Writer.new
   end
 
   it 'Should be able to write a Brick graph to a turtle file' do
-    @writer_brick.create_output
+    @writer.create_output(@entities)
     n = "#{@building_type}_model.ttl"
     f = File.join(@output_path, n)
     if File.exist?(f)
       File.delete(f)
     end
     expect(File.exist?(f)).to be false
-    @writer_brick.write_output_to_file(output_format: 'ttl', file_path: @output_path, file_name_without_extension: n.split('.')[0])
+    @writer.write_output_to_file(output_format: 'ttl', file_path: @output_path, file_name_without_extension: n.split('.')[0])
     expect(File.exist?(f)).to be true
   end
 
@@ -172,19 +170,19 @@ RSpec.describe 'OpenStudio::Metadata::Writer Haystack and Brick RetailStandalone
       File.delete(f)
     end
     expect(File.exist?(f)).to be false
-    @writer_brick.write_output_to_file(output_format: 'nq', file_path: @output_path, file_name_without_extension: n.split('.')[0])
+    @writer.write_output_to_file(output_format: 'nq', file_path: @output_path, file_name_without_extension: n.split('.')[0])
     expect(File.exist?(f)).to be true
   end
 
   it 'Should be able to write a Haystack model to a json file' do
-    @writer_haystack.create_output
+    @writer.create_output(@entities)
     n = "#{@building_type}_model.json"
     f = File.join(@output_path, n)
     if File.exist?(f)
       File.delete(f)
     end
     expect(File.exist?(f)).to be false
-    @writer_haystack.write_output_to_file(output_format: 'json', file_path: @output_path, file_name_without_extension: n.split('.')[0])
+    @writer.write_output_to_file(output_format: 'json', file_path: @output_path, file_name_without_extension: n.split('.')[0])
     expect(File.exist?(f)).to be true
   end
 end

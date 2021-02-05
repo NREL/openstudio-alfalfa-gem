@@ -2,9 +2,9 @@ module OpenStudio
   module Metadata
     module Mapping
       class Template
-        attr_reader :base_type, :version, :ontology, :template_id, :properties
+        attr_reader :version, :ontology, :id, :properties, :symbol
         def initialize(template_yaml)
-          case template_yaml['type']
+          case template_yaml['schema_name']
           when 'Haystack'
             @ontology = HAYSTACK
             @properties = template_yaml['properties']
@@ -18,14 +18,13 @@ module OpenStudio
           when 'Brick'
             @ontology = BRICK
           end
-          @base_type = template_yaml['base_type']
-          @template_id = template_yaml['id']
+          @id = template_yaml['id']
+          @symbol = template_yaml['symbol']
         end
 
         def to_s
-          return "#{@template_id}:#{@ontology}"
+          return "#{@id}:#{@ontology}"
         end
-        
       end
     end
   end

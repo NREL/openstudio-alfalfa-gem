@@ -54,27 +54,25 @@ module OpenStudio
       # Initialize Writer
       ##
       # @param creator [Creator] creator
-      def initialize(creator:)
-        @creator = creator
+      def initialize(files_path = nil)
         @files_path = File.join(File.dirname(__FILE__), '../../files')
-        @metadata_type = @creator.metadata_type
+        @files_path = files_path if files_path
         @output_format = nil # set by write_output_to_file
         @brick_graph = nil #
         @haystack = nil
-
-        supported_metadata_types = ['Brick', 'Haystack']
-        raise "metadata_type must be one of #{supported_metadata_types}" unless supported_metadata_types.include? @metadata_type
       end
 
       # Generates BrickGraph or Haystack from entities
-      def create_output
-        case @metadata_type
-        when 'Brick'
-          @brick_graph = BrickGraph.new
-          @brick_graph.create_from_entities(@creator.entities)
-        when 'Haystack'
-          @haystack = Haystack.new
-          @haystack = @haystack.create_from_entities(@creator.entities)
+      def create_output(entities, ontologies = ONTOLOGIES)
+        ontologies.each do |ontology|
+          case ontology
+          when BRICK
+            @brick_graph = BrickGraph.new
+            @brick_graph.create_from_entities(entities)
+          when HAYSTACK
+            @haystack = Haystack.new
+            @haystack = @haystack.create_from_entities(entities)
+          end
         end
       end
 
@@ -85,20 +83,22 @@ module OpenStudio
       # @param [String] file_path Path to output folder
       # @param [String] file_name_without_extension output name without extension
       def write_output_to_file(output_format:, file_path: '.', file_name_without_extension: 'model')
-        @output_format = output_format
-        supported_haystack_formats = ['json']
-        supported_brick_formats = ['ttl', 'nq']
-        raise "Brick output format must be one of: #{supported_brick_formats}" if (@metadata_type == 'Brick') && !supported_brick_formats.include?(@output_format)
-        raise "Haystack output format must be one of: #{supported_haystack_formats}" if (@metadata_type == 'Haystack') && !supported_haystack_formats.include?(@output_format)
-        case @metadata_type
-        when 'Brick'
-          case @output_format
+        output_formats = { 'json' => HAYSTACK,
+                           'ttl' => BRICK,
+                           'nq' => BRICK }.freeze
+        if !output_formats.key? output_format
+          raise "Output Format: #{output_format} is not supported"
+        end
+        ontology = output_formats[output_format]
+        case ontology
+        when BRICK
+          case output_format
           when 'ttl'
             File.open(File.join(file_path, "#{file_name_without_extension}.ttl"), 'w') { |f| f << @brick_graph.dump(:ttl) }
           when 'nq'
             File.open(File.join(file_path, "#{file_name_without_extension}.nq"), 'w') { |f| f << @brick_graph.dump(:nquads) }
           end
-        when 'Haystack'
+        when HAYSTACK
           File.open(File.join(file_path, "#{file_name_without_extension}.json"), 'w') { |f| f << @haystack }
         end
       end

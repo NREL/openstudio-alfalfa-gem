@@ -33,30 +33,32 @@
 # OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 # *******************************************************************************
 
-require 'openstudio/extension'
-require_relative 'metadata/creator'
-require_relative 'metadata/version'
-require_relative 'metadata/writer'
-require_relative 'metadata/serializer'
-require_relative 'metadata/helpers'
-require_relative 'metadata/controls'
-require_relative 'metadata/reverse_translator'
-require_relative 'metadata/translator'
-require_relative 'metadata/mapping'
-require_relative 'metadata/topology'
+require 'spec_helper'
+require 'openstudio'
+require_relative '../spec_helper'
 
-module OpenStudio
-  module Metadata
-    HAYSTACK = 'HAYSTACK'.freeze
-    BRICK = 'BRICK'.freeze
-    ONTOLOGIES = [BRICK, HAYSTACK].freeze
-    class Metadata < OpenStudio::Extension::Extension
-      # Override parent class
-      def initialize
-        super
+RSpec.describe 'OpenStudio::Metadata::Translator spec' do
+  before(:all) do
+    building_type = 'SmallOffice'
+    @dir = "#{Dir.pwd}/spec/outputs/#{building_type}"
+    @osm = @dir + '/SR1/in.osm'
+    @model = OpenStudio::Model::Model.load(@osm).get
+    @mappings_manager = OpenStudio::Metadata::Mapping::MappingsManager.new
+    check_and_create_prototype(building_type)
 
-        @root_dir = File.absolute_path(File.join(File.dirname(__FILE__), '..', '..'))
-      end
-    end
+    @translator = OpenStudio::Metadata::Translator.new(@model, @mappings_manager)
+    @haystack = OpenStudio::Metadata::Haystack.new
+    @brick = OpenStudio::Metadata::BrickGraph.new
+  end
+
+  it 'Should translate model to haystack' do
+    entities = @translator.build_entities_list
+    puts @haystack.create_from_entities(entities)
+  end
+
+  it 'Should translate model to Brick' do
+    entities = @translator.build_entities_list
+    @brick.create_from_entities(entities)
+    puts @brick.dump
   end
 end

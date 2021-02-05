@@ -1,0 +1,7 @@
+require_relative 'mapping/mapping'
+require_relative 'mapping/mappings_manager'
+require_relative 'mapping/template'
+require_relative 'mapping/template_entity'
+require_relative 'mapping/template_equipment'
+require_relative 'mapping/template_point_group'
+require_relative 'mapping/templates_manager'
