@@ -16,7 +16,7 @@ jobs:
       run: |
         gem install bundler
         bundle install
-    - name: Building Section Spec
+    - name: Templates Manager Spec
       run: bundle exec rspec spec/tests/templates_manager_spec.rb
       if: always()
 

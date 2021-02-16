@@ -41,9 +41,9 @@ RSpec.describe 'OpenStudio::Metadata::Writer Haystack and Brick SmallOffice spec
   before(:all) do
     @building_type = 'SmallOffice'
     @dir = "#{Dir.pwd}/spec/outputs/#{@building_type}"
+    check_and_create_prototype(@building_type)
     @model = OpenStudio::Model::Model.load(@dir + '/SR1/in.osm').get
     @mappings_manager = OpenStudio::Metadata::Mapping::MappingsManager.new
-    check_and_create_prototype(@building_type)
     @output_path = File.join(File.dirname(__FILE__), '../outputs')
 
     @translator = OpenStudio::Metadata::Translator.new(@model, @mappings_manager)
@@ -91,9 +91,9 @@ RSpec.describe 'OpenStudio::Metadata::Writer Haystack and Brick MediumOffice spe
   before(:all) do
     @building_type = 'MediumOffice'
     @dir = "#{Dir.pwd}/spec/outputs/#{@building_type}"
+    check_and_create_prototype(@building_type)
     @model = OpenStudio::Model::Model.load(@dir + '/SR1/in.osm').get
     @mappings_manager = OpenStudio::Metadata::Mapping::MappingsManager.new
-    check_and_create_prototype(@building_type)
     @output_path = File.join(File.dirname(__FILE__), '../outputs')
 
     @translator = OpenStudio::Metadata::Translator.new(@model, @mappings_manager)
@@ -141,9 +141,9 @@ RSpec.describe 'OpenStudio::Metadata::Writer Haystack and Brick RetailStandalone
   before(:all) do
     @building_type = 'RetailStandalone'
     @dir = "#{Dir.pwd}/spec/outputs/#{@building_type}"
+    check_and_create_prototype(@building_type)
     @model = OpenStudio::Model::Model.load(@dir + '/SR1/in.osm').get
     @mappings_manager = OpenStudio::Metadata::Mapping::MappingsManager.new
-    check_and_create_prototype(@building_type)
     @output_path = File.join(File.dirname(__FILE__), '../outputs')
 
     @translator = OpenStudio::Metadata::Translator.new(@model, @mappings_manager)
