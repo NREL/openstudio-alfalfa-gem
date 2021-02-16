@@ -88,4 +88,12 @@ RSpec.describe 'OpenStudio::Metadata::Mapping::TemplatesManager spec' do
   it 'Should store templates as a Hash' do
     expect(@templates_manager.send(:templates)).to be_an_instance_of(Hash)
   end
+
+  it 'Should have PH_OAF_Sensor' do
+    puts @templates_manager.resolve_template('PH_OAF_Sensor', OpenStudio::Metadata::HAYSTACK)
+  end
+
+  it 'Should have PH_DX_Heating_Coil_2_Stage' do
+    puts @templates_manager.resolve_template('PH_DX_Heating_Coil_2_Stage', OpenStudio::Metadata::HAYSTACK)
+  end
 end

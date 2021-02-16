@@ -1,0 +1,57 @@
+name: Continuous Integration
+
+on:
+  pull_request:
+  push:
+
+jobs:
+  utilities_tests:
+    name: Templates and Mapping Tests
+    container: nrel/openstudio:3.0.1
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v2
+    - name: Setup
+      run: |
+        gem install bundler
+        bundle install
+    - name: Building Section Spec
+      run: bundle exec rspec spec/tests/templates_manager_spec.rb
+      if: always()
+
+
+  translator_tests:
+    name: Translator Tests
+    container: nrel/openstudio:3.0.1
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v2
+    - name: Setup
+      run: |
+        gem install bundler
+        bundle install
+    - name: Translator Spec
+      run: bundle exec rspec spec/tests/translator_spec.rb
+      if: always()
+    - name: Writer Spec
+      run: bundle exec rspec spec/tests/writer_spec.rb
+      if: always()
+    - name: Runner Spec
+      run: bundle exec rspec spec/tests/runner_spec.rb
+
+  reverse_translation_tests:
+    name: Reverse Translation Tests
+    container: nrel/openstudio:3.0.1
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v2
+    - name: Setup
+      run: |
+        gem install bundler
+        bundle install
+    - name: Reverse Translator Spec
+      run: bundle exec rspec spec/tests/report_spec.rb
+      if: always()
