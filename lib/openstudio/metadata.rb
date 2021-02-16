@@ -34,7 +34,6 @@
 # *******************************************************************************
 
 require 'openstudio/extension'
-require_relative 'metadata/creator'
 require_relative 'metadata/version'
 require_relative 'metadata/writer'
 require_relative 'metadata/serializer'

@@ -92,7 +92,7 @@ module OpenStudio
               kind = val['kind_']
               case kind
               when 'marker'
-                tags[name] = ':m'
+                tags[name] = 'm'
               when 'number'
                 tags[name] = val['val'].to_i
               end
@@ -121,7 +121,7 @@ module OpenStudio
           # to_return[term] = :m
           if !union.empty?
             union.each do |tag|
-              to_return[tag] = ':m'
+              to_return[tag] = 'm'
             end
           end
           return to_return
