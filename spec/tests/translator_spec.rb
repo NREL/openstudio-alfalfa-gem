@@ -37,7 +37,7 @@ require 'spec_helper'
 require 'openstudio'
 require_relative '../spec_helper'
 
-RSpec.describe 'OpenStudio::Metadata::Translator spec' do
+RSpec.describe 'OpenStudio::Metadata::Translator SmallOffice spec' do
   before(:all) do
     building_type = 'SmallOffice'
     @dir = "#{Dir.pwd}/spec/outputs/#{building_type}"
@@ -47,18 +47,28 @@ RSpec.describe 'OpenStudio::Metadata::Translator spec' do
     check_and_create_prototype(building_type)
 
     @translator = OpenStudio::Metadata::Translator.new(@model, @mappings_manager)
-    @haystack = OpenStudio::Metadata::Haystack.new
-    @brick = OpenStudio::Metadata::BrickGraph.new
   end
 
-  it 'Should translate model to haystack' do
+  it 'Should have 133 entities' do
     entities = @translator.build_entities_list
-    puts @haystack.create_from_entities(entities)
+    expect(entities.size).to eq 133
+  end
+end
+
+RSpec.describe 'OpenStudio::Metadata::Translator MediumOffice spec' do
+  before(:all) do
+    building_type = 'MediumOffice'
+    @dir = "#{Dir.pwd}/spec/outputs/#{building_type}"
+    @osm = @dir + '/SR1/in.osm'
+    @model = OpenStudio::Model::Model.load(@osm).get
+    @mappings_manager = OpenStudio::Metadata::Mapping::MappingsManager.new
+    check_and_create_prototype(building_type)
+
+    @translator = OpenStudio::Metadata::Translator.new(@model, @mappings_manager)
   end
 
-  it 'Should translate model to Brick' do
+  it 'Should have 145 entities' do
     entities = @translator.build_entities_list
-    @brick.create_from_entities(entities)
-    puts @brick.dump
+    expect(entities.size).to eq 145
   end
 end

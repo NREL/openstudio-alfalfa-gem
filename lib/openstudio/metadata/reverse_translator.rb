@@ -12,7 +12,7 @@ module OpenStudio
         @mappings = @mappings_manager.mappings
         @class_map = {}
         @mappings.each do |mapping|
-          @class_map[mapping.openstudio_class] = mapping.resolve_template
+          @class_map[mapping.openstudio_class] = @mappings_manager.template_manager.resolve_metadata(mapping.template_ids[HAYSTACK])
         end
       end
 

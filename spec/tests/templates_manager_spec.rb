@@ -35,64 +35,57 @@
 
 require 'spec_helper'
 require_relative '../spec_helper'
-require 'fileutils'
 
-RSpec.describe 'Tests a successful simulation of SmallOffice after mappings applied' do
+RSpec.describe 'OpenStudio::Metadata::Mapping::TemplatesManager spec' do
   before(:all) do
-    building_type = 'SmallOffice'
-    @dir = "#{Dir.pwd}/spec/outputs/#{building_type}"
-    @file_dir = @dir + '/SR1/'
-    @osm = @file_dir + 'in.osm'
-    @model = OpenStudio::Model::Model.load(@osm).get
-    @mappings_manager = OpenStudio::Metadata::Mapping::MappingsManager.new
-    check_and_create_prototype(building_type)
-
-    @translator = OpenStudio::Metadata::Translator.new(@model, @mappings_manager)
+    @templates_manager = OpenStudio::Metadata::Mapping::TemplatesManager.new
   end
 
-  it 'SmallOffice can run an OSW' do
-    result, failed = run_osw(@file_dir)
-    expect(result).to be true
-    expect(failed).to be false
-  end
-end
-
-RSpec.describe 'Tests a successful simulation of MediumOffice after mappings applied' do
-  before(:all) do
-    building_type = 'MediumOffice'
-    @dir = "#{Dir.pwd}/spec/outputs/#{building_type}"
-    @file_dir = @dir + '/SR1/'
-    @osm = @file_dir + 'in.osm'
-    @model = OpenStudio::Model::Model.load(@osm).get
-    @mappings_manager = OpenStudio::Metadata::Mapping::MappingsManager.new
-    check_and_create_prototype(building_type)
-
-    @translator = OpenStudio::Metadata::Translator.new(@model, @mappings_manager)
+  it 'Should read in templates' do
+    expect(@templates_manager.send(:templates)).to_not be({})
   end
 
-  it 'MediumOffice can run an OSW' do
-    result, failed = run_osw(@file_dir)
-    expect(result).to be true
-    expect(failed).to be false
-  end
-end
-
-RSpec.describe 'Tests a successful simulation of RetailStandalone after mappings applied' do
-  before(:all) do
-    building_type = 'RetailStandalone'
-    @dir = "#{Dir.pwd}/spec/outputs/#{building_type}"
-    @file_dir = @dir + '/SR1/'
-    @osm = @file_dir + 'in.osm'
-    @model = OpenStudio::Model::Model.load(@osm).get
-    @mappings_manager = OpenStudio::Metadata::Mapping::MappingsManager.new
-    check_and_create_prototype(building_type)
-
-    @translator = OpenStudio::Metadata::Translator.new(@model, @mappings_manager)
+  it 'Should read in brick and haystack metadata definitions' do
+    expect(@templates_manager.send(:haystack_repo)).to_not be nil
+    expect(@templates_manager.send(:brick_repo)).to_not be nil
   end
 
-  it 'RetailStandalone can run an OSW' do
-    result, failed = run_osw(@file_dir)
-    expect(result).to be true
-    expect(failed).to be false
+  it 'Should have heatPump as a term in @haystack_repo' do
+    haystack_repo = @templates_manager.send(:haystack_repo)
+    phiot_vocab = @templates_manager.send(:phiot_vocab)
+    expect(haystack_repo.has_subject?(phiot_vocab.heatPump)).to be true
+  end
+
+  it 'Should have AHU as a term in @brick_repo' do
+    brick_repo = @templates_manager.send(:brick_repo)
+    brick_vocab = @templates_manager.send(:brick_vocab)
+    expect(brick_repo.has_subject?(brick_vocab['AHU'])).to be true
+  end
+
+  it "Should return four Haystack classes that are subclasses of an 'ahu'" do
+    haystack_repo = @templates_manager.send(:haystack_repo)
+    phiot_vocab = @templates_manager.send(:phiot_vocab)
+
+    s = SPARQL::Client.new(haystack_repo)
+    q = "SELECT ?e WHERE { ?e <#{RDF::RDFS.subClassOf}>* <#{phiot_vocab.ahu}> }"
+    results = s.query(q)
+    data = []
+    results.each do |r|
+      data << r['e'].to_s
+    end
+    data = data.to_set
+    expect(data.size).to be 4
+    expected = [
+      phiot_vocab.ahu.to_s,
+      phiot_vocab['doas'].to_s,
+      phiot_vocab[:rtu].to_s,
+      phiot_vocab.mau.to_s
+    ]
+    expected = expected.to_set
+    expect(expected == data).to be true
+  end
+
+  it 'Should store templates as a Hash' do
+    expect(@templates_manager.send(:templates)).to be_an_instance_of(Hash)
   end
 end

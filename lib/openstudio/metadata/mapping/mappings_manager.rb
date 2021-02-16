@@ -6,7 +6,7 @@ module OpenStudio
   module Metadata
     module Mapping
       class MappingsManager
-        attr_reader :mappings
+        attr_reader :mappings, :template_manager
         def initialize(files_path = nil)
           files_path = File.join(File.dirname(__FILE__), '../../../files') unless !files_path.nil?
           @template_manager = TemplatesManager.new(files_path)
