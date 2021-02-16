@@ -42,9 +42,9 @@ RSpec.describe 'OpenStudio::Metadata::Translator SmallOffice spec' do
     building_type = 'SmallOffice'
     @dir = "#{Dir.pwd}/spec/outputs/#{building_type}"
     @osm = @dir + '/SR1/in.osm'
+    check_and_create_prototype(building_type)
     @model = OpenStudio::Model::Model.load(@osm).get
     @mappings_manager = OpenStudio::Metadata::Mapping::MappingsManager.new
-    check_and_create_prototype(building_type)
 
     @translator = OpenStudio::Metadata::Translator.new(@model, @mappings_manager)
   end
@@ -60,9 +60,9 @@ RSpec.describe 'OpenStudio::Metadata::Translator MediumOffice spec' do
     building_type = 'MediumOffice'
     @dir = "#{Dir.pwd}/spec/outputs/#{building_type}"
     @osm = @dir + '/SR1/in.osm'
+    check_and_create_prototype(building_type)
     @model = OpenStudio::Model::Model.load(@osm).get
     @mappings_manager = OpenStudio::Metadata::Mapping::MappingsManager.new
-    check_and_create_prototype(building_type)
 
     @translator = OpenStudio::Metadata::Translator.new(@model, @mappings_manager)
   end

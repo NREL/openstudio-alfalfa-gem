@@ -42,29 +42,29 @@ RSpec.describe 'OpenStudio::Metadata::Mapping::TemplatesManager spec' do
   end
 
   it 'Should read in templates' do
-    expect(@templates_manager.send(:templates)).to_not be({})
+    expect(@templates_manager.instance_variable_get(:@templates)).to_not be({})
   end
 
   it 'Should read in brick and haystack metadata definitions' do
-    expect(@templates_manager.send(:haystack_repo)).to_not be nil
-    expect(@templates_manager.send(:brick_repo)).to_not be nil
+    expect(@templates_manager.instance_variable_get(:@haystack_repo)).to_not be nil
+    expect(@templates_manager.instance_variable_get(:@brick_repo)).to_not be nil
   end
 
   it 'Should have heatPump as a term in @haystack_repo' do
-    haystack_repo = @templates_manager.send(:haystack_repo)
-    phiot_vocab = @templates_manager.send(:phiot_vocab)
+    haystack_repo = @templates_manager.instance_variable_get(:@haystack_repo)
+    phiot_vocab = @templates_manager.instance_variable_get(:@phiot_vocab)
     expect(haystack_repo.has_subject?(phiot_vocab.heatPump)).to be true
   end
 
   it 'Should have AHU as a term in @brick_repo' do
-    brick_repo = @templates_manager.send(:brick_repo)
-    brick_vocab = @templates_manager.send(:brick_vocab)
+    brick_repo = @templates_manager.instance_variable_get(:@brick_repo)
+    brick_vocab = @templates_manager.instance_variable_get(:@brick_vocab)
     expect(brick_repo.has_subject?(brick_vocab['AHU'])).to be true
   end
 
   it "Should return four Haystack classes that are subclasses of an 'ahu'" do
-    haystack_repo = @templates_manager.send(:haystack_repo)
-    phiot_vocab = @templates_manager.send(:phiot_vocab)
+    haystack_repo = @templates_manager.instance_variable_get(:@haystack_repo)
+    phiot_vocab = @templates_manager.instance_variable_get(:@phiot_vocab)
 
     s = SPARQL::Client.new(haystack_repo)
     q = "SELECT ?e WHERE { ?e <#{RDF::RDFS.subClassOf}>* <#{phiot_vocab.ahu}> }"
@@ -86,6 +86,14 @@ RSpec.describe 'OpenStudio::Metadata::Mapping::TemplatesManager spec' do
   end
 
   it 'Should store templates as a Hash' do
-    expect(@templates_manager.send(:templates)).to be_an_instance_of(Hash)
+    expect(@templates_manager.instance_variable_get(:@templates)).to be_an_instance_of(Hash)
+  end
+
+  it 'Should have PH_OAF_Sensor' do
+    puts @templates_manager.resolve_metadata('PH_OAF_Sensor', OpenStudio::Metadata::HAYSTACK)
+  end
+
+  it 'Should have PH_DX_Heating_Coil_2_Stage' do
+    puts @templates_manager.resolve_metadata('PH_DX_Heating_Coil_2_Stage', OpenStudio::Metadata::HAYSTACK)
   end
 end

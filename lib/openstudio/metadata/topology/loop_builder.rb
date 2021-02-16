@@ -1,4 +1,4 @@
-require_relative 'Loop'
+require_relative 'loop'
 module OpenStudio
   module Metadata
     module Topology
