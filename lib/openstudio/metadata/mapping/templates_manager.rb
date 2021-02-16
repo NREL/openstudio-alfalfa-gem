@@ -14,6 +14,7 @@ module OpenStudio
           @templates = load_templates_from_path(File.join(@files_path, 'templates'))
           @phiot_vocab = RDF::Vocabulary.new('https://project-haystack.org/def/phIoT/3.9.9#')
           @ph_vocab = RDF::Vocabulary.new('https://project-haystack.org/def/ph/3.9.9#')
+          @brick_vocab = RDF::Vocabulary.new('https://brickschema.org/schema/1.1/Brick#')
           @brick_repo = nil
           @haystack_repo = nil
           read_metadata

@@ -53,5 +53,5 @@ jobs:
         gem install bundler
         bundle install
     - name: Reverse Translator Spec
-      run: bundle exec rspec spec/tests/report_spec.rb
+      run: bundle exec rspec spec/tests/reverse_translator_spec.rb
       if: always()
