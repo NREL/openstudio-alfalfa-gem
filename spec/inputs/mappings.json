@@ -1,0 +1,388 @@
+[
+  {
+    "openstudio_class": "OS:Building",
+    "haystack": {
+      "template": "site"
+    },
+    "brick": {
+      "template": "Building"
+    }
+  },
+  {
+    "openstudio_class": "OS:AirLoopHVAC",
+    "relationships": [
+      {
+        "method_scope": "model",
+        "openstudio_method": ["getBuilding"],
+        "haystack": "siteRef",
+        "brick": "hasLocation"
+      }
+    ],
+    "brick": {
+      "template": "AHU"
+    },
+    "haystack": {
+      "template": "ahu"
+    },
+    "nodes": {
+      "relationship_to_parent": {
+        "brick": "isPointOf",
+        "haystack": "equipRef"
+      },
+      "outdoorAirNode": {
+        "System Node Temperature": {
+          "brick": "Outside_Air_Temperature_Sensor",
+          "haystack": "PH_OAT_Sensor"
+        },
+        "System Node Relative Humidity": {
+          "brick": "Outside_Air_Humidity_Sensor",
+          "haystack": "PH_OARH_Sensor"
+        },
+        "System Node Dewpoint Temperature": {
+          "brick": "Outside_Air_Dewpoint_Sensor",
+          "haystack":"PH_OADP_Sensor"
+        },
+        "System Node Mass Flow Rate": {
+          "brick": "Outside_Air_Flow_Sensor",
+          "haystack":"PH_OAF_Sensor"
+        }
+      },
+      "mixedAirNode": {
+        "System Node Temperature": {
+          "brick": "Mixed_Air_Temperature_Sensor",
+          "haystack": "PH_MAT_Sensor"
+        },
+        "System Node Relative Humidity": {
+          "brick": "Air_Humidity_Sensor",
+          "haystack": "PH_MARH_Sensor"
+        },
+        "System Node Mass Flow Rate": {
+          "brick": "Air_Flow_Sensor",
+          "haystack":"PH_MAF_Sensor"
+        }
+      },
+      "supplyOutletNode": {
+        "System Node Temperature": {
+          "brick": "Discharge_Air_Temperature_Sensor",
+          "haystack": "PH_DAT_Sensor"
+        },
+        "System Node Relative Humidity": {
+          "brick": "Discharge_Air_Humidity_Sensor",
+          "haystack": "PH_DARH_Sensor"
+        },
+        "System Node Mass Flow Rate": {
+          "brick": "Discharge_Air_Flow_Sensor",
+          "haystack":"PH_DAF_Sensor"
+        }
+      },
+      "supplyInletNode": {
+        "System Node Temperature": {
+          "brick": "Return_Air_Temperature_Sensor",
+          "haystack": "PH_RAT_Sensor"
+        },
+        "System Node Relative Humidity": {
+          "brick": "Return_Air_Humidity_Sensor",
+          "haystack": "PH_RARH_Sensor"
+        },
+        "System Node Mass Flow Rate": {
+          "brick": "Return_Air_Flow_Sensor",
+          "haystack":"PH_RAF_Sensor"
+        }
+      },
+      "reliefAirNode": {
+        "System Node Temperature": {
+          "brick": "Exhaust_Air_Temperature_Sensor",
+          "haystack": "PH_EAT_Sensor"
+        },
+        "System Node Relative Humidity": {
+          "brick": "Exhaust_Air_Humidity_Sensor",
+          "haystack": "PH_EARH_Sensor"
+        },
+        "System Node Mass Flow Rate": {
+          "brick": "Exhaust_Air_Flow_Sensor",
+          "haystack":"PH_EAF_Sensor"
+        }
+      }
+    }
+  },
+  {
+    "openstudio_class": "OS:AirLoopHVAC:UnitaryHeatPump:AirToAir",
+    "relationships": [
+      {
+        "method_scope": "model",
+        "openstudio_method": ["getBuilding"],
+        "haystack": "siteRef",
+        "brick": "hasLocation"
+      }
+    ],
+    "brick": {
+      "template": "AHU"
+    },
+    "haystack": {
+      "template": "PH_HP_SD_CAV"
+    }
+  },
+  {
+    "openstudio_class": "OS:AirTerminal:SingleDuct:ConstantVolume:NoReheat",
+    "relationships": [
+      {
+        "openstudio_method": ["airLoopHVAC"],
+        "haystack": "airRef",
+        "brick": "isFedBy"
+      },
+      {
+        "method_scope": "model",
+        "openstudio_method": ["getBuilding"],
+        "haystack": "siteRef",
+        "brick": "hasLocation"
+      }
+    ],
+    "haystack": {
+      "template": "cav"
+    },
+    "brick": {
+      "template": "Terminal_Unit"
+    }
+  },
+  {
+    "openstudio_class": "OS:ThermalZone",
+    "relationships": [
+      {
+        "openstudio_method": ["airLoopHVACTerminal"],
+        "haystack": "airRef",
+        "brick": "isFedBy"
+      },
+      {
+        "method_scope" : "model",
+        "openstudio_method": ["getBuilding"],
+        "haystack": "siteRef",
+        "brick": "hasLocation"
+      }
+    ],
+    "haystack": {
+      "template": "hvac-zone-space"
+    },
+    "brick": {
+      "template": "HVAC_Zone"
+    },
+    "nodes": {
+      "relationship_to_parent": {
+        "brick": "hasLocation",
+        "haystack": "spaceRef"
+      },
+      "zoneAirNode": {
+        "System Node Temperature": {
+          "brick": "Zone_Air_Temperature_Sensor",
+          "haystack": "PH_ZAT_Sensor"
+        },
+        "System Node Relative Humidity": {
+          "brick": "Zone_Air_Humidity_Sensor",
+          "haystack": "PH_ZARH_Sensor"
+        }
+      }
+    }
+  },
+  {
+    "openstudio_class": "OS:Fan:OnOff",
+    "relationships": [
+      {
+        "openstudio_method": ["containingHVACComponent", "airLoopHVAC"],
+        "haystack": "equipRef",
+        "brick": "isPartOf"
+      }
+    ],
+    "haystack": {
+      "template": "fan-motor"
+    },
+    "brick": {
+      "template": "Fan"
+    }
+  },
+  {
+    "openstudio_class": "OS:Fan:ConstantVolume",
+    "relationships": [
+      {
+        "openstudio_method": ["containingHVACComponent", "airLoopHVAC"],
+        "haystack": "equipRef",
+        "brick": "isPartOf"
+      }
+    ],
+    "haystack": {
+      "template": "PH_CAV_Fan"
+    },
+    "brick": {
+      "template": "Fan"
+    }
+  },
+  {
+    "openstudio_class": "OS:Fan:VariableVolume",
+    "relationships": [
+      {
+        "openstudio_method": ["containingHVACComponent", "airLoopHVAC"],
+        "haystack": "equipRef",
+        "brick": "isPartOf"
+      }
+    ],
+    "haystack": {
+      "template": "PH_VAV_Fan"
+    },
+    "brick": {
+      "template": "Fan"
+    }
+  },
+  {
+    "openstudio_class": "OS:Coil:Heating:DX:SingleSpeed",
+    "relationships": [
+      {
+        "openstudio_method": ["containingHVACComponent", "airLoopHVAC"],
+        "haystack": "equipRef",
+        "brick": "isPartOf"
+      }
+    ],
+    "haystack": {
+      "template": "PH_DX_Heating_Coil"
+    },
+    "brick": {
+      "template": "Heating_Coil"
+    }
+  },
+  {
+    "openstudio_class": "OS:Coil:Cooling:DX:SingleSpeed",
+    "relationships": [
+      {
+        "openstudio_method": ["containingHVACComponent", "airLoopHVAC"],
+        "haystack": "equipRef",
+        "brick": "isPartOf"
+      }
+    ],
+    "haystack": {
+      "template": "PH_DX_Cooling_Coil"
+    },
+    "brick": {
+      "template": "Cooling_Coil"
+    }
+  },
+  {
+    "openstudio_class": "OS:Coil:Cooling:DX:TwoSpeed",
+    "relationships": [
+      {
+        "openstudio_method": ["containingHVACComponent", "airLoopHVAC"],
+        "haystack": "equipRef",
+        "brick": "isPartOf"
+      }
+    ],
+    "haystack": {
+      "template": "PH_DX_Cooling_Coil_2_Stage"
+    },
+    "brick": {
+      "template": "Cooling_Coil"
+    }
+  },
+  {
+    "openstudio_class": "OS:Coil:Heating:Gas",
+    "relationships": [
+      {
+        "openstudio_method": ["containingHVACComponent", "airLoopHVAC"],
+        "haystack": "equipRef",
+        "brick": "isPartOf"
+      }
+    ],
+    "haystack": {
+      "template": "PH_Gas_Heating_Coil"
+    },
+    "brick": {
+      "template": "Heating_Coil"
+    }
+  },
+  {
+    "openstudio_class": "OS:Coil:Heating:Electric",
+    "relationships": [
+      {
+        "openstudio_method": ["containingHVACComponent", "airLoopHVAC"],
+        "haystack": "equipRef",
+        "brick": "isPartOf"
+      }
+    ],
+    "haystack": {
+      "template": "PH_Electric_Heating_Coil"
+    },
+    "brick": {
+      "template": "Heating_Coil"
+    }
+  },
+  {
+    "openstudio_class": "OS:AirTerminal:SingleDuct:VAV:Reheat",
+    "relationships": [
+      {
+        "openstudio_method": ["airLoopHVAC"],
+        "haystack": "airRef",
+        "brick": "isFedBy"
+      },
+      {
+        "method_scope": "model",
+        "openstudio_method": ["getBuilding"],
+        "haystack": "siteRef",
+        "brick": "hasLocation"
+      }
+    ],
+    "haystack": {
+      "template": "vav"
+    },
+    "brick": {
+      "template": "VAV"
+    }
+  },
+  {
+    "openstudio_class": "OS:Output:Meter",
+    "relationships": [
+      {
+        "method_scope": "model",
+        "openstudio_method": ["getBuilding"],
+        "haystack": "siteRef",
+        "brick": "hasLocation"
+      }
+    ],
+    "submeter_relationships": {
+      "haystack": "submeterOf",
+      "brick": "isFedBy"
+    },
+    "point_to_meter_relationship": {
+      "haystack": "equipRef",
+      "brick": "isPointOf"
+    },
+    "meters": {
+      "Electricity:Facility": {
+        "haystack": {
+          "equip_template": "PH_Elec_SiteMeter",
+          "point_template": "PH_Elec_Power"
+        },
+        "brick": {
+          "equip_template": "Building_Electrical_Meter",
+          "point_template": "Electrical_Power_Sensor"
+        },
+        "meters": {
+          "InteriorLights:Electricity:Facility": {
+            "haystack": {
+              "equip_template": "elec-meter",
+              "point_template":"PH_Elec_Power"
+            },
+            "brick": {
+              "equip_template": "Electrical_Meter",
+              "point_template": "Electrical_Power_Sensor"
+            }
+          }
+        }
+      },
+      "Gas:Facility": {
+        "haystack": {
+          "equip_template": "PH_Gas_SiteMeter",
+          "point_template": "PH_Gas_Energy"
+        },
+        "brick": {
+          "equip_template": "Building_Gas_Meter",
+          "point_template": "Energy_Sensor"
+        }
+      }
+    }
+  }
+]
