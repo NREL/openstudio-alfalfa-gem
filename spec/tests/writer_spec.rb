@@ -59,7 +59,7 @@ RSpec.describe 'OpenStudio::Metadata::Writer Haystack and Brick SmallOffice spec
       File.delete(f)
     end
     expect(File.exist?(f)).to be false
-    @writer.write_output_to_file(output_format: 'ttl', file_path: @output_path, file_name_without_extension: n.split('.')[0])
+    @writer.write_output_to_file(output_format: 'ttl', output_schema: OpenStudio::Metadata::BRICK, file_path: @output_path, file_name_without_extension: n.split('.')[0])
     expect(File.exist?(f)).to be true
   end
 
@@ -70,7 +70,7 @@ RSpec.describe 'OpenStudio::Metadata::Writer Haystack and Brick SmallOffice spec
       File.delete(f)
     end
     expect(File.exist?(f)).to be false
-    @writer.write_output_to_file(output_format: 'nq', file_path: @output_path, file_name_without_extension: n.split('.')[0])
+    @writer.write_output_to_file(output_format: 'nq', output_schema: OpenStudio::Metadata::BRICK, file_path: @output_path, file_name_without_extension: n.split('.')[0])
     expect(File.exist?(f)).to be true
   end
 
@@ -82,7 +82,7 @@ RSpec.describe 'OpenStudio::Metadata::Writer Haystack and Brick SmallOffice spec
       File.delete(f)
     end
     expect(File.exist?(f)).to be false
-    @writer.write_output_to_file(output_format: 'json', file_path: @output_path, file_name_without_extension: n.split('.')[0])
+    @writer.write_output_to_file(output_format: 'json', output_schema: OpenStudio::Metadata::HAYSTACK, file_path: @output_path, file_name_without_extension: n.split('.')[0])
     expect(File.exist?(f)).to be true
   end
 end
@@ -109,7 +109,7 @@ RSpec.describe 'OpenStudio::Metadata::Writer Haystack and Brick MediumOffice spe
       File.delete(f)
     end
     expect(File.exist?(f)).to be false
-    @writer.write_output_to_file(output_format: 'ttl', file_path: @output_path, file_name_without_extension: n.split('.')[0])
+    @writer.write_output_to_file(output_format: 'ttl', output_schema: OpenStudio::Metadata::BRICK, file_path: @output_path, file_name_without_extension: n.split('.')[0])
     expect(File.exist?(f)).to be true
   end
 
@@ -120,7 +120,7 @@ RSpec.describe 'OpenStudio::Metadata::Writer Haystack and Brick MediumOffice spe
       File.delete(f)
     end
     expect(File.exist?(f)).to be false
-    @writer.write_output_to_file(output_format: 'nq', file_path: @output_path, file_name_without_extension: n.split('.')[0])
+    @writer.write_output_to_file(output_format: 'nq', output_schema: OpenStudio::Metadata::BRICK, file_path: @output_path, file_name_without_extension: n.split('.')[0])
     expect(File.exist?(f)).to be true
   end
 
@@ -132,7 +132,7 @@ RSpec.describe 'OpenStudio::Metadata::Writer Haystack and Brick MediumOffice spe
       File.delete(f)
     end
     expect(File.exist?(f)).to be false
-    @writer.write_output_to_file(output_format: 'json', file_path: @output_path, file_name_without_extension: n.split('.')[0])
+    @writer.write_output_to_file(output_format: 'json', output_schema: OpenStudio::Metadata::HAYSTACK, file_path: @output_path, file_name_without_extension: n.split('.')[0])
     expect(File.exist?(f)).to be true
   end
 end
@@ -159,7 +159,7 @@ RSpec.describe 'OpenStudio::Metadata::Writer Haystack and Brick RetailStandalone
       File.delete(f)
     end
     expect(File.exist?(f)).to be false
-    @writer.write_output_to_file(output_format: 'ttl', file_path: @output_path, file_name_without_extension: n.split('.')[0])
+    @writer.write_output_to_file(output_format: 'ttl', output_schema: OpenStudio::Metadata::BRICK, file_path: @output_path, file_name_without_extension: n.split('.')[0])
     expect(File.exist?(f)).to be true
   end
 
@@ -170,7 +170,7 @@ RSpec.describe 'OpenStudio::Metadata::Writer Haystack and Brick RetailStandalone
       File.delete(f)
     end
     expect(File.exist?(f)).to be false
-    @writer.write_output_to_file(output_format: 'nq', file_path: @output_path, file_name_without_extension: n.split('.')[0])
+    @writer.write_output_to_file(output_format: 'nq', output_schema: OpenStudio::Metadata::BRICK, file_path: @output_path, file_name_without_extension: n.split('.')[0])
     expect(File.exist?(f)).to be true
   end
 
@@ -182,7 +182,7 @@ RSpec.describe 'OpenStudio::Metadata::Writer Haystack and Brick RetailStandalone
       File.delete(f)
     end
     expect(File.exist?(f)).to be false
-    @writer.write_output_to_file(output_format: 'json', file_path: @output_path, file_name_without_extension: n.split('.')[0])
+    @writer.write_output_to_file(output_format: 'json', output_schema: OpenStudio::Metadata::HAYSTACK, file_path: @output_path, file_name_without_extension: n.split('.')[0])
     expect(File.exist?(f)).to be true
   end
 end

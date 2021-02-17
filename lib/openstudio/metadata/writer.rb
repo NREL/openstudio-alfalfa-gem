@@ -82,15 +82,13 @@ module OpenStudio
       # @param [String] output_format One of: ['json', 'ttl', 'nq']
       # @param [String] file_path Path to output folder
       # @param [String] file_name_without_extension output name without extension
-      def write_output_to_file(output_format:, file_path: '.', file_name_without_extension: 'model')
-        output_formats = { 'json' => HAYSTACK,
-                           'ttl' => BRICK,
-                           'nq' => BRICK }.freeze
-        if !output_formats.key? output_format
+      def write_output_to_file(output_format:, output_schema:, file_path: '.', file_name_without_extension: 'model')
+        output_formats = { HAYSTACK => ['json'],
+                           BRICK => ['ttl', 'nq'] }.freeze
+        if !output_formats[output_schema].include? output_format
           raise "Output Format: #{output_format} is not supported"
         end
-        ontology = output_formats[output_format]
-        case ontology
+        case output_schema
         when BRICK
           case output_format
           when 'ttl'

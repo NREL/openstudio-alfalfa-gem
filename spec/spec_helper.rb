@@ -93,7 +93,7 @@ RSpec.configure do |config|
       File.delete(f)
     end
     expect(File.exist?(f)).to be false
-    writer.write_output_to_file(output_format: 'json', file_path: output_path, file_name_without_extension: n.split('.')[0])
+    writer.write_output_to_file(output_format: 'json', output_schema: OpenStudio::Metadata::HAYSTACK, file_path: output_path, file_name_without_extension: n.split('.')[0])
     expect(File.exist?(f)).to be true
   end
 
