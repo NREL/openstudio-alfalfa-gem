@@ -135,4 +135,8 @@ RSpec.configure do |config|
     return result, failed
   end
 
+  def inputs_dir
+    return File.join(__dir__, 'inputs')
+  end
+
 end

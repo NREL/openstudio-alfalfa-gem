@@ -1,0 +1,124 @@
+---
+- id: eec6f19d-50db-4ec6-8cbb-1ccd30e58b76
+  symbol: PH_HP_SD_CAV
+  description: Single-Zone Unitary Heat Pump AHU
+  template_type: equipment-template
+  schema_name: Haystack
+  version: 3.9.9
+  extends: heatPump
+  properties:
+    singleDuct:
+      kind_: marker
+    constantAirVolume:
+      kind_: marker
+
+- id: dc5d14b0-2e86-47de-bccb-3a27752a1336
+  symbol: PH_DF
+  description: Discharge Fan
+  template_type: equipment-template
+  schema_name: Haystack
+  version: 3.9.9
+  extends: fan-motor
+  properties:
+    discharge:
+      kind_: marker
+
+- id: 1aa93cd8-a8a7-4731-b222-11d0dd85b2b4
+  symbol: PH_CAV_Fan
+  description: CAV Fan
+  template_type: equipment-template
+  schema_name: Haystack
+  version: 3.9.9
+  extends: fan-motor
+  properties:
+    constantAirVolume:
+      kind_: marker
+
+- id: 0461d4f4-3cbf-4178-bc9f-f5c5e669b876
+  symbol: PH_VAV_Fan
+  description: VAV Fan
+  template_type: equipment-template
+  schema_name: Haystack
+  version: 3.9.9
+  extends: fan-motor
+  properties:
+    variableAirVolume:
+      kind_: marker
+
+- id: 856c59e2-98b4-40ed-89fd-4605340cc910
+  symbol: PH_Gas_Heating_Coil
+  description: Gas Heating Coil
+  template_type: equipment-template
+  schema_name: Haystack
+  version: 3.9.9
+  extends: heatingCoil
+  properties:
+    naturalGasHeating:
+      kind_: marker
+
+- id: 6dd5c2b5-1bfd-4c13-b9ac-1bcdfde1c53a
+  symbol: PH_Electric_Heating_Coil
+  description: Electric Heating Coil
+  template_type: equipment-template
+  schema_name: Haystack
+  version: 3.9.9
+  extends: heatingCoil
+  properties:
+    elecHeating:
+      kind_: marker
+
+- id: b110abc2-7bde-47e2-bc57-a788dab90dec
+  symbol: PH_DX_Heating_Coil
+  description: DX Heating Coil
+  template_type: equipment-template
+  schema_name: Haystack
+  version: 3.9.9
+  extends: heatingCoil
+  properties:
+    dxHeating:
+      kind_: marker
+    stage:
+      kind_: number
+      val: 1
+
+- id: 48b6987d-3d36-4c9c-9384-346368e15d5c
+  symbol: PH_DX_Heating_Coil_2_Stage
+  description: DX Heating Coil Two Stage
+  template_type: equipment-template
+  schema_name: Haystack
+  version: 3.9.9
+  extends: heatingCoil
+  properties:
+    dxHeating:
+      kind_: marker
+    stage:
+      kind_: number
+      val: 2
+
+- id: 1ef87919-2915-4d0f-8aae-6e2abc9b78ce
+  symbol: PH_DX_Cooling_Coil
+  description: DX Cooling Coil
+  template_type: equipment-template
+  schema_name: Haystack
+  version: 3.9.9
+  extends: coolingCoil
+  properties:
+    dxCooling:
+      kind_: marker
+    stage:
+      kind_: number
+      val: 1
+
+- id: 8bff2db3-9b3c-4d3e-abad-50f7c03335d9
+  symbol: PH_DX_Cooling_Coil_2_Stage
+  description: DX Cooling Coil Two Stage
+  template_type: equipment-template
+  schema_name: Haystack
+  version: 3.9.9
+  extends: coolingCoil
+  properties:
+    dxCooling:
+      kind_: marker
+    stage:
+      kind_: number
+      val: 2

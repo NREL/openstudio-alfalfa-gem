@@ -38,7 +38,7 @@ require_relative '../spec_helper'
 
 RSpec.describe 'OpenStudio::Metadata::Mapping::TemplatesManager spec' do
   before(:all) do
-    @templates_manager = OpenStudio::Metadata::Mapping::TemplatesManager.new
+    @templates_manager = OpenStudio::Metadata::Mapping::TemplatesManager.new(inputs_dir)
   end
 
   it 'Should read in templates' do
@@ -90,10 +90,10 @@ RSpec.describe 'OpenStudio::Metadata::Mapping::TemplatesManager spec' do
   end
 
   it 'Should have PH_OAF_Sensor' do
-    puts @templates_manager.resolve_metadata('PH_OAF_Sensor', OpenStudio::Metadata::HAYSTACK)
+    expect(@templates_manager.resolve_metadata('PH_OAF_Sensor', OpenStudio::Metadata::HAYSTACK)).to eq({ 'outdoor' => 'm:', 'air' => 'm:', 'flow' => 'm:', 'sensor' => 'm:', 'point' => 'm:' })
   end
 
   it 'Should have PH_DX_Heating_Coil_2_Stage' do
-    puts @templates_manager.resolve_metadata('PH_DX_Heating_Coil_2_Stage', OpenStudio::Metadata::HAYSTACK)
+    expect(@templates_manager.resolve_metadata('PH_DX_Heating_Coil_2_Stage', OpenStudio::Metadata::HAYSTACK)).to eq({ 'dxHeating' => 'm:', 'stage' => 2, 'equip' => 'm:', 'heatingCoil' => 'm:' })
   end
 end
