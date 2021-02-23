@@ -2,6 +2,7 @@ module OpenStudio
   module Metadata
     module Topology
       class Loop
+        attr_reader :equips
         def initialize
           @equips = []
         end
