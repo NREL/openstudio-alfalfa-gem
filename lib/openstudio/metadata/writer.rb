@@ -45,10 +45,11 @@ module OpenStudio
     # Class to write serialized metadata models to file
     ##
     # @example Write Haystack JSON to file with Writer
-    #   creator = OpenStudio::Metadata::Creator.new(path_to_model)
-    #   creator.apply_mappings('Haystack')
-    #   writer = OpenStudio::Metadata::Writer.new(creator: creator)
-    #   writer.write_output_to_file(output_format: 'json')
+    #   translator = OpenStudio::Metadata::Translator(model)
+    #   entities = translator.build_entities_list()
+    #   writer = OpenStudio::Metadata::Writer.new
+    #   writer.create_output(entities)
+    #   writer.write_output_to_file(output_format: 'json', output_schema: OpenStudio::Metadata::HAYSTACK)
     class Writer
       ##
       # Initialize Writer
@@ -82,6 +83,7 @@ module OpenStudio
       # @param [String] output_format One of: ['json', 'ttl', 'nq']
       # @param [String] file_path Path to output folder
       # @param [String] file_name_without_extension output name without extension
+      # @param [String] output_schema One of [HAYSTACK, BRICK]
       def write_output_to_file(output_format:, output_schema:, file_path: '.', file_name_without_extension: 'model')
         output_formats = { HAYSTACK => ['json'],
                            BRICK => ['ttl', 'nq'] }.freeze

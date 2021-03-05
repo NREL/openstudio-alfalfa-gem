@@ -1,4 +1,4 @@
----
+--
 - id: eec6f19d-50db-4ec6-8cbb-1ccd30e58b76
   symbol: PH_HP_SD_CAV
   description: Single-Zone Unitary Heat Pump AHU
@@ -8,9 +8,9 @@
   extends: heatPump
   properties:
     singleDuct:
-      kind_: marker
+      _kind: marker
     constantAirVolume:
-      kind_: marker
+      _kind: marker
 
 - id: dc5d14b0-2e86-47de-bccb-3a27752a1336
   symbol: PH_DF
@@ -21,7 +21,7 @@
   extends: fan-motor
   properties:
     discharge:
-      kind_: marker
+      _kind: marker
 
 - id: 1aa93cd8-a8a7-4731-b222-11d0dd85b2b4
   symbol: PH_CAV_Fan
@@ -32,7 +32,7 @@
   extends: fan-motor
   properties:
     constantAirVolume:
-      kind_: marker
+      _kind: marker
 
 - id: 0461d4f4-3cbf-4178-bc9f-f5c5e669b876
   symbol: PH_VAV_Fan
@@ -43,7 +43,7 @@
   extends: fan-motor
   properties:
     variableAirVolume:
-      kind_: marker
+      _kind: marker
 
 - id: 856c59e2-98b4-40ed-89fd-4605340cc910
   symbol: PH_Gas_Heating_Coil
@@ -53,7 +53,7 @@
   version: 3.9.9
   extends: heatingCoil
   properties:
-    naturalGasHeating:
+    natualGasHeating:
       kind_: marker
 
 - id: 6dd5c2b5-1bfd-4c13-b9ac-1bcdfde1c53a

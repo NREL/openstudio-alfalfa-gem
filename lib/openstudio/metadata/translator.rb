@@ -6,14 +6,26 @@ require_relative 'mapping/meter_entity'
 require_relative 'helpers'
 module OpenStudio
   module Metadata
+    ##
+    # Class to translate OpenStudio models to Haystack and Brick
+    ##
+    # @example Instantiate Translator from model and generate entities list
+    #   model = OpenStudio::Model::Model.load(path_to_osm)
+    #   translator = OpenStudio::Metadata::Translator.new(model)
+    #   entities = translator.build_entities_list()
     class Translator
       include OpenStudio::Metadata::Helpers
-
+      #
+      # @param model [OpenStudio::Model::Model] model to translate
+      # @param mapping_manager [OpenStudio::Metadata::Mapping::MappingsManager] mappings manager
       def initialize(model, mappings_manager)
         @model = model
         @mappings_manager = mappings_manager
       end
 
+      # Translates model into list of entities to be used an input for generating output metadata models
+      # @param ontologies [Array<String>] list of ontologies to populate entities with
+      # @return [Array<Entity>] list of entities populated with metadata
       def build_entities_list(ontologies = [HAYSTACK, BRICK])
         entities = []
         @mappings_manager.mappings.each do |mapping|
@@ -25,7 +37,6 @@ module OpenStudio
             objs.each do |obj|
               # rescue objects from the clutches of boost
               conv_meth = 'to_' << os_class.gsub(/^OS/, '').gsub(':', '').gsub('_', '')
-              # puts obj.methods - Object.methods
               obj = obj.send(conv_meth)
               break if obj.empty?
               obj = obj.get
@@ -44,6 +55,7 @@ module OpenStudio
         return entities
       end
 
+      # @api private
       def build_node_entities_list(entity, ontologies = [HAYSTACK, BRICK])
         return [] if entity.mapping.nodes.nil?
         nodes = entity.mapping.nodes
@@ -81,6 +93,7 @@ module OpenStudio
         return node_entities
       end
 
+      # @api private
       def build_meter_entities_list(mapping, ontologies = [HAYSTACK, BRICK], meters = nil, parent_meter = nil)
         meter_entities = []
         meters = mapping.meters if meters.nil?
@@ -117,6 +130,7 @@ module OpenStudio
         return meter_entities
       end
 
+      # @api private
       def resolve_relationships(entity, ontologies)
         return if entity.mapping.relationships.nil?
         entity.mapping.relationships.each do |relationship|
@@ -145,6 +159,7 @@ module OpenStudio
       end
 
       # and replaces the unitary entity id with the airloop id.
+      # @api private
       def resolve_unitary_and_air_loops_overlap(entities)
         handles_to_swap = {}
         @model.getAirLoopHVACs.each do |air_loop|

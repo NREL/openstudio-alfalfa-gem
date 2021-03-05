@@ -7,6 +7,7 @@ module OpenStudio
     module Mapping
       class MappingsManager
         attr_reader :mappings, :template_manager
+        # @param files_path [String] path tot he directory where mappings are located
         def initialize(files_path = nil)
           files_path = File.join(File.dirname(__FILE__), '../../../files') unless !files_path.nil?
           @template_manager = TemplatesManager.new(files_path)

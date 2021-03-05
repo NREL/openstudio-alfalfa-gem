@@ -5,9 +5,15 @@ require_relative '../mapping'
 module OpenStudio
   module Metadata
     module Mapping
+      ##
+      # Class that is used to load and manage templates
+      ##
+      # @example Instantiate class
+      #   templates_manager = OpenStudio::Metadata::Mapping::TemplateManager.new
       class TemplatesManager
         TEMPLATE_TYPES = { 'equipment-template' => TemplateEquipment,
-                           'point-group-template' => TemplatePointGroup }.freeze
+                          'point-group-template' => TemplatePointGroup }.freeze
+        # @param files_path [String] path to the directory where the templates directory is located
         def initialize(files_path = nil)
           files_path = File.join(File.dirname(__FILE__), '../../../files') if files_path.nil?
           @files_path = files_path
@@ -19,49 +25,10 @@ module OpenStudio
           @haystack_repo = nil
           read_metadata
         end
-
-        def load_templates_from_path(templates_directory)
-          templates = {}
-          Dir.each_child(templates_directory) do |child|
-            path = File.join(templates_directory, child)
-            if File.directory? path
-              load_templates_from_path(path)
-            elsif File.extname(path) =~ /.ya?ml$/
-              templates = templates.merge(load_templates_from_file(path))
-            end
-          end
-          return templates
-        end
-
-        def load_templates_from_file(templates_file)
-          template_contents = YAML.load_file(templates_file)
-          templates = {}
-          template_contents.each do |template_dict|
-            template = TEMPLATE_TYPES[template_dict['template_type']].new(template_dict)
-            templates[template_dict['id']] = template
-          end
-          return templates
-        end
-
-        def read_metadata(brick_version = '1.1', haystack_version = '3.9.9')
-          @brick_version = brick_version
-          @haystack_version = haystack_version
-          read_brick_ttl_as_repository_object(brick_version)
-          read_haystack_ttl_as_repository_object(haystack_version)
-        end
-
-        def read_haystack_ttl_as_repository_object(version)
-          path = File.join(@files_path, "haystack/#{version}/defs.ttl")
-          raise "File '#{path}' does not exist" unless File.exist?(path)
-          @haystack_repo = RDF::Repository.load(path)
-        end
-
-        def read_brick_ttl_as_repository_object(version)
-          path = File.join(@files_path, "brick/#{version}/Brick.ttl")
-          raise "File '#{path}' does not exist" unless File.exist?(path)
-          @brick_repo = RDF::Repository.load(path)
-        end
-
+        # Gets metadata for a given template
+        # @param symbol [String] symbol of template to look up
+        # @param ontology [String] which ontology should the metadata be built for (HAYSTACK or BRICK)
+        # @return [Hash] tags from given template 
         def resolve_metadata(symbol, ontology = HAYSTACK)
           template = nil
           @templates.values.each do |tmp|
@@ -86,6 +53,54 @@ module OpenStudio
           end
         end
 
+        # @api private
+        def load_templates_from_path(templates_directory)
+          templates = {}
+          Dir.each_child(templates_directory) do |child|
+            path = File.join(templates_directory, child)
+            if File.directory? path
+              load_templates_from_path(path)
+            elsif File.extname(path) =~ /.ya?ml$/
+              templates = templates.merge(load_templates_from_file(path))
+            end
+          end
+          return templates
+        end
+
+        # @api private
+        def load_templates_from_file(templates_file)
+          template_contents = YAML.load_file(templates_file)
+          templates = {}
+          template_contents.each do |template_dict|
+            template = TEMPLATE_TYPES[template_dict['template_type']].new(template_dict)
+            templates[template_dict['id']] = template
+          end
+          return templates
+        end
+
+        # @api private
+        def read_metadata(brick_version = '1.1', haystack_version = '3.9.9')
+          @brick_version = brick_version
+          @haystack_version = haystack_version
+          read_brick_ttl_as_repository_object(brick_version)
+          read_haystack_ttl_as_repository_object(haystack_version)
+        end
+
+        # @api private
+        def read_haystack_ttl_as_repository_object(version)
+          path = File.join(@files_path, "haystack/#{version}/defs.ttl")
+          raise "File '#{path}' does not exist" unless File.exist?(path)
+          @haystack_repo = RDF::Repository.load(path)
+        end
+
+        # @api private
+        def read_brick_ttl_as_repository_object(version)
+          path = File.join(@files_path, "brick/#{version}/Brick.ttl")
+          raise "File '#{path}' does not exist" unless File.exist?(path)
+          @brick_repo = RDF::Repository.load(path)
+        end
+
+        # @api private
         def build_haystack_from_template(template)
           tags = {}
           if template.class == TemplateEquipment
@@ -102,10 +117,12 @@ module OpenStudio
           end
         end
 
+        # @api private
         def build_brick_from_template(template)
           return {}
         end
 
+        # @api private
         def resolve_mandatory_tags(term)
           q = "SELECT ?m WHERE { <#{@phiot_vocab[term]}> <#{RDF::RDFS.subClassOf}>* ?m . ?m <#{@ph_vocab.mandatory}> <#{@ph_vocab.marker}> }"
           s = SPARQL::Client.new(@haystack_repo)

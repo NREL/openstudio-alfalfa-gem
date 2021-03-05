@@ -38,7 +38,7 @@ require_relative '../spec_helper'
 
 RSpec.describe 'OpenStudio::Metadata::Mapping::TemplatesManager spec' do
   before(:all) do
-    @templates_manager = OpenStudio::Metadata::Mapping::TemplatesManager.new(inputs_dir)
+    @templates_manager = OpenStudio::Metadata::Mapping::TemplatesManager.new
   end
 
   it 'Should read in templates' do

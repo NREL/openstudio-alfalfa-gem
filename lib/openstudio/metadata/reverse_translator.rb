@@ -4,9 +4,22 @@ require_relative 'topology/loop_builder'
 require_relative 'topology/equipment'
 module OpenStudio
   module Metadata
+    ##
+    # Class to inferr HVAC topology from haystack file
+    ##
+    # @example
+    #   model = path to haystack json
+    #   reverse_translator = OpenStudio::Metadata::ReverseTranslator.new(model)
+    #   reverse_translator.reverse_translate
+    #   equips = reverse_translator.equips #get equips from reverse_translator
+    #   loops = reverse_translator.loops #get loops from reverse_translator
+    # @see OpenStudio::Metadata::Topology::Loop
+    # @see OpenStudio::Metadata::Topology::Equipment
     class ReverseTranslator
       IGNORE_TAGS = ['sensor', 'meter']
       attr_reader :equips, :loops
+      # @param path_to_model [String] path to haystack JSON containing model
+      # @param path_to_mappings_dir [String] path to the directory containing mappings and templates to be used to reverse translate the model
       def initialize(path_to_model, path_to_mappings_dir = nil)
         @model = JSON.parse(File.read(path_to_model))
         if path_to_mappings_dir.nil?
@@ -23,6 +36,7 @@ module OpenStudio
         @loops = []
       end
 
+      # processes model and populates equips and loops attributes with inferred values from model
       def reverse_translate
         @equips = []
         @model['rows'].each do |row|
@@ -34,6 +48,7 @@ module OpenStudio
         @loops = loop_builder.build_loops
       end
 
+      # @api private
       def find_matching_class(entry)
         score = Hash[*@class_map.keys.collect { |clazz| [clazz, 0] }.flatten]
         entry.each do |key, val|
