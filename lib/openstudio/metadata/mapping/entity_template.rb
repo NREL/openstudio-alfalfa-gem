@@ -1,7 +1,7 @@
 module OpenStudio
   module Metadata
     module Mapping
-      class TemplateEntitiy < Template
+      class EntityTemplate < Template
         def initialize(template_yaml)
           super
         end

@@ -11,8 +11,8 @@ module OpenStudio
       # @example Instantiate class
       #   templates_manager = OpenStudio::Metadata::Mapping::TemplateManager.new
       class TemplatesManager
-        TEMPLATE_TYPES = { 'equipment-template' => TemplateEquipment,
-                          'point-group-template' => TemplatePointGroup }.freeze
+        TEMPLATE_TYPES = { 'equipment-template' => EquipmentTemplate,
+                          'point-group-template' => PointGroupTemplate }.freeze
         # @param files_path [String] path to the directory where the templates directory is located
         def initialize(files_path = nil)
           files_path = File.join(File.dirname(__FILE__), '../../../files') if files_path.nil?
@@ -103,7 +103,7 @@ module OpenStudio
         # @api private
         def build_haystack_from_template(template)
           tags = {}
-          if template.class == TemplateEquipment
+          if template.class == EquipmentTemplate
             template.properties.each do |name, val|
               kind = val['kind_']
               case kind
