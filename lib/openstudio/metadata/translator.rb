@@ -18,9 +18,10 @@ module OpenStudio
       #
       # @param model [OpenStudio::Model::Model] model to translate
       # @param mapping_manager [OpenStudio::Metadata::Mapping::MappingsManager] mappings manager
-      def initialize(model, mappings_manager)
+      def initialize(model, mappings_manager = nil)
         @model = model
-        @mappings_manager = mappings_manager
+        @mappings_manager = mappings_manager if mappings_manager
+        @mappings_manager = OpenStudio::Metadata::Mapping::MappingsManager.new unless mappings_manager
       end
 
       # Translates model into list of entities to be used an input for generating output metadata models
