@@ -43,8 +43,11 @@ RSpec.describe 'Tests a successful simulation of SmallOffice after mappings appl
     @dir = "#{Dir.pwd}/spec/outputs/#{building_type}"
     @file_dir = @dir + '/SR1/'
     @osm = @file_dir + 'in.osm'
+    @model = OpenStudio::Model::Model.load(@osm).get
+    @mappings_manager = OpenStudio::Metadata::Mapping::MappingsManager.new
     check_and_create_prototype(building_type)
-    @creator = instantiate_creator_and_apply_mappings(@osm, 'Haystack')
+
+    @translator = OpenStudio::Metadata::Translator.new(@model, @mappings_manager)
   end
 
   it 'SmallOffice can run an OSW' do
@@ -60,8 +63,11 @@ RSpec.describe 'Tests a successful simulation of MediumOffice after mappings app
     @dir = "#{Dir.pwd}/spec/outputs/#{building_type}"
     @file_dir = @dir + '/SR1/'
     @osm = @file_dir + 'in.osm'
+    @model = OpenStudio::Model::Model.load(@osm).get
+    @mappings_manager = OpenStudio::Metadata::Mapping::MappingsManager.new
     check_and_create_prototype(building_type)
-    @creator = instantiate_creator_and_apply_mappings(@osm, 'Brick')
+
+    @translator = OpenStudio::Metadata::Translator.new(@model, @mappings_manager)
   end
 
   it 'MediumOffice can run an OSW' do
@@ -77,8 +83,11 @@ RSpec.describe 'Tests a successful simulation of RetailStandalone after mappings
     @dir = "#{Dir.pwd}/spec/outputs/#{building_type}"
     @file_dir = @dir + '/SR1/'
     @osm = @file_dir + 'in.osm'
+    @model = OpenStudio::Model::Model.load(@osm).get
+    @mappings_manager = OpenStudio::Metadata::Mapping::MappingsManager.new
     check_and_create_prototype(building_type)
-    @creator = instantiate_creator_and_apply_mappings(@osm, 'Haystack')
+
+    @translator = OpenStudio::Metadata::Translator.new(@model, @mappings_manager)
   end
 
   it 'RetailStandalone can run an OSW' do

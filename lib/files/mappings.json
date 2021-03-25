@@ -208,7 +208,7 @@
       }
     ],
     "haystack": {
-      "template": "fan-motor"
+      "template": "PH_CAV_Fan"
     },
     "brick": {
       "template": "Fan"
@@ -224,7 +224,7 @@
       }
     ],
     "haystack": {
-      "template": "fan-motor"
+      "template": "PH_VAV_Fan"
     },
     "brick": {
       "template": "Fan"
@@ -240,7 +240,7 @@
       }
     ],
     "haystack": {
-      "template": "heatingCoil"
+      "template": "PH_DX_Heating_Coil"
     },
     "brick": {
       "template": "Heating_Coil"
@@ -256,7 +256,7 @@
       }
     ],
     "haystack": {
-      "template": "coolingCoil"
+      "template": "PH_DX_Cooling_Coil"
     },
     "brick": {
       "template": "Cooling_Coil"
@@ -272,7 +272,7 @@
       }
     ],
     "haystack": {
-      "template": "coolingCoil"
+      "template": "PH_DX_Cooling_Coil_2_Stage"
     },
     "brick": {
       "template": "Cooling_Coil"
@@ -288,7 +288,7 @@
       }
     ],
     "haystack": {
-      "template": "heatingCoil"
+      "template": "PH_Gas_Heating_Coil"
     },
     "brick": {
       "template": "Heating_Coil"
@@ -304,7 +304,7 @@
       }
     ],
     "haystack": {
-      "template": "heatingCoil"
+      "template": "PH_Electric_Heating_Coil"
     },
     "brick": {
       "template": "Heating_Coil"

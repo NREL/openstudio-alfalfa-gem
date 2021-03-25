@@ -68,12 +68,11 @@ module OpenStudio
       def create_from_entities(entities)
         @g = RDF::Repository.new
         entities.each do |entity|
-          @g << RDF::Statement.new(@bldg[entity['id']], RDF.type, @brick[entity['type']])
-          @g << RDF::Statement.new(@bldg[entity['id']], RDF::RDFS.label, entity['dis'])
-          if entity.key? 'relationships'
-            entity['relationships'].each do |relationship, reference|
-              @g << RDF::Statement.new(@bldg[entity['id']], @brick[relationship], @bldg[reference])
-            end
+          type = entity.get_metadata(BRICK)['type']
+          @g << RDF::Statement.new(@bldg[entity.id], RDF.type, @brick[type])
+          @g << RDF::Statement.new(@bldg[entity.id], RDF::RDFS.label, entity.name)
+          entity.get_relationships(BRICK).each do |relationship, reference|
+            @g << RDF::Statement.new(@bldg[entity.id], @brick[relationship], @bldg[reference])
           end
         end
       end
@@ -109,21 +108,17 @@ module OpenStudio
         cols = []
         rows = []
         entities.each do |entity|
-          entity.keys.each do |k|
-            if k == 'add_tags'
-              (tags = entity[k]) && tags.each { |tag| entity.store(tag, ':m') && entity.delete(k) }
-            elsif k == 'type'
-              (t_tags = entity[k].split('-')) && t_tags.each { |t_tag| entity.store(t_tag, ':m') } && entity.delete(k)
-            elsif k == 'relationships'
-              relationships = entity[k]
-              relationships.each do |relationship, reference|
-                entity.store(relationship, reference)
-              end
-              entity.delete(k)
-            end
-          end
-          rows.append(entity)
+          row = { 'id' => entity.id, 'dis' => entity.name }
+          row.update(entity.get_metadata(HAYSTACK))
+          row.update(entity.get_relationships(HAYSTACK))
+          rows.push(row)
+          # if entity.class == Mapping::MappingEntity
+          #   if entity.mapping.openstudio_class == 'OS:AirLoopHVAC:UnitaryHeatPump:AirToAir'
+          #     puts entity.get_metadata(HAYSTACK)
+          #   end
+          # end    
         end
+
         rows.each do |row|
           row.keys.each do |k|
             unless cols.include?('name' => k)

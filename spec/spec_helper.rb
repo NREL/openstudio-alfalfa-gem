@@ -75,6 +75,28 @@ RSpec.configure do |config|
     end
   end
 
+  def generate_building_metadata_and_write(building_type)
+    osm_dir = "#{Dir.pwd}/spec/outputs/#{building_type}"
+    check_and_create_prototype(building_type)
+    model = OpenStudio::Model::Model.load(osm_dir + '/SR1/in.osm').get
+    mappings_manager = OpenStudio::Metadata::Mapping::MappingsManager.new
+    output_path = File.join(File.dirname(__FILE__), 'outputs')
+
+    translator = OpenStudio::Metadata::Translator.new(model, mappings_manager)
+    entities = translator.build_entities_list
+    writer = OpenStudio::Metadata::Writer.new
+
+    writer.create_output(entities)
+    n = "#{building_type}_model.json"
+    f = File.join(output_path, n)
+    if File.exist?(f)
+      File.delete(f)
+    end
+    expect(File.exist?(f)).to be false
+    writer.write_output_to_file(output_format: 'json', output_schema: OpenStudio::Metadata::HAYSTACK, file_path: output_path, file_name_without_extension: n.split('.')[0])
+    expect(File.exist?(f)).to be true
+  end
+
   def count_class_mappings(creator)
     count_by_class = {}
     total_count = 0
@@ -85,22 +107,6 @@ RSpec.configure do |config|
       total_count += objects.size
     end
     return [count_by_class, total_count]
-  end
-
-  def setup_creator(metadata_type, building_type)
-    types = ['Brick', 'Haystack']
-    raise "metadata_type must be one of #{types}" unless types.include? metadata_type
-    @dir = "#{Dir.pwd}/spec/outputs/#{building_type}"
-    @osm = @dir + '/SR1/in.osm'
-    return instantiate_creator_and_apply_mappings(@osm, metadata_type)
-  end
-
-  def instantiate_creator_and_apply_mappings(osm, metadata_type)
-    creator = OpenStudio::Metadata::Creator.new(osm)
-    creator.read_templates_and_mappings
-    creator.read_metadata
-    creator.apply_mappings(metadata_type)
-    return creator
   end
 
   def run_osw(file_dir)
@@ -129,17 +135,8 @@ RSpec.configure do |config|
     return result, failed
   end
 
-  def set_entities_to_zero(creator)
-    creator.entities = []
-    expect(creator.entities.size).to eq 0
+  def inputs_dir
+    return File.join(__dir__, 'inputs')
   end
 
-  def check_creator_entity_keys(creator)
-    # puts creator.entities
-    creator.entities.each do |e|
-      expect(e).to have_key('id')
-      expect(e).to have_key('dis')
-      expect(e).to have_key('type')
-    end
-  end
 end

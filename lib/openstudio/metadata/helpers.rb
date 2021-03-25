@@ -179,6 +179,23 @@ module OpenStudio
         json[:variable] = emsName
         return json
       end
+
+      ##
+      # @return [Boolean or One of AirLoopHVACUnitary* objects]
+      def check_if_component_is_unitary(sc)
+        r = false
+        if sc.to_AirLoopHVACUnitaryHeatPumpAirToAir.is_initialized
+          r = sc.to_AirLoopHVACUnitaryHeatPumpAirToAir
+        elsif sc.to_AirLoopHVACUnitarySystem.is_initialized
+          r = sc.to_AirLoopHVACUnitarySystem
+        elsif sc.to_AirLoopHVACUnitaryHeatPumpAirToAirMultiSpeed.is_initialized
+          r = sc.to_AirLoopHVACUnitaryHeatPumpAirToAirMultiSpeed
+        end
+        if r
+          r = r.get
+        end
+        return r
+      end
     end
   end
 end
